@@ -1,15 +1,19 @@
 package server;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.Optional;
 
 public class ServerClient implements Client {
 
-	private final ClientConnection clientConnection;
+	private final Socket clientConnection;
 	private final BufferedReader reader;
 	private final OutputStream writer;
 
-	public ServerClient(ClientConnection clientConnection) {
+	public ServerClient(Socket clientConnection) throws IOException {
 		this.clientConnection = clientConnection;
 		this.reader = setupReader();
 		this.writer = setupWriter();
@@ -19,13 +23,9 @@ public class ServerClient implements Client {
 		return !clientConnection.isClosed();
 	}
 
-	public Optional<String> readFrom() {
-		try {
-			String read = reader.readLine();
-			if (read != null) { return Optional.of(read); }
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public Optional<String> readFrom() throws IOException {
+		String read = reader.readLine();
+		if (read != null) { return Optional.of(read); }
 		return Optional.empty();
 	}
 
@@ -38,14 +38,18 @@ public class ServerClient implements Client {
 	}
 
 	public void close() {
-		clientConnection.close();
+		try {
+			clientConnection.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private BufferedReader setupReader() {
+	private BufferedReader setupReader() throws IOException {
 		return new BufferedReader(
 			new InputStreamReader(clientConnection.getInputStream())
 		);
 	}
 
-	private OutputStream setupWriter() { return clientConnection.getOutputStream(); }
+	private OutputStream setupWriter() throws IOException { return clientConnection.getOutputStream(); }
 }

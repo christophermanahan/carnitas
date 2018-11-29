@@ -1,5 +1,7 @@
 package server;
 
+import java.io.IOException;
+
 public class Server {
 
 	private final Listener listener;
@@ -8,7 +10,7 @@ public class Server {
 		this.listener = listener;
 	}
 
-	public void run() {
+	public void run() throws IOException {
 		Client serverClient = listener.listenForClient();
 
 		while (serverClient.isConnected()) {

@@ -1,5 +1,7 @@
 package server;
 
+import java.io.IOException;
+
 public interface Listener {
-	Client listenForClient();
+	Client listenForClient() throws IOException;
 }

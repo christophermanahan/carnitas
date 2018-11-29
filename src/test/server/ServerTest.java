@@ -3,6 +3,7 @@ package server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,13 +21,13 @@ class ServerTest {
 	}
 
 	@Test
-	void serverListensForClientConnection() {
+	void serverListensForClientConnection() throws IOException {
 		server.run();
 		assertTrue(listener.called);
 	}
 
 	@Test
-	void serverEchosDataWhileConnectionIsOpen() {
+	void serverEchosDataWhileConnectionIsOpen() throws IOException {
 		server.run();
 		assertEquals(listener.input, listener.output);
 	}

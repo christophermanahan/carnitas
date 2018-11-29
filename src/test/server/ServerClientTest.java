@@ -3,26 +3,24 @@ package server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ServerClientTest {
 
-	private ClientConnection clientConnection;
+	private Socket clientConnection;
 	private Client serverClient;
 
 	@BeforeEach
-	void setup() {
+	void setup() throws IOException {
 		clientConnection = new TestClientConnection();
 		serverClient = new ServerClient(clientConnection);
 	}
 
 	@Test
-	void isNotConnectedIfConnectionIsClosed() {
+	void isNotConnectedIfConnectionIsClosed() throws IOException {
 		clientConnection.close();
 		assertFalse(serverClient.isConnected());
 	}
@@ -40,7 +38,7 @@ public class ServerClientTest {
 	}
 
 	@Test
-	void readsDataFromConnection() {
+	void readsDataFromConnection() throws IOException {
 		assertEquals("echo", serverClient.readFrom().get());
 	}
 
@@ -50,7 +48,7 @@ public class ServerClientTest {
 		assertEquals("echo\n", ((TestClientConnection) clientConnection).sent.toString());
 	}
 
-	private class TestClientConnection implements ClientConnection {
+	private class TestClientConnection extends Socket {
 
 		private boolean closed;
 		public OutputStream sent;
@@ -64,7 +62,7 @@ public class ServerClientTest {
 			closed = true;
 		}
 
-		public Boolean isClosed() { return closed; }
+		public boolean isClosed() { return closed; }
 
 		public InputStream getInputStream() {
 			return new ByteArrayInputStream("echo".getBytes());
