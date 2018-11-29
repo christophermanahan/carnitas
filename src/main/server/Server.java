@@ -9,11 +9,11 @@ public class Server {
 	}
 
 	public void run() {
-		Client client = listener.listenForClient();
+		Client serverClient = listener.listenForClient();
 
-		while (client.isConnected()) {
-			client.readFrom()
-				.ifPresentOrElse(client::sendTo, client::close);
+		while (serverClient.isConnected()) {
+			serverClient.readFrom()
+				.ifPresentOrElse(serverClient::sendTo, serverClient::close);
 		}
 	}
 }
