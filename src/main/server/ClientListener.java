@@ -2,14 +2,14 @@ package server;
 
 public class ClientListener implements Listener {
 
-	private final ServerSocket serverSocket;
+	private final ServerConnection serverConnection;
 
-	public ClientListener(ServerSocket serverSocket) {
-		this.serverSocket = serverSocket;
+	public ClientListener(ServerConnection serverConnection) {
+		this.serverConnection = serverConnection;
 	}
 
 	public Client listenForClient() {
-		ClientSocket clientSocket = serverSocket.accept();
-		return new ServerClient(clientSocket);
+		ClientConnection clientConnection = serverConnection.accept();
+		return new ServerClient(clientConnection);
 	}
 }

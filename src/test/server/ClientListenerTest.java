@@ -12,27 +12,27 @@ public class ClientListenerTest {
 
 	@Test
 	void acceptsClientConnection() {
-		TestServerSocket serverSocket = new TestServerSocket();
-		Listener listener = new ClientListener(serverSocket);
+		TestServerConnection serverConnection = new TestServerConnection();
+		Listener listener = new ClientListener(serverConnection);
 		listener.listenForClient();
-		assertTrue(serverSocket.accepted);
+		assertTrue(serverConnection.accepted);
 	}
 
-	private class TestServerSocket implements ServerSocket {
+	private class TestServerConnection implements ServerConnection {
 
 		public boolean accepted;
 
-		TestServerSocket() {
+		TestServerConnection() {
 			this.accepted = false;
 		}
 
-		public TestClientSocket accept() {
+		public TestClientConnection accept() {
 			accepted = true;
-			return new TestClientSocket();
+			return new TestClientConnection();
 		}
 	}
 
-	private class TestClientSocket implements ClientSocket {
+	private class TestClientConnection implements ClientConnection {
 
 		public void close() {}
 

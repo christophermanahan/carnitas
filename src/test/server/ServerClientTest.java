@@ -15,49 +15,49 @@ public class ServerClientTest {
 
 	@Test
 	void isNotConnectedIfConnectionIsClosed() {
-		ClientSocket testSocket = new TestSocket();
-		Client serverClient = new ServerClient(testSocket);
-		testSocket.close();
+		ClientConnection testClientConnection = new TestClientConnection();
+		Client serverClient = new ServerClient(testClientConnection);
+		testClientConnection.close();
 		assertFalse(serverClient.isConnected());
 	}
 
 	@Test
 	void isConnectedIfConnectionIsOpen() {
-		ClientSocket testSocket = new TestSocket();
-		Client serverClient = new ServerClient(testSocket);
+		ClientConnection testClientConnection = new TestClientConnection();
+		Client serverClient = new ServerClient(testClientConnection);
 		assertTrue(serverClient.isConnected());
 	}
 
 	@Test
 	void closeWillCloseConnection() {
-		ClientSocket testSocket = new TestSocket();
-		Client serverClient = new ServerClient(testSocket);
-		assertFalse(testSocket.isClosed());
+		ClientConnection testClientConnection = new TestClientConnection();
+		Client serverClient = new ServerClient(testClientConnection);
+		assertFalse(testClientConnection.isClosed());
 		serverClient.close();
-		assertTrue(testSocket.isClosed());
+		assertTrue(testClientConnection.isClosed());
 	}
 
 	@Test
 	void readsDataFromConnection() {
-		ClientSocket testSocket = new TestSocket();
-		Client serverClient = new ServerClient(testSocket);
+		ClientConnection testClientConnection = new TestClientConnection();
+		Client serverClient = new ServerClient(testClientConnection);
 		assertEquals("echo", serverClient.readFrom().get());
 	}
 
 	@Test
-	void writesNewLineDataToConnection() {
-		ClientSocket testSocket = new TestSocket();
-		Client serverClient = new ServerClient(testSocket);
+	void writesNewLinedDataToConnection() {
+		ClientConnection testClientConnection = new TestClientConnection();
+		Client serverClient = new ServerClient(testClientConnection);
 		serverClient.sendTo("echo");
-		assertEquals("echo\n", ((TestSocket) testSocket).sent.toString());
+		assertEquals("echo\n", ((TestClientConnection) testClientConnection).sent.toString());
 	}
 
-	private class TestSocket implements ClientSocket {
+	private class TestClientConnection implements ClientConnection {
 
 		private boolean closed;
 		public OutputStream sent;
 
-		TestSocket() {
+		TestClientConnection() {
 			this.closed = false;
 			this.sent = new ByteArrayOutputStream();
 		}

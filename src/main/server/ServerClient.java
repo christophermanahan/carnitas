@@ -5,18 +5,18 @@ import java.util.Optional;
 
 public class ServerClient implements Client {
 
-	private final ClientSocket clientSocket;
+	private final ClientConnection clientConnection;
 	private final BufferedReader reader;
 	private final OutputStream writer;
 
-	public ServerClient(ClientSocket clientSocket) {
-		this.clientSocket = clientSocket;
+	public ServerClient(ClientConnection clientConnection) {
+		this.clientConnection = clientConnection;
 		this.reader = setupReader();
 		this.writer = setupWriter();
 	}
 
 	public Boolean isConnected() {
-		return !clientSocket.isClosed();
+		return !clientConnection.isClosed();
 	}
 
 	public Optional<String> readFrom() {
@@ -38,14 +38,14 @@ public class ServerClient implements Client {
 	}
 
 	public void close() {
-		clientSocket.close();
+		clientConnection.close();
 	}
 
 	private BufferedReader setupReader() {
 		return new BufferedReader(
-			new InputStreamReader(clientSocket.getInputStream())
+			new InputStreamReader(clientConnection.getInputStream())
 		);
 	}
 
-	private OutputStream setupWriter() { return clientSocket.getOutputStream(); }
+	private OutputStream setupWriter() { return clientConnection.getOutputStream(); }
 }
