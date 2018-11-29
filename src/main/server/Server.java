@@ -2,18 +2,18 @@ package server;
 
 public class Server {
 
-	private final IListener listener;
+	private final Listener listener;
 
-	public Server(IListener listener) {
+	public Server(Listener listener) {
 		this.listener = listener;
 	}
 
 	public void run() {
-		IClient client = listener.listenForClient();
+		Client client = listener.listenForClient();
 
-		while (client.connected()) {
-			String data = client.receiveFrom();
-			client.sendTo(data);
+		while (client.isConnected()) {
+			client.readFrom()
+				.ifPresentOrElse(client::sendTo, client::close);
 		}
 	}
 }

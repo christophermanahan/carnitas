@@ -2,8 +2,10 @@ package server;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ServerTest {
 
@@ -16,62 +18,51 @@ class ServerTest {
 	}
 
 	@Test
-	void serverReceivesDataWhileConnectionIsOpen() {
-		TestListener listener = new TestListener();
-		Server server = new Server(listener);
-		server.run();
-		assertEquals(listener.output.toString(), "echoechoechoecho");
-	}
-
-	@Test
 	void serverEchosDataWhileConnectionIsOpen() {
 		TestListener listener = new TestListener();
 		Server server = new Server(listener);
 		server.run();
-		assertEquals(listener.input.toString(), "echoechoechoecho");
+		assertEquals(listener.input, listener.output);
 	}
 
-	private class TestListener implements IListener {
+	private class TestListener implements Listener {
 		Boolean called;
-		StringBuilder output;
-		StringBuilder input;
+		List<String> output;
+		List<String> input;
 
 		TestListener() {
 			this.called = false;
-			this.output = new StringBuilder();
-			this.input = new StringBuilder();
+			this.output = new ArrayList();
+			this.input = List.of("echo", "echo");
 		}
 
-		public IClient listenForClient() {
+		public Client listenForClient() {
 			called = true;
 			return new TestClient(this.output, this.input);
 		}
 	}
 
-	private class TestClient implements IClient {
-		public StringBuilder input;
-		public StringBuilder output;
+	private class TestClient implements Client {
+		public Iterator<String> input;
+		public List<String> output;
 
-		public TestClient(StringBuilder output, StringBuilder input) {
+		public TestClient(List<String> output, List<String> input) {
+			this.input = input.iterator();
 			this.output = output;
-			this.input = input;
 		}
 
-		public Boolean connected() {
-			if (output.toString().equals("echoechoechoecho")) {
-				return false;
-			}
-			return true;
+		public Boolean isConnected() {
+			return input.hasNext();
 		}
 
-		public String receiveFrom() {
-			String testString = "echo";
-			output.append(testString);
-			return testString;
+		public Optional<String> readFrom() {
+			return Optional.of(input.next());
 		}
 
 		public void sendTo(String data) {
-			input.append(data);
+			output.add(data);
 		}
+
+		public void close() {}
 	}
 }
