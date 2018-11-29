@@ -1,5 +1,6 @@
 package server;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -9,18 +10,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ServerTest {
 
+	private TestListener listener;
+	private Server server;
+
+	@BeforeEach
+	void setup() {
+		listener = new TestListener();
+		server = new Server(listener);
+	}
+
 	@Test
 	void serverListensForClientConnection() {
-		TestListener listener = new TestListener();
-		Server server = new Server(listener);
 		server.run();
 		assertTrue(listener.called);
 	}
 
 	@Test
 	void serverEchosDataWhileConnectionIsOpen() {
-		TestListener listener = new TestListener();
-		Server server = new Server(listener);
 		server.run();
 		assertEquals(listener.input, listener.output);
 	}
