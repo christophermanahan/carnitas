@@ -13,38 +13,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientListenerTest {
 
-	@Test
-	void acceptsClientConnection() throws IOException {
-		TestServerConnection serverConnection = new TestServerConnection();
-		Listener listener = new ClientListener(serverConnection);
-		listener.listenForClient();
-		assertTrue(serverConnection.accepted);
-	}
+  @Test
+  void acceptsClientConnection() throws IOException {
+    TestServerConnection serverConnection = new TestServerConnection();
+    Listener listener = new ClientListener(serverConnection);
+    listener.listenForClient();
+    assertTrue(serverConnection.accepted);
+  }
 
-	private class TestServerConnection extends ServerSocket {
+  private class TestServerConnection extends ServerSocket {
 
-		public boolean accepted;
+    public boolean accepted;
 
-		TestServerConnection() throws IOException {
-			super();
-			this.accepted = false;
-		}
+    TestServerConnection() throws IOException {
+      super();
+      this.accepted = false;
+    }
 
-		public TestClientConnection accept() {
-			accepted = true;
-			return new TestClientConnection();
-		}
-	}
+    public TestClientConnection accept() {
+      accepted = true;
+      return new TestClientConnection();
+    }
+  }
 
-	private class TestClientConnection extends Socket {
+  private class TestClientConnection extends Socket {
 
-		public void close() {}
+    public void close() {}
 
-		public boolean isClosed() { return false; }
+    public boolean isClosed() { return false; }
 
-		public InputStream getInputStream() { return new ByteArrayInputStream("".getBytes()); }
+    public InputStream getInputStream() { return new ByteArrayInputStream("".getBytes()); }
 
-		public OutputStream getOutputStream() { return null; }
-	}
+    public OutputStream getOutputStream() { return null; }
+  }
 }
 

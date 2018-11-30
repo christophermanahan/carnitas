@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.Optional;
 
 public interface Client {
-	Boolean isConnected();
+  Boolean isConnected();
 
-	Optional<String> readFrom() throws IOException;
+  Optional<String> readFrom() throws IOException;
 
-	void sendTo(String data);
+  void sendTo(String data);
 
-	void close();
+  void close();
 }
