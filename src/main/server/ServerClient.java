@@ -24,9 +24,7 @@ public class ServerClient implements Client {
   }
 
   public Optional<String> readFrom() throws IOException {
-    String read = reader.readLine();
-    if (read != null) { return Optional.of(read); }
-    return Optional.empty();
+    return Optional.ofNullable(reader.readLine());
   }
 
   public void sendTo(String data) {

@@ -22,12 +22,12 @@ public class ServerClientTest {
   @Test
   void isNotConnectedIfConnectionIsClosed() throws IOException {
     clientConnection.close();
-    assertFalse(serverClient.isConnected());
+    assertFalse(new ServerClient(clientConnection).isConnected());
   }
 
   @Test
-  void isConnectedIfConnectionIsOpen() {
-    assertTrue(serverClient.isConnected());
+  void isConnectedIfConnectionIsOpen() throws IOException {
+    assertTrue(new ServerClient(clientConnection).isConnected());
   }
 
   @Test
@@ -43,15 +43,15 @@ public class ServerClientTest {
   }
 
   @Test
-  void writesNewLinedDataToConnection() {
+  void writesNewLinedDataToConnection() throws IOException {
     serverClient.sendTo("echo");
-    assertEquals("echo\n", ((TestClientConnection) clientConnection).sent.toString());
+    assertEquals("echo\n", clientConnection.getOutputStream().toString();
   }
 
   private class TestClientConnection extends Socket {
 
     private boolean closed;
-    public OutputStream sent;
+    private OutputStream sent;
 
     TestClientConnection() {
       this.closed = false;
