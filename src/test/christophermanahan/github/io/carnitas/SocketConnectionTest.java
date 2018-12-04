@@ -13,6 +13,7 @@ class SocketConnectionTest {
   void isOpenIfSocketIsConnected() {
     boolean connected = true;
     Socket testSocket = new TestSocket(connected);
+
     assertTrue(new SocketConnection(testSocket).isOpen());
   }
 
@@ -20,6 +21,7 @@ class SocketConnectionTest {
   void isClosedIfSocketIsNotConnected() {
     boolean connected = false;
     Socket testSocket = new TestSocket(connected);
+
     assertFalse(new SocketConnection(testSocket).isOpen());
   }
 
@@ -27,11 +29,14 @@ class SocketConnectionTest {
   void closeWillDisconnectConnection() {
     boolean connected = true;
     Socket testSocket = new TestSocket(connected);
+
     new SocketConnection(testSocket).close();
+
     assertTrue(testSocket.isClosed());
   }
 
   private class TestSocket extends Socket {
+
     boolean connected;
 
     TestSocket(boolean connected) {
