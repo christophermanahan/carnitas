@@ -27,7 +27,7 @@ class SocketInputTest {
     byte[] testData = testString.getBytes();
     Socket testSocket = new TestSocket(testData);
 
-    assertEquals(new SocketInput(testSocket).receive(), Optional.of(testString));
+    assertEquals(Optional.of(testString), new SocketInput(testSocket).receive());
   }
 
   private class TestSocket extends Socket {
