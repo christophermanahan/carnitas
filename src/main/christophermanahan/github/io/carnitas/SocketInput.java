@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public class SocketInput implements Input {
 
-  final Socket socket;
+  private final Socket socket;
 
-  public SocketInput(Socket socket) {
+  SocketInput(Socket socket) {
     this.socket = socket;
   }
 
@@ -18,11 +18,11 @@ public class SocketInput implements Input {
     try {
       return Optional.ofNullable(reader().readLine());
     } catch (IOException e) {
-      throw new IllegalStateException("Could not read from socket input stream", e);
+      return Optional.empty();
     }
   }
 
-  BufferedReader reader() {
+  private BufferedReader reader() {
     try {
       return new BufferedReader(
         new InputStreamReader(socket.getInputStream())

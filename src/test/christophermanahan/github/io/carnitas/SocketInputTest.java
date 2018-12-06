@@ -3,7 +3,6 @@ package christophermanahan.github.io.carnitas;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.Optional;
@@ -14,31 +13,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SocketInputTest {
 
   @Test
-  void isEmptyIfSocketRespondsWithoutData() {
-    byte[] testData = new byte[0];
-    Socket testSocket = new TestSocket(testData);
+  void isEmptyIfSocketRespondsWithEmptyData() {
+    String emptyData = "";
+    Socket socket = new TestSocket(emptyData);
 
-    assertTrue(new SocketInput(testSocket).receive().isEmpty());
+    assertTrue(new SocketInput(socket).receive().isEmpty());
   }
 
   @Test
   void containsDataIfSocketRespondsWithData() {
-    String testString = "data";
-    byte[] testData = testString.getBytes();
-    Socket testSocket = new TestSocket(testData);
+    String incomingData = "data";
+    Socket socket = new TestSocket(incomingData);
 
-    assertEquals(Optional.of(testString), new SocketInput(testSocket).receive());
+    assertEquals(Optional.of(incomingData), new SocketInput(socket).receive());
   }
 
   private class TestSocket extends Socket {
-    final byte[] testData;
+    private final String incomingData;
 
-    TestSocket(byte[] testData) {
-      this.testData = testData;
+    TestSocket(String incomingData) {
+      this.incomingData = incomingData;
     }
 
-    public InputStream getInputStream() throws IOException {
-      return new ByteArrayInputStream(testData);
+    public InputStream getInputStream() {
+      return new ByteArrayInputStream(incomingData.getBytes());
     }
   }
 }
