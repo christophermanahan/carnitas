@@ -1,5 +1,6 @@
 package io.github.christophermanahan.carnitas;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -17,28 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EchoServerTest {
 
+  private List<String> incomingData;
+  private TestSocket socket;
+
+  @BeforeEach
+  void setup() throws IOException {
+    incomingData = List.of("data", "data");
+    socket = new TestSocket(incomingData);
+
+    new EchoServer(new TestServerSocket(socket)).run();
+  }
+
   @Test
   void dataReceivedFromInputIsSentToOutputUntilDisconnect() throws IOException {
-    List<String> incomingData = List.of("data", "data");
-    TestSocket socket = new TestSocket(incomingData);
-    TestServerSocket serverSocket = new TestServerSocket(socket);
-    EchoServer echoServer = new EchoServer(serverSocket);
-
-    echoServer.run();
-
     String outgoingData = socket.getOutputStream().toString();
     List<String> outgoingDataList = List.of(outgoingData.split("\n"));
     assertEquals(incomingData, outgoingDataList);
   }
 
   @Test void socketIsClosedWhenStreamIsDisconnected() throws IOException {
-    List<String> incomingData = List.of();
-    TestSocket socket = new TestSocket(incomingData);
-    TestServerSocket serverSocket = new TestServerSocket(socket);
-    EchoServer echoServer = new EchoServer(serverSocket);
-
-    echoServer.run();
-
     assertTrue(socket.closed);
   }
 
