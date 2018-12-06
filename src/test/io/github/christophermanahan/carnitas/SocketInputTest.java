@@ -1,4 +1,4 @@
-package christophermanahan.github.io.carnitas;
+package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 

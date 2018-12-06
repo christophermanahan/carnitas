@@ -1,4 +1,4 @@
-package christophermanahan.github.io.carnitas;
+package io.github.christophermanahan.carnitas;
 
 public interface Connection {
   boolean isOpen();
