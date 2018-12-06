@@ -6,33 +6,59 @@ import java.net.Socket;
 
 public class EchoServer implements Server {
 
-  final ServerSocket serverSocket;
+  private ServerSocket serverSocket;
+  private Connection socketConnection;
+  private Input socketInput;
+  private Output socketOutput;
 
   EchoServer(ServerSocket serverSocket) {
     this.serverSocket = serverSocket;
   }
 
   public void run() {
+    acceptConnection();
+
+    echoUntilDisconnect();
+  }
+
+  private void acceptConnection() {
     try {
       Socket socket = serverSocket.accept();
-
-      Connection socketConnection = new SocketConnection(socket);
-      Input socketInput = new SocketInput(socket);
-      Output socketOutput = new SocketOutput(socket);
-
-      while(socketConnection.isOpen()) {
-        try {
-          socketInput.receive()
-            .ifPresentOrElse(socketOutput::send, socketConnection::close);
-        } catch (SocketOutput.SendToSocketFailed e) {
-          System.out.println(e.dueTo());
-          continue;
-        } catch (SocketConnection.CloseSocketFailed e) {
-          System.out.println(e.dueTo());
-        }
-      }
+      setup(socket);
     } catch (IOException e) {
-      System.out.println("Server connection failed due to: " + e);
+      print("Server connection failed due to: " + e);
     }
+  }
+
+  private void setup(Socket socket) {
+    socketConnection = new SocketConnection(socket);
+    socketInput = new SocketInput(socket);
+    socketOutput = new SocketOutput(socket);
+  }
+
+  private void echoUntilDisconnect() {
+    while(connected()) {
+      try {
+        echo();
+      } catch (SocketOutput.SendToSocketFailed e) {
+        print(e.dueTo());
+        continue;
+      } catch (SocketConnection.CloseSocketFailed e) {
+        print(e.dueTo());
+      }
+    }
+  }
+
+  private boolean connected() {
+    return socketConnection.isOpen();
+  }
+
+  private void echo() {
+    socketInput.receive()
+      .ifPresentOrElse(socketOutput::send, socketConnection::close);
+  }
+
+  private void print(String message) {
+    System.out.println(message);
   }
 }
