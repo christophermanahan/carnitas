@@ -21,11 +21,18 @@ public class EchoServer implements Server {
       Output socketOutput = new SocketOutput(socket);
 
       while(socketConnection.isOpen()) {
-        socketInput.receive()
-          .ifPresentOrElse(socketOutput::send, socketConnection::close);
+        try {
+          socketInput.receive()
+            .ifPresentOrElse(socketOutput::send, socketConnection::close);
+        } catch (SocketOutput.SendToSocketFailed e) {
+          System.out.println(e.dueTo());
+          continue;
+        } catch (SocketConnection.CloseSocketFailed e) {
+          System.out.println(e.dueTo());
+        }
       }
     } catch (IOException e) {
-      throw new IllegalStateException("Connection was not accepted", e);
+      System.out.println("Server connection failed due to: " + e);
     }
   }
 }

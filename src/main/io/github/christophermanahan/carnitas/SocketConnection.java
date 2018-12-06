@@ -19,7 +19,19 @@ public class SocketConnection implements Connection {
     try {
       socket.close();
     } catch (IOException e) {
-      throw new IllegalStateException("Cannot close socket", e);
+      throw new CloseSocketFailed(e);
+    }
+  }
+
+  static class CloseSocketFailed extends RuntimeException {
+    private static IOException exception;
+
+    CloseSocketFailed(IOException e) {
+      this.exception = e;
+    }
+
+    public static String dueTo() {
+      return "Socket failed to close due to: " + exception;
     }
   }
 }

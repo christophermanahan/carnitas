@@ -15,7 +15,19 @@ public class SocketOutput implements Output {
     try {
       socket.getOutputStream().write(data.concat("\n").getBytes());
     } catch (IOException e) {
-      throw new IllegalStateException("Could not write to socket output", e);
+      throw new SendToSocketFailed(e);
+    }
+  }
+
+  static class SendToSocketFailed extends RuntimeException {
+    private static IOException exception;
+
+    SendToSocketFailed(IOException e) {
+      this.exception = e;
+    }
+
+    public static String dueTo() {
+      return "Sending to socket failed due to: " + exception;
     }
   }
 }
