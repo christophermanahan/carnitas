@@ -42,7 +42,6 @@ public class EchoServer implements Server {
         echo();
       } catch (SocketOutput.SendToSocketFailed e) {
         print(e.dueTo());
-        continue;
       } catch (SocketConnection.CloseSocketFailed e) {
         print(e.dueTo());
       }
