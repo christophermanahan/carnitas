@@ -28,7 +28,19 @@ public class SocketInput implements Input {
         new InputStreamReader(socket.getInputStream())
       );
     } catch (IOException e) {
-      throw new IllegalStateException("Could not get input stream from socket", e);
+      throw new InputStreamFailed(e);
+    }
+  }
+
+  static class InputStreamFailed extends RuntimeException {
+    private static IOException exception;
+
+    InputStreamFailed (IOException e) {
+      this.exception = e;
+    }
+
+    public static String dueTo() {
+      return "Getting the socket input stream failed due to: " + exception;
     }
   }
 }

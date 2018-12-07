@@ -40,6 +40,8 @@ public class EchoServer implements Server {
     while(connected()) {
       try {
         echo();
+      } catch (SocketInput.InputStreamFailed e) {
+        print(e.dueTo());
       } catch (SocketOutput.SendToSocketFailed e) {
         print(e.dueTo());
       } catch (SocketConnection.CloseSocketFailed e) {
