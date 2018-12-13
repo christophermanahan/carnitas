@@ -1,7 +1,6 @@
 package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -18,13 +17,9 @@ class SocketConnectionTest {
 
   String data;
 
-  @BeforeEach
-  void setup() {
-    data = "data";
-  }
-
   @Test
   void receivesDataFromSocket() {
+    data = "data";
     Socket socket = new TestSocket(data);
 
     Optional<String> received = new SocketConnection(socket).receive();
@@ -34,6 +29,7 @@ class SocketConnectionTest {
 
   @Test
   void sendsNewLineAppendedDataToSocket() throws IOException {
+    data = "data";
     Socket socket = new TestSocket(null);
 
     new SocketConnection(socket).send(data);
@@ -46,7 +42,7 @@ class SocketConnectionTest {
     Socket socket = new OutputStreamException();
     Connection connection = new SocketConnection(socket);
 
-    RuntimeException e = assertThrows(RuntimeException.class, ()->{ connection.send(data); });
+    RuntimeException e = assertThrows(RuntimeException.class, ()->{ connection.send(null); });
 
     Assertions.assertEquals(ErrorMessages.SEND_TO_CONNECTION, e.getMessage());
   }

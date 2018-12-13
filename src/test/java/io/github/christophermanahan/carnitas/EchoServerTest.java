@@ -19,13 +19,13 @@ class EchoServerTest {
 
   @BeforeEach
   void setup() {
-    received = List.of("data");
     sent = new ArrayList<>();
     logger = new TestLogger();
   }
 
   @Test
   void dataReceivedFromConnectionIsSentToConnection() {
+    received = List.of("data");
     connection = new TestConnection(received, sent);
     listener = new TestListener(connection);
 
@@ -36,6 +36,7 @@ class EchoServerTest {
 
   @Test
   void connectionIsClosedAfterDataIsReceivedAndSent() {
+    received = List.of("data");
     connection = new TestConnection(received, sent);
     listener = new TestListener(connection);
 
@@ -46,6 +47,7 @@ class EchoServerTest {
 
   @Test
   void logsExceptionIfListenFails() {
+    received = List.of("data");
     connection = new TestConnection(received, sent);
     listener = new ListenException(connection);
 
@@ -56,6 +58,7 @@ class EchoServerTest {
 
   @Test
   void logsExceptionIfSendFails() {
+    received = List.of("data");
     connection = new SendException(received, sent);
     listener = new TestListener(connection);
 
@@ -66,6 +69,7 @@ class EchoServerTest {
 
   @Test
   void logsExceptionIfCloseFails() {
+    received = List.of("data");
     connection = new CloseException(received, sent);
     listener = new TestListener(connection);
 
