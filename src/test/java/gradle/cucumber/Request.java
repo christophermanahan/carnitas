@@ -14,9 +14,9 @@ public class Request {
     this.socket = new Socket(address, Integer.parseInt(port));
   }
 
-  public Response send(String data) throws IOException {
+  public String send(String data) throws IOException {
     BufferedReader receive = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     new PrintWriter(socket.getOutputStream(), true).println(data);
-    return new Response(receive.readLine());
+    return receive.readLine();
   }
 }
