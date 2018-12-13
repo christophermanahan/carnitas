@@ -3,7 +3,6 @@ package gradle.cucumber;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 
@@ -23,6 +22,6 @@ public class EchoSteps {
 
   @Then("I should receive {string}")
   public void i_should_receive(String string) {
-    Assertions.assertEquals(string, response.contains());
+    assert(string == response.contains());
   }
 }
