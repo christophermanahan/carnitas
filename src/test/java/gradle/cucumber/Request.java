@@ -10,8 +10,8 @@ public class Request {
 
   private final Socket socket;
 
-  public Request(String address, Integer port) throws IOException {
-    this.socket = new Socket(address, port);
+  public Request(String address, String port) throws IOException {
+    this.socket = new Socket(address, Integer.parseInt(port));
   }
 
   public Response send(String data) throws IOException {
