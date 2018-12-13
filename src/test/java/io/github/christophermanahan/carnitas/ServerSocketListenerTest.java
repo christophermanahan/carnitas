@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ServerSocketListenerTest {
 
@@ -27,10 +28,11 @@ class ServerSocketListenerTest {
   @Test
   void throwsExceptionIfConnectionAcceptionFails() throws IOException {
     ServerSocket serverSocket = new ConnectionException();
-
     Listener listener = new ServerSocketListener(serverSocket);
 
-    Assertions.assertThrows(AcceptConnectionException.class, listener::listen);
+    RuntimeException e = assertThrows(RuntimeException.class, listener::listen);
+
+    Assertions.assertEquals(ErrorMessages.ACCEPT_CONNECTION, e.getMessage());
   }
 
   private class TestServerSocket extends ServerSocket {

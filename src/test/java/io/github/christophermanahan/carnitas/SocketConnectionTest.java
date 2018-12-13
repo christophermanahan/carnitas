@@ -1,5 +1,6 @@
 package io.github.christophermanahan.carnitas;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,10 +44,11 @@ class SocketConnectionTest {
   @Test
   void throwsExceptionIfSendFails() {
     Socket socket = new OutputStreamException();
-
     Connection connection = new SocketConnection(socket);
 
-    assertThrows(SendToConnectionException.class, ()->{ connection.send(data); });
+    RuntimeException e = assertThrows(RuntimeException.class, ()->{ connection.send(data); });
+
+    Assertions.assertEquals(ErrorMessages.SEND_TO_CONNECTION, e.getMessage());
   }
 
   @Test
@@ -61,10 +63,11 @@ class SocketConnectionTest {
   @Test
   void throwsExceptionIfCloseFails() {
     Socket socket = new CloseException();
-
     Connection connection = new SocketConnection(socket);
 
-    assertThrows(ConnectionCloseException.class, connection::close);
+    RuntimeException e = assertThrows(RuntimeException.class, connection::close);
+
+    Assertions.assertEquals(ErrorMessages.CLOSE_CONNECTION, e.getMessage());
   }
 
   private class TestSocket extends Socket {

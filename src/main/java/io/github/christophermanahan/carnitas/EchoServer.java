@@ -16,12 +16,8 @@ public class EchoServer {
       connect();
       echo();
       close();
-    } catch (AcceptConnectionException e) {
-      errorLogger.log(ErrorMessages.ACCEPT_CONNECTION);
-    } catch (SendToConnectionException e) {
-      errorLogger.log(ErrorMessages.SEND_TO_CONNECTION);
-    } catch (ConnectionCloseException e) {
-      errorLogger.log(ErrorMessages.CLOSE_CONNECTION);
+    } catch (RuntimeException e) {
+      errorLogger.log(e.getMessage());
     }
   }
 

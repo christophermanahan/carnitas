@@ -14,7 +14,7 @@ public class ServerSocketListener implements Listener {
     try {
       return new SocketConnection(serverSocket.accept());
     } catch (IOException e) {
-      throw new AcceptConnectionException();
+      throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
     }
   }
 }

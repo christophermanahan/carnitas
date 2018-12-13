@@ -111,7 +111,7 @@ class EchoServerTest {
     }
 
     public Connection listen() {
-      throw new AcceptConnectionException();
+      throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
     }
   }
 
@@ -147,7 +147,7 @@ class EchoServerTest {
     }
 
     public void send(String data) {
-      throw new SendToConnectionException();
+      throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);
     }
   }
 
@@ -158,7 +158,7 @@ class EchoServerTest {
     }
 
     public void close() {
-      throw new ConnectionCloseException();
+      throw new RuntimeException(ErrorMessages.CLOSE_CONNECTION);
     }
   }
 }

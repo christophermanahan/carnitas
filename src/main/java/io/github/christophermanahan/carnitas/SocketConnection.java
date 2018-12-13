@@ -27,7 +27,7 @@ public class SocketConnection implements Connection {
     try {
       socket.getOutputStream().write(data.concat("\n").getBytes());
     } catch (IOException e) {
-      throw new SendToConnectionException();
+      throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);
     }
   }
 
@@ -35,7 +35,7 @@ public class SocketConnection implements Connection {
     try {
       socket.close();
     } catch (IOException e) {
-      throw new ConnectionCloseException();
+      throw new RuntimeException(ErrorMessages.CLOSE_CONNECTION);
     }
   }
 }
