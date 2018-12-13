@@ -1,6 +1,5 @@
 package io.github.christophermanahan.carnitas;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
 
@@ -27,7 +28,7 @@ class SocketConnectionTest {
 
     Optional<String> received = new SocketConnection(socket).receive();
 
-    Assertions.assertEquals(Optional.of(data), received);
+    assertEquals(Optional.of(data), received);
   }
 
   @Test
@@ -36,7 +37,7 @@ class SocketConnectionTest {
 
     new SocketConnection(socket).send(data);
 
-    Assertions.assertEquals(data.concat("\n"), socket.getOutputStream().toString());
+    assertEquals(data.concat("\n"), socket.getOutputStream().toString());
   }
 
   @Test
@@ -45,7 +46,7 @@ class SocketConnectionTest {
 
     Connection connection = new SocketConnection(socket);
 
-    Assertions.assertThrows(SendToConnectionException.class, ()->{ connection.send(data); });
+    assertThrows(SendToConnectionException.class, ()->{ connection.send(data); });
   }
 
   @Test
@@ -54,7 +55,7 @@ class SocketConnectionTest {
 
     new SocketConnection(socket).close();
 
-    Assertions.assertTrue(socket.isClosed());
+    assertTrue(socket.isClosed());
   }
 
   @Test
@@ -63,7 +64,7 @@ class SocketConnectionTest {
 
     Connection connection = new SocketConnection(socket);
 
-    Assertions.assertThrows(ConnectionCloseException.class, connection::close);
+    assertThrows(ConnectionCloseException.class, connection::close);
   }
 
   private class TestSocket extends Socket {
