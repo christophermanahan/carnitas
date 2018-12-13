@@ -11,18 +11,17 @@ public class EchoSteps {
   private Response response;
 
   @Given("The server is running on port {string}")
-  public void the_server_is_running_on_port(String string) {
-    port = string;
+  public void theServerIsRunningOnPort(String port) {
+    this.port = port;
   }
 
   @When("I send {string} to address {string} at the specified port")
-  public void i_send_to_address_at_the_specified_port(String string, String string2) throws IOException {
+  public void iSendToAddressAtTheSpecifiedPort(String data, String address) throws IOException {
     new Thread(new Support(port)).start();
-    response = new Request(string2, port).send(string);
+    response = new Request(address, port).send(data);
   }
 
   @Then("I should receive {string}")
-  public void i_should_receive(String string) {
-    assert(string == response.contains());
+  public void iShouldReceive(String data) {assert(data == response.contains());
   }
 }
