@@ -7,73 +7,71 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EchoServerTest {
+class HTTPServerTest {
 
-  private List<String> received;
-  private List<String> sent;
+  private String received;
+  private List<byte[]> sent;
   private Connection connection;
   private Listener listener;
   private TestLogger logger;
 
   @BeforeEach
   void setup() {
-    sent = new ArrayList<>();
+    sent = new ArrayList<byte[]>();
     logger = new TestLogger();
   }
 
   @Test
-  void dataReceivedFromConnectionIsSentToConnection() {
-    received = List.of("data");
-    connection = new TestConnection(received, sent);
+  void sendsHTTPResponseAfterReceivingData() {
+    String data = "data";
+    connection = new TestConnection(data, sent);
     listener = new TestListener(connection);
 
-    new EchoServer(listener, logger).run();
+    new HTTPServer(listener, logger).run();
 
-    assertEquals(received, sent);
+    Response response = new HTTPResponse(data);
+    assertArrayEquals(response.bytes(), sent.get(0));
   }
 
   @Test
   void connectionIsClosedAfterDataIsReceivedAndSent() {
-    received = List.of("data");
-    connection = new TestConnection(received, sent);
+    connection = new TestConnection("data", sent);
     listener = new TestListener(connection);
 
-    new EchoServer(listener, logger).run();
+    new HTTPServer(listener, logger).run();
 
     assertEquals(Optional.empty(), connection.receive());
   }
 
   @Test
   void logsExceptionIfListenFails() {
-    received = List.of("data");
-    connection = new TestConnection(received, sent);
+    connection = new TestConnection("data", sent);
     listener = new ListenException(connection);
 
-    new EchoServer(listener, logger).run();
+    new HTTPServer(listener, logger).run();
 
     assertEquals(ErrorMessages.ACCEPT_CONNECTION, logger.log());
   }
 
   @Test
   void logsExceptionIfSendFails() {
-    received = List.of("data");
-    connection = new SendException(received, sent);
+    connection = new SendException("data", sent);
     listener = new TestListener(connection);
 
-    new EchoServer(listener, logger).run();
+    new HTTPServer(listener, logger).run();
 
     assertEquals(ErrorMessages.SEND_TO_CONNECTION, logger.log());
   }
 
   @Test
   void logsExceptionIfCloseFails() {
-    received = List.of("data");
-    connection = new CloseException(received, sent);
+    connection = new CloseException("data", sent);
     listener = new TestListener(connection);
 
-    new EchoServer(listener, logger).run();
+    new HTTPServer(listener, logger).run();
 
     assertEquals(ErrorMessages.CLOSE_CONNECTION, logger.log());
   }
@@ -121,22 +119,22 @@ class EchoServerTest {
 
   private class TestConnection implements Connection {
 
-    private List<String> received;
-    private List<String> sent;
+    private String received;
+    private List<byte[]> sent;
     private boolean closed;
 
-    public TestConnection(List<String> received, List<String> sent) {
+    public TestConnection(String received, List<byte[]> sent) {
       this.received = received;
       this.sent = sent;
       this.closed = false;
     }
 
     public Optional<String> receive() {
-      return closed ? Optional.empty() : Optional.of(received.get(0));
+      return closed ? Optional.empty() : Optional.of(received);
     }
 
-    public void send(String data) {
-      sent.add(data);
+    public void send(Response response) {
+      sent.add(response.bytes());
     }
 
     public void close() {
@@ -146,18 +144,18 @@ class EchoServerTest {
 
   private class SendException extends TestConnection {
 
-    public SendException(List<String> received, List<String> sent) {
+    public SendException(String received, List<byte[]> sent) {
       super(received, sent);
     }
 
-    public void send(String data) {
+    public void send(Response response) {
       throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);
     }
   }
 
   private class CloseException extends TestConnection {
 
-    public CloseException(List<String> received, List<String> sent) {
+    public CloseException(String received, List<byte[]> sent) {
       super(received, sent);
     }
 

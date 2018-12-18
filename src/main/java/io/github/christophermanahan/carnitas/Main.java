@@ -8,6 +8,6 @@ public class Main {
   public static void main(String[] args) throws IOException {
     int port = args.length == 0  ? 33333 : Integer.parseInt(args[0]);
     ServerSocket serverSocket = new ServerSocket(port);
-    new EchoServer(new ServerSocketListener(serverSocket), new ErrorLogger()).run();
+    new HTTPServer(new ServerSocketListener(serverSocket), new ErrorLogger()).run();
   }
 }

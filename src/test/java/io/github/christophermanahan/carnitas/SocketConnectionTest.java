@@ -28,13 +28,13 @@ class SocketConnectionTest {
   }
 
   @Test
-  void sendsNewLineAppendedDataToSocket() throws IOException {
+  void sendsResponseBytesToSocket() throws IOException {
     data = "data";
     Socket socket = new TestSocket(null);
 
-    new SocketConnection(socket).send(data);
+    new SocketConnection(socket).send(new TestResponse(data));
 
-    assertEquals(data.concat("\n"), socket.getOutputStream().toString());
+    assertEquals(data, socket.getOutputStream().toString());
   }
 
   @Test
@@ -92,6 +92,19 @@ class SocketConnectionTest {
 
     public boolean isClosed() {
       return closed;
+    }
+  }
+
+  private class TestResponse implements Response {
+
+    private final String request;
+
+    TestResponse(String request) {
+      this.request = request;
+    }
+
+    public byte[] bytes() {
+      return request.getBytes();
     }
   }
 
