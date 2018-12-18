@@ -6,7 +6,7 @@ import cucumber.api.java.en.When;
 
 import java.io.IOException;
 
-public class EchoSteps {
+public class SimpleGetSteps {
   private String port;
   private String response;
 
@@ -15,13 +15,14 @@ public class EchoSteps {
     this.port = port;
   }
 
-  @When("I send {string} to address {string} at the specified port")
-  public void iSendToAddressAtTheSpecifiedPort(String data, String address) throws IOException {
+  @When("I send {string} to host at the specified port")
+  public void iSendToHostAtTheSpecifiedPort(String data) throws IOException {
     new Thread(new Support(port)).start();
-    this.response = new Request(address, port).send(data);
+    this.response = new Request(port).send(data);
   }
 
   @Then("I should receive {string}")
-  public void iShouldReceive(String data) {assert(data.equals(response));
+  public void iShouldReceive(String simpleGETResponse) {
+    assert simpleGETResponse.equals(response);
   }
 }
