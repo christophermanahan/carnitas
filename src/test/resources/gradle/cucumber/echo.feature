@@ -1,5 +1,5 @@
-Feature: Echo
-  The server should echo back data sent to it
+Feature: Simple GET
+  The server should respond to simple GET requests
 
   Scenario: Simple GET request
     Given The server is running on port "33333"

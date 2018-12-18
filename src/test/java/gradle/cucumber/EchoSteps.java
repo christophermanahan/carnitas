@@ -22,6 +22,6 @@ public class EchoSteps {
   }
 
   @Then("I should receive {string}")
-  public void iShouldReceive(String data) {assert(data == response);
+  public void iShouldReceive(String data) {assert(data.equals(response));
   }
 }
