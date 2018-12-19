@@ -7,6 +7,6 @@ public class HTTPResponse implements Response {
   static final String CRLF = "\r\n";
 
   public byte[] bytes() {
-    return String.format("%s %s %s", VERSION, GET, CRLF).getBytes();
+    return String.format("%s %s%s%s", VERSION, GET, CRLF, CRLF).getBytes();
   }
 }

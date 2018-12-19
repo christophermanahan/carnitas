@@ -11,7 +11,7 @@ class HTTPResponseTest {
 
     byte[] httpResponseBytes = httpResponse.bytes();
 
-    String response = String.format("%s %s %s", HTTPResponse.VERSION, HTTPResponse.GET, HTTPResponse.CRLF);
+    String response = String.format("%s %s%s%s", HTTPResponse.VERSION, HTTPResponse.GET, HTTPResponse.CRLF, HTTPResponse.CRLF);
     Assertions.assertArrayEquals(response.getBytes(), httpResponseBytes);
   }
 }
