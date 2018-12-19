@@ -26,13 +26,12 @@ class HTTPServerTest {
 
   @Test
   void sendsHTTPResponseAfterReceivingData() {
-    String data = "data";
-    connection = new TestConnection(data, sent);
+    connection = new TestConnection("data", sent);
     listener = new TestListener(connection);
 
     new HTTPServer(listener, logger).run();
 
-    Response response = new HTTPResponse(data);
+    Response response = new HTTPResponse();
     assertArrayEquals(response.bytes(), sent.get(0));
   }
 

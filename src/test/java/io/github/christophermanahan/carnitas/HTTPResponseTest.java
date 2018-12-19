@@ -7,7 +7,7 @@ class HTTPResponseTest {
 
   @Test
   void createsGETResponseBytes() {
-    Response httpResponse = new HTTPResponse("data");
+    Response httpResponse = new HTTPResponse();
 
     byte[] httpResponseBytes = httpResponse.bytes();
 

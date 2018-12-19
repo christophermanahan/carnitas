@@ -27,7 +27,7 @@ public class HTTPServer {
 
   private void serve() {
     connection.receive()
-      .map(HTTPResponse::new)
+      .map(request -> new HTTPResponse())
       .ifPresent(connection::send);
   }
 
