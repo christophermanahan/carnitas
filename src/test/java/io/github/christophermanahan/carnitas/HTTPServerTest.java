@@ -12,15 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
 
-  private String received;
-  private List<byte[]> sent;
+  private List<String> sent;
   private Connection connection;
   private Listener listener;
   private TestLogger logger;
 
   @BeforeEach
   void setup() {
-    sent = new ArrayList<byte[]>();
+    sent = new ArrayList<>();
     logger = new TestLogger();
   }
 
@@ -32,7 +31,7 @@ class HTTPServerTest {
     new HTTPServer(listener, logger).run();
 
     Response response = new HTTPResponse();
-    assertArrayEquals(response.bytes(), sent.get(0));
+    assertArrayEquals(response.bytes(), sent.get(0).getBytes());
   }
 
   @Test
@@ -119,10 +118,10 @@ class HTTPServerTest {
   private class TestConnection implements Connection {
 
     private String received;
-    private List<byte[]> sent;
+    private List<String> sent;
     private boolean closed;
 
-    public TestConnection(String received, List<byte[]> sent) {
+    public TestConnection(String received, List<String> sent) {
       this.received = received;
       this.sent = sent;
       this.closed = false;
@@ -133,7 +132,7 @@ class HTTPServerTest {
     }
 
     public void send(Response response) {
-      sent.add(response.bytes());
+      sent.add(new String(response.bytes()));
     }
 
     public void close() {
@@ -143,7 +142,7 @@ class HTTPServerTest {
 
   private class SendException extends TestConnection {
 
-    public SendException(String received, List<byte[]> sent) {
+    public SendException(String received, List<String> sent) {
       super(received, sent);
     }
 
@@ -154,7 +153,7 @@ class HTTPServerTest {
 
   private class CloseException extends TestConnection {
 
-    public CloseException(String received, List<byte[]> sent) {
+    public CloseException(String received, List<String> sent) {
       super(received, sent);
     }
 
