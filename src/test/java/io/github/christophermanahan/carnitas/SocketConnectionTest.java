@@ -15,26 +15,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
 
-  String data;
+  String request;
 
   @Test
   void receivesDataFromSocket() {
-    data = "data";
-    Socket socket = new TestSocket(data);
+    request = "GET simple_get HTTP/1.1";
+    Socket socket = new TestSocket(request);
 
     Optional<String> received = new SocketConnection(socket).receive();
 
-    assertEquals(Optional.of(data), received);
+    assertEquals(Optional.of(request), received);
   }
 
   @Test
   void sendsResponseBytesToSocket() throws IOException {
-    data = "data";
+    request = "GET simple_get HTTP/1.1";
     Socket socket = new TestSocket(null);
 
-    new SocketConnection(socket).send(new TestResponse(data));
+    new SocketConnection(socket).send(new TestResponse(request));
 
-    assertEquals(data, socket.getOutputStream().toString());
+    assertEquals(request, socket.getOutputStream().toString());
   }
 
   @Test

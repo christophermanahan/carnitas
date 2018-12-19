@@ -17,12 +17,12 @@ class ServerSocketListenerTest {
 
   @Test
   void listensForAConnection() throws IOException {
-    String data = "data";
-    ServerSocket serverSocket = new TestServerSocket(data);
+    String request = "GET simple_get HTTP/1.1";
+    ServerSocket serverSocket = new TestServerSocket(request);
 
     Connection connection = new ServerSocketListener(serverSocket).listen();
 
-    assertEquals(Optional.of(data), connection.receive());
+    assertEquals(Optional.of(request), connection.receive());
   }
 
   @Test
@@ -36,14 +36,14 @@ class ServerSocketListenerTest {
   }
 
   private class TestServerSocket extends ServerSocket {
-    private final String data;
+    private final String request;
 
-    public TestServerSocket(String data) throws IOException {
-      this.data = data;
+    public TestServerSocket(String request) throws IOException {
+      this.request = request;
     }
 
     public Socket accept() {
-      return new TestSocket(data);
+      return new TestSocket(request);
     }
   }
 
@@ -57,14 +57,14 @@ class ServerSocketListenerTest {
   }
 
   private class TestSocket extends Socket {
-    private final String data;
+    private final String request;
 
-    public TestSocket(String data) {
-      this.data = data;
+    public TestSocket(String request) {
+      this.request = request;
     }
 
     public InputStream getInputStream() {
-      return new ByteArrayInputStream(data.getBytes());
+      return new ByteArrayInputStream(request.getBytes());
     }
   }
 }

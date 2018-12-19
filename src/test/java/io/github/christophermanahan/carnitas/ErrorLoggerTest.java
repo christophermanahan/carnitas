@@ -11,13 +11,13 @@ class ErrorLoggerTest {
 
   @Test
   void logsErrorMessagesAppendedWithNewLine() {
-    String data = "data";
+    String error = "Failed due to <error>";
     OutputStream output = new ByteArrayOutputStream();
     System.setOut(new PrintStream(output));
     Logger logger = new ErrorLogger();
 
-    logger.log(data);
+    logger.log(error);
 
-    Assertions.assertEquals(data.concat("\n"), output.toString());
+    Assertions.assertEquals(error.concat("\n"), output.toString());
   }
 }

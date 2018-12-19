@@ -25,7 +25,7 @@ class HTTPServerTest {
 
   @Test
   void sendsHTTPResponseAfterReceivingData() {
-    connection = new TestConnection("data", sent);
+    connection = new TestConnection("GET simple_get HTTP/1.1", sent);
     listener = new TestListener(connection);
 
     new HTTPServer(listener, logger).run();
@@ -36,7 +36,7 @@ class HTTPServerTest {
 
   @Test
   void connectionIsClosedAfterDataIsReceivedAndSent() {
-    connection = new TestConnection("data", sent);
+    connection = new TestConnection("GET simple_get HTTP/1.1", sent);
     listener = new TestListener(connection);
 
     new HTTPServer(listener, logger).run();
@@ -46,7 +46,7 @@ class HTTPServerTest {
 
   @Test
   void logsExceptionIfListenFails() {
-    connection = new TestConnection("data", sent);
+    connection = new TestConnection("GET simple_get HTTP/1.1", sent);
     listener = new ListenException(connection);
 
     new HTTPServer(listener, logger).run();
@@ -56,7 +56,7 @@ class HTTPServerTest {
 
   @Test
   void logsExceptionIfSendFails() {
-    connection = new SendException("data", sent);
+    connection = new SendException("GET simple_get HTTP/1.1", sent);
     listener = new TestListener(connection);
 
     new HTTPServer(listener, logger).run();
@@ -66,7 +66,7 @@ class HTTPServerTest {
 
   @Test
   void logsExceptionIfCloseFails() {
-    connection = new CloseException("data", sent);
+    connection = new CloseException("GET simple_get HTTP/1.1", sent);
     listener = new TestListener(connection);
 
     new HTTPServer(listener, logger).run();
