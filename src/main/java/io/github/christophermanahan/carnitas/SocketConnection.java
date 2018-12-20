@@ -23,9 +23,9 @@ public class SocketConnection implements Connection {
     }
   }
 
-  public void send(String data) {
+  public void send(Response response) {
     try {
-      socket.getOutputStream().write(data.concat("\n").getBytes());
+      socket.getOutputStream().write(response.serialize());
     } catch (IOException e) {
       throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);
     }

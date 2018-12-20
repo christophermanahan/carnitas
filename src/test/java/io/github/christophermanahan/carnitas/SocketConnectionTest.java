@@ -15,26 +15,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
 
-  String data;
+  String request;
 
   @Test
   void receivesDataFromSocket() {
-    data = "data";
-    Socket socket = new TestSocket(data);
+    request = "GET /simple_get HTTP/1.1";
+    Socket socket = new TestSocket(request);
 
     Optional<String> received = new SocketConnection(socket).receive();
 
-    assertEquals(Optional.of(data), received);
+    assertEquals(Optional.of(request), received);
   }
 
   @Test
-  void sendsNewLineAppendedDataToSocket() throws IOException {
-    data = "data";
+  void sendsResponseBytesToSocket() throws IOException {
+    request = "GET /simple_get HTTP/1.1";
     Socket socket = new TestSocket(null);
 
-    new SocketConnection(socket).send(data);
+    new SocketConnection(socket).send(new TestResponse(request));
 
-    assertEquals(data.concat("\n"), socket.getOutputStream().toString());
+    assertEquals(request, socket.getOutputStream().toString());
   }
 
   @Test
@@ -92,6 +92,19 @@ class SocketConnectionTest {
 
     public boolean isClosed() {
       return closed;
+    }
+  }
+
+  private class TestResponse implements Response {
+
+    private final String request;
+
+    TestResponse(String request) {
+      this.request = request;
+    }
+
+    public byte[] serialize() {
+      return request.getBytes();
     }
   }
 

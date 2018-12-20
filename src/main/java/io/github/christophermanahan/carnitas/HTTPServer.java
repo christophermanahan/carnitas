@@ -1,12 +1,12 @@
 package io.github.christophermanahan.carnitas;
 
-public class EchoServer {
+public class HTTPServer {
 
   private final Listener listener;
   private final Logger errorLogger;
   private Connection connection;
 
-  public EchoServer(Listener listener, Logger errorLogger) {
+  public HTTPServer(Listener listener, Logger errorLogger) {
     this.listener = listener;
     this.errorLogger = errorLogger;
   }
@@ -14,7 +14,7 @@ public class EchoServer {
   public void run() {
     try {
       connect();
-      echo();
+      serve();
       close();
     } catch (RuntimeException e) {
       errorLogger.log(e.getMessage());
@@ -25,8 +25,9 @@ public class EchoServer {
     connection = listener.listen();
   }
 
-  private void echo() {
+  private void serve() {
     connection.receive()
+      .map(request -> new HTTPResponse())
       .ifPresent(connection::send);
   }
 
