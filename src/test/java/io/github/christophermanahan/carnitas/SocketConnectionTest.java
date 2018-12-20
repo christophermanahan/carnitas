@@ -103,7 +103,7 @@ class SocketConnectionTest {
       this.request = request;
     }
 
-    public byte[] bytes() {
+    public byte[] serialize() {
       return request.getBytes();
     }
   }

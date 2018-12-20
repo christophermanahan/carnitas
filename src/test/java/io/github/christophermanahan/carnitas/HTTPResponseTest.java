@@ -9,9 +9,9 @@ class HTTPResponseTest {
   void createsGETResponseBytes() {
     Response httpResponse = new HTTPResponse();
 
-    byte[] httpResponseBytes = httpResponse.bytes();
+    byte[] httpResponseBytes = httpResponse.serialize();
+    byte[] expectedResponse = "HTTP/1.1 200 OK\r\n\r\n".getBytes();
 
-    String response = String.format("%s %s%s%s", HTTPResponse.VERSION, HTTPResponse.GET, HTTPResponse.CRLF, HTTPResponse.CRLF);
-    Assertions.assertArrayEquals(response.getBytes(), httpResponseBytes);
+    Assertions.assertArrayEquals(expectedResponse, httpResponseBytes);
   }
 }

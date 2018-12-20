@@ -6,7 +6,7 @@ public class HTTPResponse implements Response {
   static final String GET = "200 OK";
   static final String CRLF = "\r\n";
 
-  public byte[] bytes() {
+  public byte[] serialize() {
     return String.format("%s %s%s%s", VERSION, GET, CRLF, CRLF).getBytes();
   }
 }

@@ -31,7 +31,7 @@ class HTTPServerTest {
     new HTTPServer(listener, logger).run();
 
     Response response = new HTTPResponse();
-    assertArrayEquals(response.bytes(), sent.get(0).getBytes());
+    assertArrayEquals(response.serialize(), sent.get(0).getBytes());
   }
 
   @Test
@@ -132,7 +132,7 @@ class HTTPServerTest {
     }
 
     public void send(Response response) {
-      sent.add(new String(response.bytes()));
+      sent.add(new String(response.serialize()));
     }
 
     public void close() {
