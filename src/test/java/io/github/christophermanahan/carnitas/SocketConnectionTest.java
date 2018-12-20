@@ -19,7 +19,7 @@ class SocketConnectionTest {
 
   @Test
   void receivesDataFromSocket() {
-    request = "GET simple_get HTTP/1.1";
+    request = "GET /simple_get HTTP/1.1";
     Socket socket = new TestSocket(request);
 
     Optional<String> received = new SocketConnection(socket).receive();
@@ -29,7 +29,7 @@ class SocketConnectionTest {
 
   @Test
   void sendsResponseBytesToSocket() throws IOException {
-    request = "GET simple_get HTTP/1.1";
+    request = "GET /simple_get HTTP/1.1";
     Socket socket = new TestSocket(null);
 
     new SocketConnection(socket).send(new TestResponse(request));
