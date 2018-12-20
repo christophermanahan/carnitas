@@ -9,15 +9,15 @@ import java.io.PrintStream;
 
 class ErrorLoggerTest {
 
-  @Test
-  void logsErrorMessagesAppendedWithNewLine() {
-    String error = "Failed due to <error>";
-    OutputStream output = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(output));
-    Logger logger = new ErrorLogger();
+    @Test
+    void logsErrorMessagesAppendedWithNewLine() {
+        String error = "Failed due to <error>";
+        OutputStream output = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(output));
+        Logger logger = new ErrorLogger();
 
-    logger.log(error);
+        logger.log(error);
 
-    Assertions.assertEquals(error.concat("\n"), output.toString());
-  }
+        Assertions.assertEquals(error.concat("\n"), output.toString());
+    }
 }
