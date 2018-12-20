@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 
 class HTTPResponseTest {
 
-  @Test
-  void createsGETResponseBytes() {
-    Response httpResponse = new HTTPResponse();
+    @Test
+    void createsGETResponseBytes() {
+        Response httpResponse = new HTTPResponse();
 
-    byte[] httpResponseBytes = httpResponse.serialize();
-    byte[] expectedResponse = "HTTP/1.1 200 OK\r\n\r\n".getBytes();
+        byte[] httpResponseBytes = httpResponse.serialize();
+        byte[] expectedResponse = "HTTP/1.1 200 OK\r\n\r\n".getBytes();
 
-    Assertions.assertArrayEquals(expectedResponse, httpResponseBytes);
-  }
+        Assertions.assertArrayEquals(expectedResponse, httpResponseBytes);
+    }
 }

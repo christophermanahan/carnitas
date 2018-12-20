@@ -15,56 +15,56 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ServerSocketListenerTest {
 
-  @Test
-  void listensForAConnection() throws IOException {
-    String request = "GET /simple_get HTTP/1.1";
-    ServerSocket serverSocket = new TestServerSocket(request);
+    @Test
+    void listensForAConnection() throws IOException {
+        String request = "GET /simple_get HTTP/1.1";
+        ServerSocket serverSocket = new TestServerSocket(request);
 
-    Connection connection = new ServerSocketListener(serverSocket).listen();
+        Connection connection = new ServerSocketListener(serverSocket).listen();
 
-    assertEquals(Optional.of(request), connection.receive());
-  }
-
-  @Test
-  void throwsExceptionIfConnectionAcceptionFails() throws IOException {
-    ServerSocket serverSocket = new ConnectionException();
-    Listener listener = new ServerSocketListener(serverSocket);
-
-    RuntimeException e = assertThrows(RuntimeException.class, listener::listen);
-
-    Assertions.assertEquals(ErrorMessages.ACCEPT_CONNECTION, e.getMessage());
-  }
-
-  private class TestServerSocket extends ServerSocket {
-    private final String request;
-
-    public TestServerSocket(String request) throws IOException {
-      this.request = request;
+        assertEquals(Optional.of(request), connection.receive());
     }
 
-    public Socket accept() {
-      return new TestSocket(request);
-    }
-  }
+    @Test
+    void throwsExceptionIfConnectionAcceptionFails() throws IOException {
+        ServerSocket serverSocket = new ConnectionException();
+        Listener listener = new ServerSocketListener(serverSocket);
 
-  private class ConnectionException extends ServerSocket {
-    public ConnectionException() throws IOException {
-    }
+        RuntimeException e = assertThrows(RuntimeException.class, listener::listen);
 
-    public Socket accept() throws IOException {
-      throw new IOException();
-    }
-  }
-
-  private class TestSocket extends Socket {
-    private final String request;
-
-    public TestSocket(String request) {
-      this.request = request;
+        Assertions.assertEquals(ErrorMessages.ACCEPT_CONNECTION, e.getMessage());
     }
 
-    public InputStream getInputStream() {
-      return new ByteArrayInputStream(request.getBytes());
+    private class TestServerSocket extends ServerSocket {
+        private final String request;
+
+        public TestServerSocket(String request) throws IOException {
+            this.request = request;
+        }
+
+        public Socket accept() {
+            return new TestSocket(request);
+        }
     }
-  }
+
+    private class ConnectionException extends ServerSocket {
+        public ConnectionException() throws IOException {
+        }
+
+        public Socket accept() throws IOException {
+            throw new IOException();
+        }
+    }
+
+    private class TestSocket extends Socket {
+        private final String request;
+
+        public TestSocket(String request) {
+            this.request = request;
+        }
+
+        public InputStream getInputStream() {
+            return new ByteArrayInputStream(request.getBytes());
+        }
+    }
 }

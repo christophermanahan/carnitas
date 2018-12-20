@@ -8,34 +8,34 @@ import java.util.Optional;
 
 public class SocketConnection implements Connection {
 
-  private final Socket socket;
+    private final Socket socket;
 
-  public SocketConnection(Socket socket) {
-    this.socket = socket;
-  }
-
-  public Optional<String> receive() {
-    try {
-      BufferedReader receiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-      return Optional.ofNullable(receiver.readLine());
-    } catch (IOException e) {
-      return Optional.empty();
+    SocketConnection(Socket socket) {
+        this.socket = socket;
     }
-  }
 
-  public void send(Response response) {
-    try {
-      socket.getOutputStream().write(response.serialize());
-    } catch (IOException e) {
-      throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);
+    public Optional<String> receive() {
+        try {
+            BufferedReader receiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            return Optional.ofNullable(receiver.readLine());
+        } catch (IOException e) {
+            return Optional.empty();
+        }
     }
-  }
 
-  public void close() {
-    try {
-      socket.close();
-    } catch (IOException e) {
-      throw new RuntimeException(ErrorMessages.CLOSE_CONNECTION);
+    public void send(Response response) {
+        try {
+            socket.getOutputStream().write(response.serialize());
+        } catch (IOException e) {
+            throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);
+        }
     }
-  }
+
+    public void close() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(ErrorMessages.CLOSE_CONNECTION);
+        }
+    }
 }
