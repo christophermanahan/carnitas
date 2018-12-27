@@ -6,3 +6,4 @@ Feature: Simple GET
     When I send method "GET" for "/simple_get" to host at the specified port
     Then I should receive a response with version "HTTP/1.1"
     And Status code 200
+    And Body ""

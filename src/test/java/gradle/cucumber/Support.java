@@ -17,7 +17,15 @@ public class Support implements Runnable {
         try {
             Main.main(args);
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void close() {
+        try {
+            Main.serverSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
