@@ -10,7 +10,7 @@ class HTTPResponseTest {
         Response httpResponse = new HTTPResponse();
 
         byte[] httpResponseBytes = httpResponse.serialize();
-        byte[] expectedResponse = "HTTP/1.1 200 OK\r\n\r\n".getBytes();
+        byte[] expectedResponse = "HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n".getBytes();
 
         Assertions.assertArrayEquals(expectedResponse, httpResponseBytes);
     }

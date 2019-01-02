@@ -22,7 +22,7 @@ class HTTPServerTest {
     @BeforeEach
     void setup() {
         sent = new ArrayList<>();
-        request = "GET simple_get HTTP/1.1";
+        request = "GET http://localhost:80/simple_get HTTP/1.1";
         logger = new TestLogger();
     }
 
@@ -146,6 +146,10 @@ class HTTPServerTest {
 
         public void close() {
             closed = true;
+        }
+
+        public boolean isOpen() {
+            return !closed;
         }
     }
 
