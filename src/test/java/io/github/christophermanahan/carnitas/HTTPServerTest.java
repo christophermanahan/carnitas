@@ -4,14 +4,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
 
+    private String request;
+    private List<String> received;
     private List<String> sent;
     private Connection connection;
     private Listener listener;
@@ -20,23 +22,27 @@ class HTTPServerTest {
     @BeforeEach
     void setup() {
         sent = new ArrayList<>();
+        request = "GET http://localhost:80/simple_get HTTP/1.1";
         logger = new TestLogger();
     }
 
     @Test
-    void sendsHTTPResponseAfterReceivingData() {
-        connection = new TestConnection("GET simple_get HTTP/1.1", sent);
+    void sendsHTTPResponsesWhileReceivingData() {
+        received = List.of(request, request, request);
+        connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
 
         new HTTPServer(listener, logger).run();
 
-        Response response = new HTTPResponse();
-        assertArrayEquals(response.serialize(), sent.get(0).getBytes());
+        String response = new String(new HTTPResponse().serialize());
+        List<String> responses = List.of(response, response, response);
+        assertEquals(responses, sent);
     }
 
     @Test
-    void connectionIsClosedAfterDataIsReceivedAndSent() {
-        connection = new TestConnection("GET simple_get HTTP/1.1", sent);
+    void connectionIsClosedWhenClientDisconnects() {
+        received = List.of(request, request, request);
+        connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
 
         new HTTPServer(listener, logger).run();
@@ -46,7 +52,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfListenFails() {
-        connection = new TestConnection("GET simple_get HTTP/1.1", sent);
+        received = List.of(request, request, request);
+        connection = new TestConnection(received, sent);
         listener = new ListenException(connection);
 
         new HTTPServer(listener, logger).run();
@@ -56,7 +63,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfSendFails() {
-        connection = new SendException("GET simple_get HTTP/1.1", sent);
+        received = List.of(request, request, request);
+        connection = new SendException(received, sent);
         listener = new TestListener(connection);
 
         new HTTPServer(listener, logger).run();
@@ -66,7 +74,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfCloseFails() {
-        connection = new CloseException("GET simple_get HTTP/1.1", sent);
+        received = List.of(request, request, request);
+        connection = new CloseException(received, sent);
         listener = new TestListener(connection);
 
         new HTTPServer(listener, logger).run();
@@ -117,18 +126,18 @@ class HTTPServerTest {
 
     private class TestConnection implements Connection {
 
-        private String received;
+        private Iterator<String> received;
         private List<String> sent;
         private boolean closed;
 
-        public TestConnection(String received, List<String> sent) {
-            this.received = received;
+        public TestConnection(List<String> received, List<String> sent) {
+            this.received = received.iterator();
             this.sent = sent;
             this.closed = false;
         }
 
         public Optional<String> receive() {
-            return closed ? Optional.empty() : Optional.of(received);
+            return closed || !received.hasNext() ? Optional.empty() : Optional.of(received.next());
         }
 
         public void send(Response response) {
@@ -138,11 +147,15 @@ class HTTPServerTest {
         public void close() {
             closed = true;
         }
+
+        public boolean isOpen() {
+            return !closed;
+        }
     }
 
     private class SendException extends TestConnection {
 
-        public SendException(String received, List<String> sent) {
+        public SendException(List<String> received, List<String> sent) {
             super(received, sent);
         }
 
@@ -153,7 +166,7 @@ class HTTPServerTest {
 
     private class CloseException extends TestConnection {
 
-        public CloseException(String received, List<String> sent) {
+        public CloseException(List<String> received, List<String> sent) {
             super(received, sent);
         }
 

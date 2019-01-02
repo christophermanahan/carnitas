@@ -8,4 +8,6 @@ public interface Connection {
     void send(Response response);
 
     void close();
+
+    boolean isOpen();
 }

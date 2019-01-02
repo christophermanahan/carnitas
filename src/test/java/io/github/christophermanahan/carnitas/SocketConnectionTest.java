@@ -1,6 +1,5 @@
 package io.github.christophermanahan.carnitas;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -15,11 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
 
-    String request;
 
     @Test
     void receivesDataFromSocket() {
-        request = "GET /simple_get HTTP/1.1";
+        String request = "GET http://localhost:80/simple_get HTTP/1.1";
         Socket socket = new TestSocket(request);
 
         Optional<String> received = new SocketConnection(socket).receive();
@@ -29,7 +27,7 @@ class SocketConnectionTest {
 
     @Test
     void sendsResponseBytesToSocket() throws IOException {
-        request = "GET /simple_get HTTP/1.1";
+        String request = "GET http://localhost:80/simple_get HTTP/1.1";
         Socket socket = new TestSocket(null);
 
         new SocketConnection(socket).send(new TestResponse(request));
@@ -44,7 +42,7 @@ class SocketConnectionTest {
 
         RuntimeException e = assertThrows(RuntimeException.class, ()->{ connection.send(null); });
 
-        Assertions.assertEquals(ErrorMessages.SEND_TO_CONNECTION, e.getMessage());
+        assertEquals(ErrorMessages.SEND_TO_CONNECTION, e.getMessage());
     }
 
     @Test
@@ -63,7 +61,17 @@ class SocketConnectionTest {
 
         RuntimeException e = assertThrows(RuntimeException.class, connection::close);
 
-        Assertions.assertEquals(ErrorMessages.CLOSE_CONNECTION, e.getMessage());
+        assertEquals(ErrorMessages.CLOSE_CONNECTION, e.getMessage());
+    }
+
+    @Test
+    void checksOpenSocketStatus() {
+        Socket socket = new TestSocket(null);
+
+        Connection connection = new SocketConnection(socket);
+
+        assertFalse(socket.isClosed());
+        assertTrue(connection.isOpen());
     }
 
     private class TestSocket extends Socket {
@@ -86,7 +94,7 @@ class SocketConnectionTest {
             return output;
         }
 
-        public synchronized void close() {
+        public void close() {
             closed = true;
         }
 

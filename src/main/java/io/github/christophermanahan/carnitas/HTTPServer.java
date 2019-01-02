@@ -14,8 +14,7 @@ public class HTTPServer {
     public void run() {
         try {
             connect();
-            serve();
-            close();
+            serveUntilDisconnect();
         } catch (RuntimeException e) {
             errorLogger.log(e.getMessage());
         }
@@ -25,13 +24,15 @@ public class HTTPServer {
         connection = listener.listen();
     }
 
+    private void serveUntilDisconnect() {
+        while(connection.isOpen()) {
+            serve();
+        }
+    }
+
     private void serve() {
         connection.receive()
             .map(request -> new HTTPResponse())
-            .ifPresent(connection::send);
-    }
-
-    private void close() {
-        connection.close();
+            .ifPresentOrElse(connection::send, connection::close);
     }
 }
