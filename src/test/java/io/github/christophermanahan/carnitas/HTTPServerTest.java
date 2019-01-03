@@ -12,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
 
-    private String request;
+    private String simpleGetRequest;
+    private String simplePostRequest;
     private List<String> received;
     private List<String> sent;
     private Connection connection;
@@ -22,13 +23,13 @@ class HTTPServerTest {
     @BeforeEach
     void setup() {
         sent = new ArrayList<>();
-        request = "GET http://localhost:80/simple_get HTTP/1.1";
         logger = new TestLogger();
     }
 
     @Test
-    void sendsHTTPResponsesWhileReceivingData() {
-        received = List.of(request, request, request);
+    void sendsHTTP200ResponsesWhileReceivingData() {
+        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
 
@@ -41,7 +42,8 @@ class HTTPServerTest {
 
     @Test
     void connectionIsClosedWhenClientDisconnects() {
-        received = List.of(request, request, request);
+        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
 
@@ -52,7 +54,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfListenFails() {
-        received = List.of(request, request, request);
+        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
         connection = new TestConnection(received, sent);
         listener = new ListenException(connection);
 
@@ -63,7 +66,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfSendFails() {
-        received = List.of(request, request, request);
+        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
         connection = new SendException(received, sent);
         listener = new TestListener(connection);
 
@@ -74,7 +78,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfCloseFails() {
-        received = List.of(request, request, request);
+        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
         connection = new CloseException(received, sent);
         listener = new TestListener(connection);
 
