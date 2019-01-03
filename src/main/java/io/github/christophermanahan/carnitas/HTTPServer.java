@@ -6,7 +6,7 @@ public class HTTPServer {
     private final Logger errorLogger;
     private Connection connection;
 
-    public HTTPServer(Listener listener, Logger errorLogger) {
+    public HTTPServer(Listener listener, Parser parser, Logger errorLogger) {
         this.listener = listener;
         this.errorLogger = errorLogger;
     }

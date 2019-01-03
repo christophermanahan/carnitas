@@ -12,13 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
 
-    private String simpleGetRequest;
-    private String simplePostRequest;
+    private String simpleGETRequest;
+    private String simplePOSTRequest;
     private List<String> received;
     private List<String> sent;
     private Connection connection;
     private Listener listener;
     private TestLogger logger;
+    private Parser parser;
 
     @BeforeEach
     void setup() {
@@ -28,12 +29,13 @@ class HTTPServerTest {
 
     @Test
     void sendsHTTP200ResponsesWhileReceivingData() {
-        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
-        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
+        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
+        parser = new GetParser();
         listener = new TestListener(connection);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(listener, parser, logger).run();
 
         String response = new String(new HTTPResponse().serialize());
         List<String> responses = List.of(response, response, response);
@@ -42,48 +44,48 @@ class HTTPServerTest {
 
     @Test
     void connectionIsClosedWhenClientDisconnects() {
-        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
-        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
+        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(listener, parser, logger).run();
 
         assertEquals(Optional.empty(), connection.receive());
     }
 
     @Test
     void logsExceptionIfListenFails() {
-        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
-        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
+        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
         listener = new ListenException(connection);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(listener, parser, logger).run();
 
         assertEquals(ErrorMessages.ACCEPT_CONNECTION, logger.log());
     }
 
     @Test
     void logsExceptionIfSendFails() {
-        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
-        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
+        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new SendException(received, sent);
         listener = new TestListener(connection);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(listener, parser, logger).run();
 
         assertEquals(ErrorMessages.SEND_TO_CONNECTION, logger.log());
     }
 
     @Test
     void logsExceptionIfCloseFails() {
-        simpleGetRequest = "GET http://localhost:80/simple_get HTTP/1.1";
-        received = List.of(simpleGetRequest, simpleGetRequest, simpleGetRequest);
+        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new CloseException(received, sent);
         listener = new TestListener(connection);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(listener, parser, logger).run();
 
         assertEquals(ErrorMessages.CLOSE_CONNECTION, logger.log());
     }
@@ -177,6 +179,26 @@ class HTTPServerTest {
 
         public void close() {
             throw new RuntimeException(ErrorMessages.CLOSE_CONNECTION);
+        }
+    }
+
+    private class GetParser implements Parser {
+
+        public Optional<String> parse(String request) {
+           return Optional.empty();
+        }
+    }
+
+    private class PostParser implements Parser {
+
+        private final String body;
+
+        public PostParser(String body) {
+            this.body = body;
+        }
+
+        public Optional<String> parse(String request) {
+            return Optional.of(body);
         }
     }
 }
