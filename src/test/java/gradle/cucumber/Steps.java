@@ -21,9 +21,9 @@ public class Steps {
         new Thread(server).start();
     }
 
-    @When("I send method {string} for {string} to host at the specified port")
-    public void iSendToHostAtTheSpecifiedPort(String method, String location) throws IOException, InterruptedException {
-        this.response = new Client().request(port, method, location);
+    @When("I send method {string} for {string} with body {string} to host at the specified port")
+    public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String location, String body) throws IOException, InterruptedException {
+        this.response = new Client().request(port, method, location, body);
     }
 
     @Then("I should receive a response with version {string}")
@@ -37,7 +37,7 @@ public class Steps {
     }
 
     @Then("Body {string}")
-    public void body(String body) {
+    public void body(String body) throws Throwable {
         assert body.equals(response.body());
     }
 
@@ -45,4 +45,5 @@ public class Steps {
     public void cleanup() {
         server.close();
     }
+
 }
