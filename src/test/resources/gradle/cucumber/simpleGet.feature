@@ -4,6 +4,6 @@ Feature: Simple GET
   Scenario: Simple GET request
     Given The server is running on port "33333"
     When I send method "GET" for "/simple_get" with body "" to host at the specified port
-    Then I should receive a response with version "HTTP/1.1"
+    Then I should receive a response with version "HTTP_1_1"
     And Status code 200
     And Body ""

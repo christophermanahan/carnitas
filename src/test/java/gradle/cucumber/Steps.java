@@ -8,6 +8,8 @@ import cucumber.api.java.en.When;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 
+import static org.junit.Assert.assertEquals;
+
 public class Steps {
 
     private String port;
@@ -28,17 +30,17 @@ public class Steps {
 
     @Then("I should receive a response with version {string}")
     public void iShouldReceive(String version) {
-        assert version.equals(response.version().toString());
+        assertEquals(version, response.version().toString());
     }
 
     @Then("Status code {int}")
     public void statusCode(int code) {
-        assert code == response.statusCode();
+        assertEquals(code, response.statusCode());
     }
 
     @Then("Body {string}")
     public void body(String body) throws Throwable {
-        assert body.equals(response.body());
+        assertEquals(body, response.body());
     }
 
     @After
