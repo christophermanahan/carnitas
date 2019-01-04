@@ -8,6 +8,22 @@ public class HTTPResponse implements Response {
     static final String CRLF = "\r\n";
 
     public byte[] serialize() {
-        return String.format("%s %s%s%s%s%s", VERSION, GET, CRLF, CL, CRLF, CRLF).getBytes();
+        return (
+          statusLine()
+            + headers()
+            + noBody()
+        ).getBytes();
+    }
+
+    private String statusLine() {
+        return VERSION + " " + GET + CRLF;
+    }
+
+    private String headers() {
+        return CL + CRLF;
+    }
+
+    private String noBody() {
+        return CRLF;
     }
 }
