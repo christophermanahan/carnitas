@@ -5,6 +5,7 @@ public class RequestParser implements Parser {
     private int bodyIndex;
 
     public String parse(String request) {
+        System.out.println(request);
         bodyIndex = request.indexOf(Constants.BLANK_LINE);
         return noBody(request) ? "" : body(request);
     }

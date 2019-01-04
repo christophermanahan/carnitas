@@ -3,11 +3,13 @@ package io.github.christophermanahan.carnitas;
 public class HTTPServer {
 
     private final Listener listener;
+    private final Parser parser;
     private final Logger errorLogger;
     private Connection connection;
 
     public HTTPServer(Listener listener, Parser parser, Logger errorLogger) {
         this.listener = listener;
+        this.parser = parser;
         this.errorLogger = errorLogger;
     }
 
@@ -32,7 +34,8 @@ public class HTTPServer {
 
     private void serve() {
         connection.receive()
-            .map(request -> new HTTPResponse(""))
+            .map(parser::parse)
+            .map(HTTPResponse::new)
             .ifPresentOrElse(connection::send, connection::close);
     }
 }

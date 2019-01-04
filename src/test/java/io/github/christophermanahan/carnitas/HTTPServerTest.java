@@ -29,11 +29,12 @@ class HTTPServerTest {
 
     @Test
     void sendsHTTP200ResponsesWhileReceivingData() {
-        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        String body = "";
+        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1" + Constants.BLANK_LINE + body;
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
-        parser = new GetParser();
         listener = new TestListener(connection);
+        parser = new GetParser();
 
         new HTTPServer(listener, parser, logger).run();
 
@@ -43,11 +44,27 @@ class HTTPServerTest {
     }
 
     @Test
+    void sendsHTTP201ResponseWhenReceivingPOST() {
+        String body = "hello world";
+        simplePOSTRequest = "POST http://localhost:80/simple_get HTTP/1.1" + Constants.BLANK_LINE + body;
+        received = List.of(simplePOSTRequest);
+        connection = new TestConnection(received, sent);
+        listener = new TestListener(connection);
+        parser = new PostParser(body);
+
+        new HTTPServer(listener, parser, logger).run();
+
+        List<String> response = List.of(new String(new HTTPResponse(body).serialize()));
+        assertEquals(response, sent);
+    }
+
+    @Test
     void connectionIsClosedWhenClientDisconnects() {
         simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
+        parser = new GetParser();
 
         new HTTPServer(listener, parser, logger).run();
 
@@ -60,6 +77,7 @@ class HTTPServerTest {
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
         listener = new ListenException(connection);
+        parser = new GetParser();
 
         new HTTPServer(listener, parser, logger).run();
 
@@ -72,6 +90,7 @@ class HTTPServerTest {
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new SendException(received, sent);
         listener = new TestListener(connection);
+        parser = new GetParser();
 
         new HTTPServer(listener, parser, logger).run();
 
@@ -84,6 +103,7 @@ class HTTPServerTest {
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new CloseException(received, sent);
         listener = new TestListener(connection);
+        parser = new GetParser();
 
         new HTTPServer(listener, parser, logger).run();
 
