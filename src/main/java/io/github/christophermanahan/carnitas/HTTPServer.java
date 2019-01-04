@@ -32,7 +32,7 @@ public class HTTPServer {
 
     private void serve() {
         connection.receive()
-            .map(request -> new HTTPResponse())
+            .map(request -> new HTTPResponse(""))
             .ifPresentOrElse(connection::send, connection::close);
     }
 }

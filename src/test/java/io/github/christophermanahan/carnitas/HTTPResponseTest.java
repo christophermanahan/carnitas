@@ -7,10 +7,35 @@ class HTTPResponseTest {
 
     @Test
     void creates200OKResponseBytes() {
-        Response httpResponse = new HTTPResponse();
+        String body = "";
+        Response httpResponse = new HTTPResponse(body);
 
         byte[] httpResponseBytes = httpResponse.serialize();
-        byte[] expectedResponse = "HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n".getBytes();
+        byte[] expectedResponse = (
+          Constants.VERSION + " " + StatusCodes.GET
+          + Constants.CRLF
+          + Headers.contentLength(body.length())
+          + Constants.CRLF
+          + Constants.CRLF
+        ).getBytes();
+
+        Assertions.assertArrayEquals(expectedResponse, httpResponseBytes);
+    }
+
+    @Test
+    void creates201OKResponseBytes() {
+        String body = "body";
+        Response httpResponse = new HTTPResponse(body);
+
+        byte[] httpResponseBytes = httpResponse.serialize();
+        byte[] expectedResponse = (
+          Constants.VERSION + " " + StatusCodes.POST
+          + Constants.CRLF
+          + Headers.contentLength(body.length())
+          + Constants.CRLF
+          + Constants.CRLF
+          + body
+        ).getBytes();
 
         Assertions.assertArrayEquals(expectedResponse, httpResponseBytes);
     }

@@ -2,23 +2,35 @@ package io.github.christophermanahan.carnitas;
 
 public class HTTPResponse implements Response {
 
+    private String statusCode;
+    private String body;
+
+    public HTTPResponse(String body) {
+       this.body = body;
+       this.statusCode = statusCode();
+    }
+
     public byte[] serialize() {
         return (
           statusLine()
             + headers()
-            + noBody()
+            + body()
         ).getBytes();
     }
 
     private String statusLine() {
-        return Constants.VERSION + " " + StatusCodes.GET + Constants.CRLF;
+        return Constants.VERSION + " " + statusCode + Constants.CRLF;
     }
 
     private String headers() {
-        return Headers.contentLength(0) + Constants.CRLF;
+        return Headers.contentLength(body.length()) + Constants.CRLF;
     }
 
-    private String noBody() {
-        return Constants.CRLF;
+    private String body() {
+        return Constants.CRLF + body;
+    }
+
+    private String statusCode() {
+        return body.isEmpty() ? StatusCodes.GET : StatusCodes.POST;
     }
 }

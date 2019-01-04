@@ -37,7 +37,7 @@ class HTTPServerTest {
 
         new HTTPServer(listener, parser, logger).run();
 
-        String response = new String(new HTTPResponse().serialize());
+        String response = new String(new HTTPResponse("").serialize());
         List<String> responses = List.of(response, response, response);
         assertEquals(responses, sent);
     }
@@ -184,8 +184,8 @@ class HTTPServerTest {
 
     private class GetParser implements Parser {
 
-        public Optional<String> parse(String request) {
-           return Optional.empty();
+        public String parse(String request) {
+            return "";
         }
     }
 
@@ -197,8 +197,8 @@ class HTTPServerTest {
             this.body = body;
         }
 
-        public Optional<String> parse(String request) {
-            return Optional.of(body);
+        public String parse(String request) {
+            return body;
         }
     }
 }
