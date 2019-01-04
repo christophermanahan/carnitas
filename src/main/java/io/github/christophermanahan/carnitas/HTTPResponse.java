@@ -2,11 +2,6 @@ package io.github.christophermanahan.carnitas;
 
 public class HTTPResponse implements Response {
 
-    static final String VERSION = "HTTP/1.1";
-    static final String GET = "200 OK";
-    static final String CL = "Content-Length: 0";
-    static final String CRLF = "\r\n";
-
     public byte[] serialize() {
         return (
           statusLine()
@@ -16,14 +11,14 @@ public class HTTPResponse implements Response {
     }
 
     private String statusLine() {
-        return VERSION + " " + GET + CRLF;
+        return Constants.VERSION + " " + StatusCodes.GET + Constants.CRLF;
     }
 
     private String headers() {
-        return CL + CRLF;
+        return Headers.contentLength(0) + Constants.CRLF;
     }
 
     private String noBody() {
-        return CRLF;
+        return Constants.CRLF;
     }
 }

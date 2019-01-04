@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class HTTPResponseTest {
 
     @Test
-    void createsGETResponseBytes() {
+    void creates200OKResponseBytes() {
         Response httpResponse = new HTTPResponse();
 
         byte[] httpResponseBytes = httpResponse.serialize();
