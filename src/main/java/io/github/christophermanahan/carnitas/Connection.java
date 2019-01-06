@@ -1,9 +1,7 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.Optional;
-
 public interface Connection {
-    Optional<String> receive();
+    Receiver receiver();
 
     void send(Response response);
 

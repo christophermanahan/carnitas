@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,13 +15,13 @@ class SocketConnectionTest {
 
 
     @Test
-    void receivesDataFromSocket() {
+    void getsSocketReceiver() throws IOException {
         String request = "GET http://localhost:80/simple_get HTTP/1.1";
         Socket socket = new TestSocket(request);
 
-        Optional<String> received = new SocketConnection(socket).receive();
+        Receiver receiver = new SocketConnection(socket).receiver();
 
-        assertEquals(Optional.of(request), received);
+        assertEquals(request, receiver.receiveLine());
     }
 
     @Test
@@ -33,6 +32,16 @@ class SocketConnectionTest {
         new SocketConnection(socket).send(new TestResponse(request));
 
         assertEquals(request, socket.getOutputStream().toString());
+    }
+
+    @Test
+    void throwsExceptionIfReceiverFails() {
+        Socket socket = new InputStreamException();
+        Connection connection = new SocketConnection(socket);
+
+        RuntimeException e = assertThrows(RuntimeException.class, connection::receiver);
+
+        assertEquals(ErrorMessages.OPEN_INPUT_STREAM, e.getMessage());
     }
 
     @Test
@@ -113,6 +122,13 @@ class SocketConnectionTest {
 
         public byte[] serialize() {
             return request.getBytes();
+        }
+    }
+
+    private class InputStreamException extends Socket {
+
+        public InputStream getInputStream() throws IOException {
+            throw new IOException();
         }
     }
 

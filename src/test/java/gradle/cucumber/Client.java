@@ -19,6 +19,7 @@ public class Client {
         bodyPublisher = body.isEmpty() ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(body);
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create("http://localhost:" + port + location))
+            .version(HttpClient.Version.valueOf("HTTP_1_1"))
             .method(method, bodyPublisher)
             .build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());

@@ -2,8 +2,8 @@ package io.github.christophermanahan.carnitas;
 
 public class HTTPResponse implements Response {
 
-    private String statusCode;
     private String body;
+    private String statusCode;
 
     public HTTPResponse(String body) {
        this.body = body;
@@ -23,11 +23,11 @@ public class HTTPResponse implements Response {
     }
 
     private String headers() {
-        return Headers.contentLength(body.length()) + Constants.CRLF;
+        return Headers.CONTENT_LENGTH + body.length();
     }
 
     private String body() {
-        return Constants.CRLF + body;
+        return Constants.BLANK_LINE + body;
     }
 
     private String statusCode() {

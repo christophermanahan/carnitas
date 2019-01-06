@@ -1,5 +1,8 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Optional;
+
 public interface Parser {
-    public String parse(String request);
+
+    public Optional<String> parse(Receiver receiver);
 }

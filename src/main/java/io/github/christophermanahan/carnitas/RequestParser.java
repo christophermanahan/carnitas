@@ -1,20 +1,11 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Optional;
+
 public class RequestParser implements Parser {
 
-    private int bodyIndex;
+    public Optional<String> parse(Receiver receiver) {
 
-    public String parse(String request) {
-        System.out.println(request);
-        bodyIndex = request.indexOf(Constants.BLANK_LINE);
-        return noBody(request) ? "" : body(request);
-    }
-
-    private boolean noBody(String request) {
-        return request.length() == bodyIndex;
-    }
-
-    private String body(String request) {
-        return request.substring(bodyIndex + Constants.BLANK_LINE.length());
+        return Optional.of("");
     }
 }

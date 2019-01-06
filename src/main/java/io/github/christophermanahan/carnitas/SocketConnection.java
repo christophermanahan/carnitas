@@ -1,10 +1,7 @@
 package io.github.christophermanahan.carnitas;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Optional;
 
 public class SocketConnection implements Connection {
 
@@ -14,12 +11,11 @@ public class SocketConnection implements Connection {
         this.socket = socket;
     }
 
-    public Optional<String> receive() {
+    public Receiver receiver() {
         try {
-            BufferedReader receiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            return Optional.ofNullable(receiver.readLine());
+            return new ConnectionReceiver(socket.getInputStream());
         } catch (IOException e) {
-            return Optional.empty();
+            throw new RuntimeException(ErrorMessages.OPEN_INPUT_STREAM);
         }
     }
 

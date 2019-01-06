@@ -33,8 +33,7 @@ public class HTTPServer {
     }
 
     private void serve() {
-        connection.receive()
-            .map(parser::parse)
+        parser.parse(connection.receiver())
             .map(HTTPResponse::new)
             .ifPresentOrElse(connection::send, connection::close);
     }

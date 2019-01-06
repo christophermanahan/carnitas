@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +21,7 @@ class ServerSocketListenerTest {
 
         Connection connection = new ServerSocketListener(serverSocket).listen();
 
-        assertEquals(Optional.of(request), connection.receive());
+        assertEquals(request, connection.receiver().receiveLine());
     }
 
     @Test

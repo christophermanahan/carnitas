@@ -14,7 +14,7 @@ class HTTPResponseTest {
         byte[] expectedResponse = (
           Constants.VERSION + " " + StatusCodes.GET
           + Constants.CRLF
-          + Headers.contentLength(body.length())
+          + Headers.CONTENT_LENGTH + body.length()
           + Constants.CRLF
           + Constants.CRLF
         ).getBytes();
@@ -31,7 +31,7 @@ class HTTPResponseTest {
         byte[] expectedResponse = (
           Constants.VERSION + " " + StatusCodes.POST
           + Constants.CRLF
-          + Headers.contentLength(body.length())
+          + Headers.CONTENT_LENGTH + body.length()
           + Constants.CRLF
           + Constants.CRLF
           + body

@@ -29,8 +29,7 @@ class HTTPServerTest {
 
     @Test
     void sendsHTTP200ResponsesWhileReceivingData() {
-        String body = "";
-        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1" + Constants.BLANK_LINE + body;
+        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
@@ -46,7 +45,7 @@ class HTTPServerTest {
     @Test
     void sendsHTTP201ResponseWhenReceivingPOST() {
         String body = "hello world";
-        simplePOSTRequest = "POST http://localhost:80/simple_get HTTP/1.1" + Constants.BLANK_LINE + body;
+        simplePOSTRequest = "POST http://localhost:80/simple_get HTTP/1.1";
         received = List.of(simplePOSTRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
@@ -68,7 +67,7 @@ class HTTPServerTest {
 
         new HTTPServer(listener, parser, logger).run();
 
-        assertEquals(Optional.empty(), connection.receive());
+        assertEquals(Optional.empty(), parser.parse(connection.receiver()));
     }
 
     @Test
@@ -163,8 +162,8 @@ class HTTPServerTest {
             this.closed = false;
         }
 
-        public Optional<String> receive() {
-            return closed || !received.hasNext() ? Optional.empty() : Optional.of(received.next());
+        public Receiver receiver() {
+            return closed || !received.hasNext() ? new ClosedReceiver() : new OpenReceiver(received.next());
         }
 
         public void send(Response response) {
@@ -177,6 +176,26 @@ class HTTPServerTest {
 
         public boolean isOpen() {
             return !closed;
+        }
+    }
+
+    private class OpenReceiver implements Receiver {
+
+        private final String receive;
+
+        public OpenReceiver(String receive) {
+           this.receive = receive;
+        }
+
+        public String receiveLine() {
+            return receive;
+        }
+    }
+
+    private class ClosedReceiver implements Receiver {
+
+        public String receiveLine() {
+            return "";
         }
     }
 
@@ -204,8 +223,8 @@ class HTTPServerTest {
 
     private class GetParser implements Parser {
 
-        public String parse(String request) {
-            return "";
+        public Optional<String> parse(Receiver receiver) {
+            return receiver.receiveLine().isEmpty() ? Optional.empty() : Optional.of("");
         }
     }
 
@@ -213,12 +232,12 @@ class HTTPServerTest {
 
         private final String body;
 
-        public PostParser(String body) {
+        PostParser(String body) {
             this.body = body;
         }
 
-        public String parse(String request) {
-            return body;
+        public Optional<String> parse(Receiver receiver) {
+            return receiver.receiveLine().isEmpty() ? Optional.empty() : Optional.of(body);
         }
     }
 }
