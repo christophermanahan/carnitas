@@ -16,7 +16,7 @@ class ServerSocketListenerTest {
 
     @Test
     void listensForAConnection() throws IOException {
-        String request = "GET http://localhost:80/simple_get HTTP/1.1";
+        String request = "GET /simple_get HTTP/1.1";
         ServerSocket serverSocket = new TestServerSocket(request);
 
         Connection connection = new ServerSocketListener(serverSocket).listen();

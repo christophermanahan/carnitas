@@ -24,7 +24,7 @@ class HTTPResponseTest {
 
     @Test
     void creates201OKResponseBytes() {
-        String body = "body";
+        String body = "hello world";
         Response httpResponse = new HTTPResponse(body);
 
         byte[] httpResponseBytes = httpResponse.serialize();

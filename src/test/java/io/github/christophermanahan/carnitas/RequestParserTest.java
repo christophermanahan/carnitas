@@ -12,7 +12,7 @@ class RequestParserTest {
     @Test
     void parsesRequestWithoutBody() {
         String body = "";
-        String request = "POST HTTP/1.1 http://localhost:80/simple_post"
+        String request = "GET HTTP/1.1 /simple_get"
           + Constants.CRLF
           + Headers.CONTENT_LENGTH + body.length();
         Receiver receiver = new TestReceiver(request);
@@ -26,7 +26,7 @@ class RequestParserTest {
     @Test
     void parsesRequestWithBody() {
         String body = "hello world";
-        String request = "POST HTTP/1.1 http://localhost:80/simple_post"
+        String request = "POST HTTP/1.1 /simple_post"
           + Constants.CRLF
           + Headers.CONTENT_LENGTH + body.length()
           + Constants.BLANK_LINE

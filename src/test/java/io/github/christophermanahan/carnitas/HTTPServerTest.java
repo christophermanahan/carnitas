@@ -29,7 +29,7 @@ class HTTPServerTest {
 
     @Test
     void sendsHTTP200ResponsesWhileReceivingData() {
-        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        simpleGETRequest = "GET /simple_get HTTP/1.1";
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
@@ -45,7 +45,7 @@ class HTTPServerTest {
     @Test
     void sendsHTTP201ResponseWhenReceivingPOST() {
         String body = "hello world";
-        simplePOSTRequest = "POST http://localhost:80/simple_get HTTP/1.1";
+        simplePOSTRequest = "POST /simple_post HTTP/1.1";
         received = List.of(simplePOSTRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
@@ -59,7 +59,7 @@ class HTTPServerTest {
 
     @Test
     void connectionIsClosedWhenClientDisconnects() {
-        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        simpleGETRequest = "GET /simple_get HTTP/1.1";
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
@@ -72,7 +72,7 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfListenFails() {
-        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        simpleGETRequest = "GET /simple_get HTTP/1.1";
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new TestConnection(received, sent);
         listener = new ListenException(connection);
@@ -85,7 +85,7 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfSendFails() {
-        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        simpleGETRequest = "GET /simple_get HTTP/1.1";
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new SendException(received, sent);
         listener = new TestListener(connection);
@@ -98,7 +98,7 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfCloseFails() {
-        simpleGETRequest = "GET http://localhost:80/simple_get HTTP/1.1";
+        simpleGETRequest = "GET /simple_get HTTP/1.1";
         received = List.of(simpleGETRequest, simpleGETRequest, simpleGETRequest);
         connection = new CloseException(received, sent);
         listener = new TestListener(connection);

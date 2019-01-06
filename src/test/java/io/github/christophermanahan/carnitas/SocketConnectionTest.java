@@ -16,7 +16,7 @@ class SocketConnectionTest {
 
     @Test
     void getsSocketReceiver() throws IOException {
-        String request = "GET http://localhost:80/simple_get HTTP/1.1";
+        String request = "GET /simple_get HTTP/1.1";
         Socket socket = new TestSocket(request);
 
         Receiver receiver = new SocketConnection(socket).receiver();
@@ -26,7 +26,7 @@ class SocketConnectionTest {
 
     @Test
     void sendsResponseBytesToSocket() throws IOException {
-        String request = "GET http://localhost:80/simple_get HTTP/1.1";
+        String request = "GET /simple_get HTTP/1.1";
         Socket socket = new TestSocket(null);
 
         new SocketConnection(socket).send(new TestResponse(request));
