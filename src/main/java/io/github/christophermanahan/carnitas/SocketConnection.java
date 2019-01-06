@@ -16,7 +16,7 @@ public class SocketConnection implements Connection {
     public Receiver receiver() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            return new ConnectionReceiver(reader);
+            return new BufferedReceiver(reader);
         } catch (IOException e) {
             throw new RuntimeException(ErrorMessages.OPEN_INPUT_STREAM);
         }

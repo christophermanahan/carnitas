@@ -8,14 +8,14 @@ import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ConnectionReceiverTest {
+class BufferedReceiverTest {
 
     @Test
     void receivesDataFromStream() {
         String request = "GET /simple_get HTTP1.1";
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(request.getBytes())));
-        String received = new ConnectionReceiver(reader).receiveLine();
+        String received = new BufferedReceiver(reader).receiveLine();
 
         assertEquals(request, received);
     }
@@ -26,7 +26,7 @@ class ConnectionReceiverTest {
         int amount = 3;
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(request.getBytes())));
-        String received = new ConnectionReceiver(reader).receiveCharacters(amount);
+        String received = new BufferedReceiver(reader).receiveCharacters(amount);
 
         assertEquals(request.substring(0, amount), received);
     }

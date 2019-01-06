@@ -3,11 +3,11 @@ package io.github.christophermanahan.carnitas;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class ConnectionReceiver implements Receiver {
+public class BufferedReceiver implements Receiver {
 
     private final BufferedReader reader;
 
-    public ConnectionReceiver(BufferedReader reader) {
+    BufferedReceiver(BufferedReader reader) {
         this.reader = reader;
     }
 
