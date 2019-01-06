@@ -1,6 +1,8 @@
 package io.github.christophermanahan.carnitas;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class SocketConnection implements Connection {
@@ -13,7 +15,8 @@ public class SocketConnection implements Connection {
 
     public Receiver receiver() {
         try {
-            return new ConnectionReceiver(socket.getInputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            return new ConnectionReceiver(reader);
         } catch (IOException e) {
             throw new RuntimeException(ErrorMessages.OPEN_INPUT_STREAM);
         }

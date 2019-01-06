@@ -190,12 +190,20 @@ class HTTPServerTest {
         public String receiveLine() {
             return receive;
         }
+
+        public String receiveCharacters(int amount) {
+            return null;
+        }
     }
 
     private class ClosedReceiver implements Receiver {
 
         public String receiveLine() {
             return "";
+        }
+
+        public String receiveCharacters(int amount) {
+            return null;
         }
     }
 

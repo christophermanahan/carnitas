@@ -49,5 +49,9 @@ class RequestParserTest {
         public String receiveLine() {
             return received.next();
         }
+
+        public String receiveCharacters(int amount) {
+            return received.next();
+        }
     }
 }
