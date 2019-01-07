@@ -7,12 +7,16 @@ import cucumber.api.java.en.When;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class Steps {
 
+    private List<HttpResponse<String>> responses = new ArrayList<>();
     private String port;
     private Support server;
-    private HttpResponse<String> response;
 
     @Given("The server is running on port {string}")
     public void theServerIsRunningOnPort(String port) {
@@ -21,24 +25,32 @@ public class Steps {
         new Thread(server).start();
     }
 
-    @When("I send method {string} for {string} to host at the specified port")
-    public void iSendToHostAtTheSpecifiedPort(String method, String location) throws IOException, InterruptedException {
-        this.response = new Client().request(port, method, location);
+    @When("I send method {string} for {string} to host at the specified port {int} time(s)")
+    public void iSendToHostAtTheSpecifiedPort(String method, String location, int times) throws IOException, InterruptedException {
+        for (int i = 0; i < times; i++) {
+            responses.add(new Client().request(port, method, location));
+        }
     }
 
-    @Then("I should receive a response with version {string}")
+    @Then("I should receive responses with version {string}")
     public void iShouldReceive(String version) {
-        assert version.equals(response.version().toString());
+        for (HttpResponse response : responses) {
+            assertEquals(version, response.version().toString());
+        }
     }
 
-    @Then("Status code {int}")
+    @Then("Status codes {int}")
     public void statusCode(int code) {
-        assert code == response.statusCode();
+        for (HttpResponse response : responses) {
+            assertEquals(code, response.statusCode());
+        }
     }
 
-    @Then("Body {string}")
+    @Then("Bodies {string}")
     public void body(String body) {
-        assert body.equals(response.body());
+        for (HttpResponse response : responses) {
+            assertEquals(body, response.body());
+        }
     }
 
     @After
