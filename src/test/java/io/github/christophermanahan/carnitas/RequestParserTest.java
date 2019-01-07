@@ -39,10 +39,21 @@ class RequestParserTest {
         Assertions.assertEquals(Optional.of(body), parsed);
     }
 
+    @Test
+    void parseIsEmptyIfReceiveFails() {
+        Receiver receiver = new FailedReceiver();
+        Parser parser = new RequestParser();
+
+        Optional<String> parsed = parser.parse(receiver);
+
+        Assertions.assertEquals(Optional.empty(), parsed);
+    }
+
     private class TestReceiver implements Receiver {
+
         private final Iterator<String> received;
 
-        public TestReceiver(String request) {
+        TestReceiver(String request) {
             this.received = List.of(request.split("\\r\\n")).iterator();
         }
 
@@ -52,6 +63,17 @@ class RequestParserTest {
 
         public String receiveCharacters(int amount) {
             return received.next();
+        }
+    }
+
+    private class FailedReceiver implements Receiver {
+
+        public String receiveLine() {
+            throw new RuntimeException();
+        }
+
+        public String receiveCharacters(int amount) {
+            throw new RuntimeException();
         }
     }
 }

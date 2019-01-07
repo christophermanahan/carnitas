@@ -12,13 +12,21 @@ public class RequestParser implements Parser {
 
     public Optional<String> parse(Receiver receiver) {
         bufferedReceiver = receiver;
-        while (receiving) {
-            receive();
-            getContentLength();
-            checkForContent();
-            getBody();
+        try {
+            while (receiving) {
+                parseRequest();
+            }
+            return Optional.of(body);
+        } catch(RuntimeException e) {
+            return Optional.empty();
         }
-        return Optional.of(body);
+    }
+
+    private void parseRequest() {
+        receive();
+        getContentLength();
+        checkForContent();
+        getBody();
     }
 
     private void receive() {
@@ -38,7 +46,7 @@ public class RequestParser implements Parser {
     }
 
     private void getBody() {
-        if (received.isEmpty()) {
+        if (contentLength > 0 && received.isEmpty()) {
             body = bufferedReceiver.receiveCharacters(contentLength);
             stopReceiving();
         }
