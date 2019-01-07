@@ -22,26 +22,26 @@ class HTTPServerTest {
     @BeforeEach
     void setup() {
         sent = new ArrayList<>();
-        request = "GET http://localhost:80/simple_get HTTP/1.1";
         logger = new TestLogger();
     }
 
     @Test
-    void sendsHTTPResponsesWhileReceivingData() {
-        received = List.of(request, request, request);
+    void sendsHTTPResponsesWhenRequestIsReceived() {
+        request = "GET /simple_get HTTP/1.1";
+        received = List.of(request);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
 
         new HTTPServer(listener, logger).run();
 
         String response = new String(new HTTPResponse().serialize());
-        List<String> responses = List.of(response, response, response);
-        assertEquals(responses, sent);
+        assertEquals(List.of(response), sent);
     }
 
     @Test
     void connectionIsClosedWhenClientDisconnects() {
-        received = List.of(request, request, request);
+        request = "GET /simple_get HTTP/1.1";
+        received = List.of(request);
         connection = new TestConnection(received, sent);
         listener = new TestListener(connection);
 
@@ -52,7 +52,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfListenFails() {
-        received = List.of(request, request, request);
+        request = "GET /simple_get HTTP/1.1";
+        received = List.of(request);
         connection = new TestConnection(received, sent);
         listener = new ListenException(connection);
 
@@ -63,7 +64,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfSendFails() {
-        received = List.of(request, request, request);
+        request = "GET /simple_get HTTP/1.1";
+        received = List.of(request);
         connection = new SendException(received, sent);
         listener = new TestListener(connection);
 
@@ -74,7 +76,8 @@ class HTTPServerTest {
 
     @Test
     void logsExceptionIfCloseFails() {
-        received = List.of(request, request, request);
+        request = "GET /simple_get HTTP/1.1";
+        received = List.of(request);
         connection = new CloseException(received, sent);
         listener = new TestListener(connection);
 
@@ -91,7 +94,7 @@ class HTTPServerTest {
             this.log = new StringBuilder();
         }
 
-        public String log() {
+        String log() {
             return log.toString();
         }
 
@@ -104,7 +107,7 @@ class HTTPServerTest {
 
         private final Connection connection;
 
-        public TestListener(Connection connection) {
+        TestListener(Connection connection) {
             this.connection = connection;
         }
 
@@ -115,7 +118,7 @@ class HTTPServerTest {
 
     private class ListenException extends TestListener {
 
-        public ListenException(Connection connection) {
+        ListenException(Connection connection) {
             super(connection);
         }
 
@@ -130,7 +133,7 @@ class HTTPServerTest {
         private List<String> sent;
         private boolean closed;
 
-        public TestConnection(List<String> received, List<String> sent) {
+        TestConnection(List<String> received, List<String> sent) {
             this.received = received.iterator();
             this.sent = sent;
             this.closed = false;
@@ -155,7 +158,7 @@ class HTTPServerTest {
 
     private class SendException extends TestConnection {
 
-        public SendException(List<String> received, List<String> sent) {
+        SendException(List<String> received, List<String> sent) {
             super(received, sent);
         }
 
@@ -166,7 +169,7 @@ class HTTPServerTest {
 
     private class CloseException extends TestConnection {
 
-        public CloseException(List<String> received, List<String> sent) {
+        CloseException(List<String> received, List<String> sent) {
             super(received, sent);
         }
 
