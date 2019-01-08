@@ -13,8 +13,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
-
-
     @Test
     void receivesDataFromSocket() {
         String request = "GET http://localhost:80/simple_get HTTP/1.1";
@@ -75,12 +73,11 @@ class SocketConnectionTest {
     }
 
     private class TestSocket extends Socket {
-
         private final String receive;
         private OutputStream output;
         private boolean closed;
 
-        public TestSocket(String receive) {
+        TestSocket(String receive) {
             this.receive = receive;
             this.output = new ByteArrayOutputStream();
             this.closed = false;
@@ -104,7 +101,6 @@ class SocketConnectionTest {
     }
 
     private class TestResponse implements Response {
-
         private final String request;
 
         TestResponse(String request) {
@@ -117,14 +113,12 @@ class SocketConnectionTest {
     }
 
     private class OutputStreamException extends Socket {
-
         public OutputStream getOutputStream() throws IOException {
             throw new IOException();
         }
     }
 
     private class CloseException extends Socket {
-
         public synchronized void close() throws IOException {
             throw new IOException();
         }

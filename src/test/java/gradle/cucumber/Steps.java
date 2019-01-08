@@ -1,6 +1,5 @@
 package gradle.cucumber;
 
-import cucumber.api.java.After;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -13,15 +12,13 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class Steps {
-
     private List<HttpResponse<String>> responses = new ArrayList<>();
     private String port;
-    private Support server;
 
     @Given("The server is running on port {string}")
     public void theServerIsRunningOnPort(String port) {
         this.port = port;
-        this.server = new Support(port);
+        Support server = new Support(port);
         new Thread(server).start();
     }
 
@@ -51,10 +48,5 @@ public class Steps {
         for (HttpResponse response : responses) {
             assertEquals(body, response.body());
         }
-    }
-
-    @After
-    public void cleanup() {
-        server.close();
     }
 }

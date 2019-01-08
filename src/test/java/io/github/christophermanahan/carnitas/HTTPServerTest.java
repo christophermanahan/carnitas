@@ -11,7 +11,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
-
     private String request;
     private List<String> received;
     private List<String> sent;
@@ -87,7 +86,6 @@ class HTTPServerTest {
     }
 
     private class TestLogger implements Logger {
-
         private final StringBuilder log;
 
         TestLogger() {
@@ -104,7 +102,6 @@ class HTTPServerTest {
     }
 
     private class TestListener implements Listener {
-
         private final Connection connection;
 
         TestListener(Connection connection) {
@@ -117,7 +114,6 @@ class HTTPServerTest {
     }
 
     private class ListenException extends TestListener {
-
         ListenException(Connection connection) {
             super(connection);
         }
@@ -128,7 +124,6 @@ class HTTPServerTest {
     }
 
     private class TestConnection implements Connection {
-
         private Iterator<String> received;
         private List<String> sent;
         private boolean closed;
@@ -157,7 +152,6 @@ class HTTPServerTest {
     }
 
     private class SendException extends TestConnection {
-
         SendException(List<String> received, List<String> sent) {
             super(received, sent);
         }
@@ -168,7 +162,6 @@ class HTTPServerTest {
     }
 
     private class CloseException extends TestConnection {
-
         CloseException(List<String> received, List<String> sent) {
             super(received, sent);
         }

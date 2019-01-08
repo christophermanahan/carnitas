@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 class ErrorLoggerTest {
-
     @Test
     void logsErrorMessagesAppendedWithNewLine() {
         String error = "Failed due to <error>";

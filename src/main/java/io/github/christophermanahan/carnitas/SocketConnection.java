@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.Optional;
 
 public class SocketConnection implements Connection {
-
     private final Socket socket;
 
     SocketConnection(Socket socket) {

@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ServerSocketListenerTest {
-
     @Test
     void listensForAConnection() throws IOException {
         String request = "GET http://localhost:80/simple_get HTTP/1.1";
