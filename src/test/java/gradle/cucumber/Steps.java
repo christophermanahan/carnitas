@@ -1,8 +1,12 @@
 package gradle.cucumber;
 
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import cucumber.api.junit.Cucumber;
+import io.github.christophermanahan.carnitas.Main;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -11,15 +15,32 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Cucumber.class)
 public class Steps {
     private List<HttpResponse<String>> responses = new ArrayList<>();
     private String port;
 
+    private static boolean running = false;
+
+    @Before
+    public void BeforeAll() {
+        if (!running) {
+            String[] port = {"33333"};
+            new Thread(() -> Main.main(port)).start();
+
+            Runtime.getRuntime().addShutdownHook(AfterAll());
+
+            running = true;
+        }
+    }
+
+    private Thread AfterAll() {
+        return new Thread(Main::stop);
+    }
+
     @Given("The server is running on port {string}")
     public void theServerIsRunningOnPort(String port) {
         this.port = port;
-        Support server = new Support(port);
-        new Thread(server).start();
     }
 
     @When("I send method {string} for {string} to host at the specified port {int} time(s)")
