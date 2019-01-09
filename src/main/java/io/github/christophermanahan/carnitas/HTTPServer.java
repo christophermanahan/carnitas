@@ -1,38 +1,28 @@
 package io.github.christophermanahan.carnitas;
 
-public class HTTPServer {
-
-    private final Listener listener;
+class HTTPServer {
+    private final Acceptor acceptor;
     private final Logger errorLogger;
     private Connection connection;
 
-    public HTTPServer(Listener listener, Logger errorLogger) {
-        this.listener = listener;
+    HTTPServer(Acceptor acceptor, Logger errorLogger) {
+        this.acceptor = acceptor;
         this.errorLogger = errorLogger;
     }
 
-    public void run() {
-        try {
-            connect();
-            serveUntilDisconnect();
-        } catch (RuntimeException e) {
-            errorLogger.log(e.getMessage());
+    void run() {
+        while (acceptor.isAccepting()) {
+            try (Connection connection = acceptor.accept()) {
+                serve(connection);
+            } catch (RuntimeException e) {
+                errorLogger.log(e.getMessage());
+            }
         }
     }
 
-    private void connect() {
-        connection = listener.listen();
-    }
-
-    private void serveUntilDisconnect() {
-        while(connection.isOpen()) {
-            serve();
-        }
-    }
-
-    private void serve() {
+    private void serve(Connection connection) {
         connection.receive()
-            .map(request -> new HTTPResponse())
-            .ifPresentOrElse(connection::send, connection::close);
+          .map(request -> new HTTPResponse())
+          .ifPresent(connection::send);
     }
 }

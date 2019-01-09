@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.util.Optional;
 
 public class SocketConnection implements Connection {
-
     private final Socket socket;
 
     SocketConnection(Socket socket) {
@@ -37,9 +36,5 @@ public class SocketConnection implements Connection {
         } catch (IOException e) {
             throw new RuntimeException(ErrorMessages.CLOSE_CONNECTION);
         }
-    }
-
-    public boolean isOpen() {
-        return !socket.isClosed();
     }
 }

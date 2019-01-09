@@ -11,87 +11,81 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
-
-    private String request;
-    private List<String> received;
-    private List<String> sent;
-    private Connection connection;
-    private Listener listener;
+    private List<String> responses;
     private TestLogger logger;
 
     @BeforeEach
     void setup() {
-        sent = new ArrayList<>();
-        request = "GET http://localhost:80/simple_get HTTP/1.1";
+        responses = new ArrayList<>();
         logger = new TestLogger();
     }
 
     @Test
-    void sendsHTTPResponsesWhileReceivingData() {
-        received = List.of(request, request, request);
-        connection = new TestConnection(received, sent);
-        listener = new TestListener(connection);
+    void sendsHTTPResponsesWhenTestConnectionsSendRequests() {
+        String request = "GET /simple_get HTTP/1.1";
+        TestConnection connection = new TestConnection(request, responses);
+        List<TestConnection> connections = List.of(connection, connection, connection);
+        Acceptor acceptor = new TestAcceptor(connections);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(acceptor, logger).run();
 
         String response = new String(new HTTPResponse().serialize());
         List<String> responses = List.of(response, response, response);
-        assertEquals(responses, sent);
+        assertEquals(responses, responses);
     }
 
     @Test
-    void connectionIsClosedWhenClientDisconnects() {
-        received = List.of(request, request, request);
-        connection = new TestConnection(received, sent);
-        listener = new TestListener(connection);
+    void connectionIsClosedAfterResponse() {
+        String request = "GET /simple_get HTTP/1.1";
+        List<TestConnection> connections = List.of(new TestConnection(request, responses));
+        Acceptor acceptor = new TestAcceptor(connections);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(acceptor, logger).run();
 
-        assertEquals(Optional.empty(), connection.receive());
+        assertEquals(Optional.empty(), connections.get(0).receive());
     }
 
     @Test
-    void logsExceptionIfListenFails() {
-        received = List.of(request, request, request);
-        connection = new TestConnection(received, sent);
-        listener = new ListenException(connection);
+    void logsExceptionIfAcceptFails() {
+        String request = "GET /simple_get HTTP/1.1";
+        List<TestConnection> connections = List.of(new TestConnection(request, responses));
+        Acceptor acceptor = new AcceptorException(connections);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(acceptor, logger).run();
 
-        assertEquals(ErrorMessages.ACCEPT_CONNECTION, logger.log());
+        assertEquals(ErrorMessages.ACCEPT_CONNECTION, logger.logged());
     }
 
     @Test
     void logsExceptionIfSendFails() {
-        received = List.of(request, request, request);
-        connection = new SendException(received, sent);
-        listener = new TestListener(connection);
+        String request = "GET /simple_get HTTP/1.1";
+        List<TestConnection> connection = List.of(new SendException(request, responses));
+        Acceptor acceptor = new TestAcceptor(connection);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(acceptor, logger).run();
 
-        assertEquals(ErrorMessages.SEND_TO_CONNECTION, logger.log());
+        assertEquals(ErrorMessages.SEND_TO_CONNECTION, logger.logged());
     }
 
     @Test
     void logsExceptionIfCloseFails() {
-        received = List.of(request, request, request);
-        connection = new CloseException(received, sent);
-        listener = new TestListener(connection);
+        String request = "GET /simple_get HTTP/1.1";
+        List<TestConnection> connection = List.of(new CloseException(request, responses));
+        Acceptor acceptor = new TestAcceptor(connection);
 
-        new HTTPServer(listener, logger).run();
+        new HTTPServer(acceptor, logger).run();
 
-        assertEquals(ErrorMessages.CLOSE_CONNECTION, logger.log());
+        assertEquals(ErrorMessages.CLOSE_CONNECTION, logger.logged());
     }
 
     private class TestLogger implements Logger {
-
         private final StringBuilder log;
 
         TestLogger() {
             this.log = new StringBuilder();
         }
 
-        public String log() {
+        String logged() {
             return log.toString();
         }
 
@@ -100,63 +94,69 @@ class HTTPServerTest {
         }
     }
 
-    private class TestListener implements Listener {
+    private class TestAcceptor implements Acceptor {
+        final Iterator<TestConnection> connections;
 
-        private final Connection connection;
-
-        public TestListener(Connection connection) {
-            this.connection = connection;
+        TestAcceptor(List<TestConnection> connections) {
+            this.connections = connections.iterator();
         }
 
-        public Connection listen() {
+        public TestConnection accept() {
+            TestConnection connection = connections.next();
+            connection.open();
             return connection;
+        }
+
+        public void close() {
+        }
+
+        public boolean isAccepting() {
+            return connections.hasNext();
         }
     }
 
-    private class ListenException extends TestListener {
-
-        public ListenException(Connection connection) {
-            super(connection);
+    private class AcceptorException extends TestAcceptor {
+        AcceptorException(List<TestConnection> connections) {
+            super(connections);
         }
 
-        public Connection listen() {
+        public TestConnection accept() {
+            connections.next();
             throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
         }
     }
 
     private class TestConnection implements Connection {
-
-        private Iterator<String> received;
-        private List<String> sent;
+        private final String request;
+        private List<String> responses;
         private boolean closed;
 
-        public TestConnection(List<String> received, List<String> sent) {
-            this.received = received.iterator();
-            this.sent = sent;
+        TestConnection(String request, List<String> responses) {
+            this.request = request;
+            this.responses = responses;
             this.closed = false;
         }
 
         public Optional<String> receive() {
-            return closed || !received.hasNext() ? Optional.empty() : Optional.of(received.next());
+            return closed ? Optional.empty() : Optional.of(request);
         }
 
         public void send(Response response) {
-            sent.add(new String(response.serialize()));
+            responses.add(new String(response.serialize()));
         }
 
         public void close() {
             closed = true;
         }
 
-        public boolean isOpen() {
-            return !closed;
+        void open() {
+            closed = false;
         }
     }
 
     private class SendException extends TestConnection {
-
-        public SendException(List<String> received, List<String> sent) {
-            super(received, sent);
+        SendException(String request, List<String> responses) {
+            super(request, responses);
         }
 
         public void send(Response response) {
@@ -165,9 +165,8 @@ class HTTPServerTest {
     }
 
     private class CloseException extends TestConnection {
-
-        public CloseException(List<String> received, List<String> sent) {
-            super(received, sent);
+        CloseException(String request, List<String> responses) {
+            super(request, responses);
         }
 
         public void close() {

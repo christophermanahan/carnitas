@@ -13,16 +13,14 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
-
-
     @Test
-    void receivesDataFromSocket() {
+    void requestsDataFromSocket() {
         String request = "GET http://localhost:80/simple_get HTTP/1.1";
         Socket socket = new TestSocket(request);
 
-        Optional<String> received = new SocketConnection(socket).receive();
+        Optional<String> requested = new SocketConnection(socket).receive();
 
-        assertEquals(Optional.of(request), received);
+        assertEquals(Optional.of(request), requested);
     }
 
     @Test
@@ -64,30 +62,19 @@ class SocketConnectionTest {
         assertEquals(ErrorMessages.CLOSE_CONNECTION, e.getMessage());
     }
 
-    @Test
-    void checksOpenSocketStatus() {
-        Socket socket = new TestSocket(null);
-
-        Connection connection = new SocketConnection(socket);
-
-        assertFalse(socket.isClosed());
-        assertTrue(connection.isOpen());
-    }
-
     private class TestSocket extends Socket {
-
-        private final String receive;
+        private final String request;
         private OutputStream output;
         private boolean closed;
 
-        public TestSocket(String receive) {
-            this.receive = receive;
+        TestSocket(String request) {
+            this.request = request;
             this.output = new ByteArrayOutputStream();
             this.closed = false;
         }
 
         public InputStream getInputStream() {
-            return new ByteArrayInputStream(receive.getBytes());
+            return new ByteArrayInputStream(request.getBytes());
         }
 
         public OutputStream getOutputStream() {
@@ -104,7 +91,6 @@ class SocketConnectionTest {
     }
 
     private class TestResponse implements Response {
-
         private final String request;
 
         TestResponse(String request) {
@@ -117,14 +103,12 @@ class SocketConnectionTest {
     }
 
     private class OutputStreamException extends Socket {
-
         public OutputStream getOutputStream() throws IOException {
             throw new IOException();
         }
     }
 
     private class CloseException extends Socket {
-
         public synchronized void close() throws IOException {
             throw new IOException();
         }

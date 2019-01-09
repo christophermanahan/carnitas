@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class HTTPResponseTest {
-
     @Test
     void createsGETResponseBytes() {
         Response httpResponse = new HTTPResponse();
