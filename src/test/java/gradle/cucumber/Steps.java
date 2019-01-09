@@ -1,6 +1,7 @@
 package gradle.cucumber;
 
 import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -41,9 +42,20 @@ public class Steps {
     }
 
     @When("I send method {string} for {string} to host at the specified port {int} time(s)")
-    public void iSendToHostAtTheSpecifiedPort(String method, String location, int times) throws IOException, InterruptedException {
+    public void iSendMethodForToHostAtTheSpecifiedPortTimes(String method, String location, int times) throws IOException, InterruptedException {
         for (int i = 0; i < times; i++) {
             responses.add(new Client().request(port, method, location));
+        }
+    }
+
+    @When("I send method {string} for {string} with body {string} to host at the specified port {int} time(s)")
+    public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String location, String body, int times) throws IOException, InterruptedException {
+        for (int i = 0; i < times; i++) {
+            responses.add(
+              new Client()
+                .setBody(body)
+                .request(port, method, location)
+            );
         }
     }
 
@@ -58,6 +70,13 @@ public class Steps {
     public void statusCode(int code) {
         for (HttpResponse response : responses) {
             assertEquals(code, response.statusCode());
+        }
+    }
+
+    @And("Body {string}")
+    public void body(String body) {
+        for (HttpResponse response : responses) {
+            assertEquals(body, response.body());
         }
     }
 }
