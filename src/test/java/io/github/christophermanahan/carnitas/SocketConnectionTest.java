@@ -14,13 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
     @Test
-    void receivesDataFromSocket() {
+    void requestsDataFromSocket() {
         String request = "GET http://localhost:80/simple_get HTTP/1.1";
         Socket socket = new TestSocket(request);
 
-        Optional<String> received = new SocketConnection(socket).receive();
+        Optional<String> requestd = new SocketConnection(socket).request();
 
-        assertEquals(Optional.of(request), received);
+        assertEquals(Optional.of(request), requestd);
     }
 
     @Test
@@ -63,18 +63,18 @@ class SocketConnectionTest {
     }
 
     private class TestSocket extends Socket {
-        private final String receive;
+        private final String request;
         private OutputStream output;
         private boolean closed;
 
-        TestSocket(String receive) {
-            this.receive = receive;
+        TestSocket(String request) {
+            this.request = request;
             this.output = new ByteArrayOutputStream();
             this.closed = false;
         }
 
         public InputStream getInputStream() {
-            return new ByteArrayInputStream(receive.getBytes());
+            return new ByteArrayInputStream(request.getBytes());
         }
 
         public OutputStream getOutputStream() {
