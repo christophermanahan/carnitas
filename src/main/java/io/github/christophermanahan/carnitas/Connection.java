@@ -8,6 +8,4 @@ public interface Connection extends AutoCloseable {
     void send(Response response);
 
     void close();
-
-    boolean isOpen();
 }

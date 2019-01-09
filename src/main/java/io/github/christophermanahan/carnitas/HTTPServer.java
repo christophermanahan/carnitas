@@ -3,6 +3,7 @@ package io.github.christophermanahan.carnitas;
 class HTTPServer {
     private final Acceptor acceptor;
     private final Logger errorLogger;
+    private Connection connection;
 
     HTTPServer(Acceptor acceptor, Logger errorLogger) {
         this.acceptor = acceptor;
@@ -11,9 +12,7 @@ class HTTPServer {
 
     void run() {
         while (acceptor.isAccepting()) {
-            try (
-              Connection connection = acceptor.accept()
-            ) {
+            try (Connection connection = acceptor.accept()) {
                 serve(connection);
             } catch (RuntimeException e) {
                 errorLogger.log(e.getMessage());

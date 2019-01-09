@@ -37,8 +37,4 @@ public class SocketConnection implements Connection {
             throw new RuntimeException(ErrorMessages.CLOSE_CONNECTION);
         }
     }
-
-    public boolean isOpen() {
-        return !socket.isClosed();
-    }
 }

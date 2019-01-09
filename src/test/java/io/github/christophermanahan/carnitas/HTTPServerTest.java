@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class HTTPServerTest {
     private List<String> sent;
@@ -21,10 +20,10 @@ class HTTPServerTest {
     }
 
     @Test
-    void sendsHTTPResponsesWhenConnectionsSendRequests() {
+    void sendsHTTPResponsesWhenTestConnectionsSendRequests() {
         String received = "GET /simple_get HTTP/1.1";
         int receiveCount = 3;
-        Connection connection = new TestConnection(received, sent);
+        TestConnection connection = new TestConnection(received, sent);
         Acceptor acceptor = new TestAcceptor(connection, receiveCount);
 
         new HTTPServer(acceptor, logger).run();
@@ -38,48 +37,48 @@ class HTTPServerTest {
     void connectionIsClosedAfterResponse() {
         String received = "GET /simple_get HTTP/1.1";
         int receiveCount = 1;
-        Connection connection = new TestConnection(received, sent);
+        TestConnection connection = new TestConnection(received, sent);
         Acceptor acceptor = new TestAcceptor(connection, receiveCount);
 
         new HTTPServer(acceptor, logger).run();
 
-        assertFalse(connection.isOpen());
+        assertEquals(Optional.empty(), connection.receive());
     }
 
     @Test
     void logsExceptionIfAcceptFails() {
         String received = "GET /simple_get HTTP/1.1";
         int receiveCount = 1;
-        Connection connection = new TestConnection(received, sent);
+        TestConnection connection = new TestConnection(received, sent);
         Acceptor acceptor = new AcceptorException(connection, receiveCount);
 
         new HTTPServer(acceptor, logger).run();
 
-        assertEquals(ErrorMessages.ACCEPT_CONNECTION, logger.log());
+        assertEquals(ErrorMessages.ACCEPT_CONNECTION, logger.logged());
     }
 
     @Test
     void logsExceptionIfSendFails() {
         String received = "GET /simple_get HTTP/1.1";
         int receiveCount = 1;
-        Connection connection = new SendException(received, sent);
+        TestConnection connection = new SendException(received, sent);
         Acceptor acceptor = new TestAcceptor(connection, receiveCount);
 
         new HTTPServer(acceptor, logger).run();
 
-        assertEquals(ErrorMessages.SEND_TO_CONNECTION, logger.log());
+        assertEquals(ErrorMessages.SEND_TO_CONNECTION, logger.logged());
     }
 
     @Test
     void logsExceptionIfCloseFails() {
         String received = "GET /simple_get HTTP/1.1";
         int receiveCount = 1;
-        Connection connection = new CloseException(received, sent);
+        TestConnection connection = new CloseException(received, sent);
         Acceptor acceptor = new TestAcceptor(connection, receiveCount);
 
         new HTTPServer(acceptor, logger).run();
 
-        assertEquals(ErrorMessages.CLOSE_CONNECTION, logger.log());
+        assertEquals(ErrorMessages.CLOSE_CONNECTION, logger.logged());
     }
 
     private class TestLogger implements Logger {
@@ -89,7 +88,7 @@ class HTTPServerTest {
             this.log = new StringBuilder();
         }
 
-        String log() {
+        String logged() {
             return log.toString();
         }
 
@@ -99,15 +98,16 @@ class HTTPServerTest {
     }
 
     private class TestAcceptor implements Acceptor {
-        private final Connection connection;
+        private final TestConnection connection;
         int receiveCount;
 
-        TestAcceptor(Connection connection, int receiveCount) {
+        TestAcceptor(TestConnection connection, int receiveCount) {
             this.connection = connection;
             this.receiveCount = receiveCount;
         }
 
-        public Connection accept() {
+        public TestConnection accept() {
+            connection.open();
             receiveCount -= 1;
             return connection;
         }
@@ -121,11 +121,11 @@ class HTTPServerTest {
     }
 
     private class AcceptorException extends TestAcceptor {
-        AcceptorException(Connection connection, int receiveCount) {
+        AcceptorException(TestConnection connection, int receiveCount) {
             super(connection, receiveCount);
         }
 
-        public Connection accept() {
+        public TestConnection accept() {
             receiveCount -= 1;
             throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
         }
@@ -143,7 +143,7 @@ class HTTPServerTest {
         }
 
         public Optional<String> receive() {
-            return Optional.of(received);
+            return closed ? Optional.empty() : Optional.of(received);
         }
 
         public void send(Response response) {
@@ -154,8 +154,8 @@ class HTTPServerTest {
             closed = true;
         }
 
-        public boolean isOpen() {
-            return !closed;
+        void open() {
+            closed = false;
         }
     }
 

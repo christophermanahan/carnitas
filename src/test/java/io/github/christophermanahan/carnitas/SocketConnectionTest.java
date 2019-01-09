@@ -62,16 +62,6 @@ class SocketConnectionTest {
         assertEquals(ErrorMessages.CLOSE_CONNECTION, e.getMessage());
     }
 
-    @Test
-    void checksOpenSocketStatus() {
-        Socket socket = new TestSocket(null);
-
-        Connection connection = new SocketConnection(socket);
-
-        assertFalse(socket.isClosed());
-        assertTrue(connection.isOpen());
-    }
-
     private class TestSocket extends Socket {
         private final String receive;
         private OutputStream output;
