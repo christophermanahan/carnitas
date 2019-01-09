@@ -11,33 +11,32 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
-    private List<String> responses;
+    private List<String> response;
     private TestLogger logger;
 
     @BeforeEach
     void setup() {
-        responses = new ArrayList<>();
         logger = new TestLogger();
     }
 
     @Test
     void sendsHTTPResponsesWhenTestConnectionsSendRequests() {
         String request = "GET /simple_get HTTP/1.1";
-        TestConnection connection = new TestConnection(request, responses);
-        List<TestConnection> connections = List.of(connection, connection, connection);
+        List<TestConnection> connections = List.of(new TestConnection(request), new TestConnection(request), new TestConnection(request));
         Acceptor acceptor = new TestAcceptor(connections);
 
         new HTTPServer(acceptor, logger).run();
 
-        String response = new String(new HTTPResponse().serialize());
-        List<String> responses = List.of(response, response, response);
-        assertEquals(responses, responses);
+        String expectedResponse = new String(new HTTPResponse().serialize());
+        for (TestConnection connection : connections) {
+            assertEquals(expectedResponse, connection.response);
+        }
     }
 
     @Test
     void connectionIsClosedAfterResponse() {
         String request = "GET /simple_get HTTP/1.1";
-        List<TestConnection> connections = List.of(new TestConnection(request, responses));
+        List<TestConnection> connections = List.of(new TestConnection(request));
         Acceptor acceptor = new TestAcceptor(connections);
 
         new HTTPServer(acceptor, logger).run();
@@ -48,8 +47,7 @@ class HTTPServerTest {
     @Test
     void logsExceptionIfAcceptFails() {
         String request = "GET /simple_get HTTP/1.1";
-        List<TestConnection> connections = List.of(new TestConnection(request, responses));
-        Acceptor acceptor = new AcceptorException(connections);
+        Acceptor acceptor = new AcceptorException(List.of(new TestConnection(request)));
 
         new HTTPServer(acceptor, logger).run();
 
@@ -59,8 +57,7 @@ class HTTPServerTest {
     @Test
     void logsExceptionIfSendFails() {
         String request = "GET /simple_get HTTP/1.1";
-        List<TestConnection> connection = List.of(new SendException(request, responses));
-        Acceptor acceptor = new TestAcceptor(connection);
+        Acceptor acceptor = new TestAcceptor(List.of(new SendException(request)));
 
         new HTTPServer(acceptor, logger).run();
 
@@ -70,8 +67,7 @@ class HTTPServerTest {
     @Test
     void logsExceptionIfCloseFails() {
         String request = "GET /simple_get HTTP/1.1";
-        List<TestConnection> connection = List.of(new CloseException(request, responses));
-        Acceptor acceptor = new TestAcceptor(connection);
+        Acceptor acceptor = new TestAcceptor(List.of(new CloseException(request)));
 
         new HTTPServer(acceptor, logger).run();
 
@@ -102,9 +98,7 @@ class HTTPServerTest {
         }
 
         public TestConnection accept() {
-            TestConnection connection = connections.next();
-            connection.open();
-            return connection;
+            return connections.next();
         }
 
         public void close() {
@@ -128,12 +122,11 @@ class HTTPServerTest {
 
     private class TestConnection implements Connection {
         private final String request;
-        private List<String> responses;
+        String response;
         private boolean closed;
 
-        TestConnection(String request, List<String> responses) {
+        TestConnection(String request) {
             this.request = request;
-            this.responses = responses;
             this.closed = false;
         }
 
@@ -141,22 +134,18 @@ class HTTPServerTest {
             return closed ? Optional.empty() : Optional.of(request);
         }
 
-        public void send(Response response) {
-            responses.add(new String(response.serialize()));
+        public void send(Response httpResponse) {
+            response = new String(httpResponse.serialize());
         }
 
         public void close() {
             closed = true;
         }
-
-        void open() {
-            closed = false;
-        }
     }
 
     private class SendException extends TestConnection {
-        SendException(String request, List<String> responses) {
-            super(request, responses);
+        SendException(String request) {
+            super(request);
         }
 
         public void send(Response response) {
@@ -165,8 +154,8 @@ class HTTPServerTest {
     }
 
     private class CloseException extends TestConnection {
-        CloseException(String request, List<String> responses) {
-            super(request, responses);
+        CloseException(String request) {
+            super(request);
         }
 
         public void close() {
