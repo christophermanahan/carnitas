@@ -8,13 +8,16 @@ public class Main {
 
     public static void main(String[] args) {
         int port = args.length == 0 ? 33333 : Integer.parseInt(args[0]);
+        Logger logger = new ErrorLogger();
         try (
           ServerSocket serverSocket = new ServerSocket(port);
           Acceptor acceptor = new ConnectionAcceptor(serverSocket)
         ) {
             connectionAcceptor = acceptor;
-            new HTTPServer(acceptor, new ErrorLogger()).run();
-        } catch (IOException ignored) {}
+            new HTTPServer(acceptor, logger).run();
+        } catch (IOException e) {
+            logger.log(e.getMessage());
+        }
     }
 
     public static void stop() {
