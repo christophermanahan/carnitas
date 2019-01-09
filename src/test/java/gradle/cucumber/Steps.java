@@ -60,11 +60,4 @@ public class Steps {
             assertEquals(code, response.statusCode());
         }
     }
-
-    @Then("Bodies {string}")
-    public void body(String body) {
-        for (HttpResponse response : responses) {
-            assertEquals(body, response.body());
-        }
-    }
 }
