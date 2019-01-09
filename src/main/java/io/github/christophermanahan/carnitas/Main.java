@@ -14,9 +14,7 @@ public class Main {
         ) {
             connectionAcceptor = acceptor;
             new HTTPServer(acceptor, new ErrorLogger()).run();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        } catch (IOException ignored) {}
     }
 
     public static void stop() {

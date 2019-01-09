@@ -18,9 +18,9 @@ class SocketConnectionTest {
         String request = "GET http://localhost:80/simple_get HTTP/1.1";
         Socket socket = new TestSocket(request);
 
-        Optional<String> requestd = new SocketConnection(socket).request();
+        Optional<String> requested = new SocketConnection(socket).receive();
 
-        assertEquals(Optional.of(request), requestd);
+        assertEquals(Optional.of(request), requested);
     }
 
     @Test
