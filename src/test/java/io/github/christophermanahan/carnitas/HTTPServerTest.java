@@ -11,7 +11,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
-    private List<String> response;
     private TestLogger logger;
     private TestParser parser;
     private TestHandler handler;
