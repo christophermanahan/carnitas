@@ -49,8 +49,7 @@ class RequestParserTest {
     void parsesPOSTRequestWithoutBody() {
         String requestMethod = "POST";
         String body = "";
-        String request = requestMethod +  " /simple_post " + Constants.VERSION
-          + Constants.CRLF
+        String request = requestMethod +  " /simple_post " + Constants.VERSION + Constants.CRLF
           + Headers.CONTENT_LENGTH + body.length()
           + Constants.BLANK_LINE
           + body;
@@ -68,8 +67,7 @@ class RequestParserTest {
     void parsesPOSTRequestWithBody() {
         String requestMethod = "POST";
         String body = "name=<something>";
-        String request = requestMethod +  " /simple_get " + Constants.VERSION
-          + Constants.CRLF
+        String request = requestMethod +  " /simple_get " + Constants.VERSION + Constants.CRLF
           + Headers.CONTENT_LENGTH + body.length()
           + Constants.BLANK_LINE
           + body;

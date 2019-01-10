@@ -1,12 +1,24 @@
 package io.github.christophermanahan.carnitas;
 
 public class HTTPResponse implements Response {
-    static final String VERSION = "HTTP/1.1";
-    static final String GET = "200 OK";
-    static final String CL = "Content-Length: 0";
-    static final String CRLF = "\r\n";
+    private final String statusCode;
+    private final String version;
+    private final String body;
+    private final String headers;
+
+    HTTPResponse(String statusCode, String version, String body, String header) {
+        this.statusCode = statusCode;
+        this.version = version;
+        this.body = body;
+        this.headers = header;
+    }
 
     public byte[] serialize() {
-        return String.format("%s %s%s%s%s%s", VERSION, GET, CRLF, CL, CRLF, CRLF).getBytes();
+        return (
+          statusCode + " " + version + Constants.CRLF
+            + headers
+            + Constants.BLANK_LINE
+            + body
+        ).getBytes();
     }
 }

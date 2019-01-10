@@ -5,12 +5,18 @@ import org.junit.jupiter.api.Test;
 
 class HTTPResponseTest {
     @Test
-    void createsGETResponseBytes() {
-        Response httpResponse = new HTTPResponse();
+    void createsResponseBytes() {
+        String statusCode = StatusCodes.GET;
+        String version = Constants.VERSION;
+        String body = "name=<something>";
+        String headers = Headers.CONTENT_LENGTH + body.length();
 
-        byte[] httpResponseBytes = httpResponse.serialize();
-        byte[] expectedResponse = "HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n".getBytes();
+        String response = new String(new HTTPResponse(statusCode, version, body, headers).serialize());
 
-        Assertions.assertArrayEquals(expectedResponse, httpResponseBytes);
+        String expectedResponse = statusCode + " " + version + Constants.CRLF
+          + headers
+          + Constants.BLANK_LINE
+          + body;
+        Assertions.assertEquals(expectedResponse, response);
     }
 }

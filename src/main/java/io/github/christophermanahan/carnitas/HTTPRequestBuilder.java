@@ -2,7 +2,7 @@ package io.github.christophermanahan.carnitas;
 
 public class HTTPRequestBuilder implements RequestBuilder {
     private RequestMethod requestMethod;
-    private String body;
+    private String body = "";
 
     public RequestBuilder requestMethod(String requestMethod) {
         this.requestMethod = RequestMethod.valueOf(requestMethod);
