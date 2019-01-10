@@ -15,7 +15,7 @@ class HTTPResponseBuilderTest {
           .version(version)
           .build();
 
-        String expectedResponse = statusCode + " " + version + Constants.CRLF
+        String expectedResponse = version + " " + statusCode + Constants.CRLF
           + Constants.BLANK_LINE;
         assertEquals(expectedResponse, new String(response.serialize()));
     }
@@ -32,7 +32,7 @@ class HTTPResponseBuilderTest {
           .body(body)
           .build();
 
-        String expectedResponse = statusCode + " " + version + Constants.CRLF
+        String expectedResponse = version + " " + statusCode + Constants.CRLF
           + Headers.CONTENT_LENGTH + body.length()
           + Constants.BLANK_LINE
           + body;

@@ -9,7 +9,7 @@ public class RequestParser implements Parser {
     private boolean receiving = true;
     private String requestMethod;
     private int contentLength = -1;
-    private String body;
+    private String body = "";
 
     RequestParser(RequestBuilder requestBuilder) {
        this.requestBuilder = requestBuilder;
@@ -17,6 +17,7 @@ public class RequestParser implements Parser {
 
     public Optional<Request> parse(Receiver receiver) {
         this.receiver = receiver;
+        resetState();
         try {
             parseStatusLine(receiver.receiveLine());
             parseRequest();
@@ -24,6 +25,12 @@ public class RequestParser implements Parser {
         } catch (RuntimeException e) {
             return Optional.empty();
         }
+    }
+
+    private void resetState() {
+        this.receiving = true;
+        this.contentLength = -1;
+        this.body = "";
     }
 
     private void parseStatusLine(String statusLine) {
@@ -38,26 +45,19 @@ public class RequestParser implements Parser {
 
     private void parseLine(String received) {
         getContentLength(received);
-        checkForContent();
         getBody(received);
         endRequest(received);
     }
 
     private void getContentLength(String received) {
         if (received.contains(Headers.CONTENT_LENGTH)) {
-            this.contentLength = Integer.parseInt(received.substring(Headers.CONTENT_LENGTH.length()));
-        }
-    }
-
-    private void checkForContent() {
-        if (contentLength == 0) {
-            stopReceiving();
+            contentLength = Integer.parseInt(received.substring(Headers.CONTENT_LENGTH.length()));
         }
     }
 
     private void getBody(String received) {
         if (contentLength > 0 && received.isEmpty()) {
-            this.body = receiver.receiveCharacters(contentLength);
+            body = receiver.receiveCharacters(contentLength);
             stopReceiving();
         }
     }

@@ -15,7 +15,7 @@ public class HTTPResponse implements Response {
 
     public byte[] serialize() {
         return (
-          statusCode + " " + version + Constants.CRLF
+          version + " " + statusCode + Constants.CRLF
             + headers
             + Constants.BLANK_LINE
             + body

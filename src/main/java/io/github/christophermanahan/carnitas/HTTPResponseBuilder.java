@@ -18,9 +18,7 @@ public class HTTPResponseBuilder implements ResponseBuilder {
 
     public ResponseBuilder body(String body) {
         this.body = body;
-        if (!body.isEmpty()) {
-            this.headers = Headers.CONTENT_LENGTH + body.length();
-        }
+        this.headers = Headers.CONTENT_LENGTH + body.length();
         return this;
     }
 

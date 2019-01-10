@@ -19,6 +19,12 @@ public class RequestReceiver implements Receiver {
     }
 
     public String receiveCharacters(int amount) {
-        return null;
+        try {
+            char[] characters = new char[amount];
+            reader.read(characters);
+            return new String(characters);
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 }

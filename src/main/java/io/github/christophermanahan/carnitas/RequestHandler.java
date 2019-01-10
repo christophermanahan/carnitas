@@ -3,7 +3,7 @@ package io.github.christophermanahan.carnitas;
 public class RequestHandler implements Handler {
     private final ResponseBuilder responseBuilder;
     private String statusCode;
-    private String body;
+    private String body = "";
 
     RequestHandler(ResponseBuilder responseBuilder) {
         this.responseBuilder = responseBuilder;

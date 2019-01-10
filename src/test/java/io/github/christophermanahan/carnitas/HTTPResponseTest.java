@@ -13,7 +13,7 @@ class HTTPResponseTest {
 
         String response = new String(new HTTPResponse(statusCode, version, body, headers).serialize());
 
-        String expectedResponse = statusCode + " " + version + Constants.CRLF
+        String expectedResponse = version + " " + statusCode + Constants.CRLF
           + headers
           + Constants.BLANK_LINE
           + body;
