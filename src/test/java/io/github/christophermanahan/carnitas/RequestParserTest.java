@@ -11,19 +11,27 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RequestParserTest {
+    private String requestWithoutHeaders(String requestMethod) {
+        return requestMethod +  " /simple_method " + Constants.VERSION
+          + Constants.BLANK_LINE;
+    }
+
+    private String requestWithHeaders(String requestMethod, String body) {
+        return  requestMethod +  " /simple_method " + Constants.VERSION + Constants.CRLF
+          + Headers.CONTENT_LENGTH + body.length()
+          + Constants.BLANK_LINE
+          + body;
+    }
+
     @Test
     void parsesGETRequestWithoutBody() {
         String requestMethod = "GET";
-        String body = "";
-        String request = requestMethod +  " /simple_get " + Constants.VERSION
-          + Constants.BLANK_LINE
-          + body;
-        Receiver receiver = new TestReceiver(request);
+        Receiver receiver = new TestReceiver(requestWithoutHeaders(requestMethod));
         Parser parser = new RequestParser(new TestRequestBuilder());
 
         Optional<Request> parsed = parser.parse(receiver);
 
-        String expectedRequest = requestMethod + body;
+        String expectedRequest = requestMethod;
         String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
         assertEquals(expectedRequest, parsedRequest);
     }
@@ -32,10 +40,7 @@ class RequestParserTest {
     void parsesGETRequestWithBody() {
         String requestMethod = "GET";
         String body = "name=<something>";
-        String request = requestMethod +  " /simple_get " + Constants.VERSION
-          + Constants.BLANK_LINE
-          + body;
-        Receiver receiver = new TestReceiver(request);
+        Receiver receiver = new TestReceiver(requestWithHeaders(requestMethod, body));
         Parser parser = new RequestParser(new TestRequestBuilder());
 
         Optional<Request> parsed = parser.parse(receiver);
@@ -48,12 +53,21 @@ class RequestParserTest {
     @Test
     void parsesPOSTRequestWithoutBody() {
         String requestMethod = "POST";
-        String body = "";
-        String request = requestMethod +  " /simple_post " + Constants.VERSION + Constants.CRLF
-          + Headers.CONTENT_LENGTH + body.length()
-          + Constants.BLANK_LINE
-          + body;
-        Receiver receiver = new TestReceiver(request);
+        Receiver receiver = new TestReceiver(requestWithoutHeaders(requestMethod));
+        Parser parser = new RequestParser(new TestRequestBuilder());
+
+        Optional<Request> parsed = parser.parse(receiver);
+
+        String expectedRequest = requestMethod;
+        String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
+        assertEquals(expectedRequest, parsedRequest);
+    }
+
+    @Test
+    void parsesPOSTRequestWithBody() {
+        String requestMethod = "POST";
+        String body = "name=<something>";
+        Receiver receiver = new TestReceiver(requestWithHeaders(requestMethod, body));
         Parser parser = new RequestParser(new TestRequestBuilder());
 
         Optional<Request> parsed = parser.parse(receiver);
@@ -63,21 +77,28 @@ class RequestParserTest {
         assertEquals(expectedRequest, parsedRequest);
     }
 
+
     @Test
-    void parsesPOSTRequestWithBody() {
+    void parsesMultipleDifferentRequests() {
         String requestMethod = "POST";
-        String body = "name=<something>";
-        String request = requestMethod +  " /simple_get " + Constants.VERSION + Constants.CRLF
-          + Headers.CONTENT_LENGTH + body.length()
-          + Constants.BLANK_LINE
-          + body;
-        Receiver receiver = new TestReceiver(request);
         Parser parser = new RequestParser(new TestRequestBuilder());
+
+        String body = "name=<something>";
+        Receiver receiver = new TestReceiver(requestWithHeaders(requestMethod, body));
 
         Optional<Request> parsed = parser.parse(receiver);
 
         String expectedRequest = requestMethod + body;
         String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
+        assertEquals(expectedRequest, parsedRequest);
+
+        body = "name=<somethingElse>";
+        receiver = new TestReceiver(requestWithHeaders(requestMethod, body));
+
+        parsed = parser.parse(receiver);
+
+        expectedRequest = requestMethod + body;
+        parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
         assertEquals(expectedRequest, parsedRequest);
     }
 

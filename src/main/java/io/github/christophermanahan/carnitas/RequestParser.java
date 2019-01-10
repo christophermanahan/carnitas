@@ -50,9 +50,13 @@ public class RequestParser implements Parser {
     }
 
     private void getContentLength(String received) {
-        if (received.contains(Headers.CONTENT_LENGTH)) {
+        if (isPostWithBody(received)) {
             contentLength = Integer.parseInt(received.substring(Headers.CONTENT_LENGTH.length()));
         }
+    }
+
+    private boolean isPostWithBody(String received) {
+        return RequestMethod.valueOf(requestMethod) == RequestMethod.POST && received.contains(Headers.CONTENT_LENGTH);
     }
 
     private void getBody(String received) {
