@@ -23,7 +23,7 @@ class RequestParserTest {
 
         Optional<Request> parsed = parser.parse(receiver);
 
-        String expectedRequest = requestMethod;
+        String expectedRequest = requestMethod + body;
         String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
         assertEquals(expectedRequest, parsedRequest);
     }
@@ -59,7 +59,7 @@ class RequestParserTest {
 
         Optional<Request> parsed = parser.parse(receiver);
 
-        String expectedRequest = requestMethod;
+        String expectedRequest = requestMethod + body;
         String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
         assertEquals(expectedRequest, parsedRequest);
     }

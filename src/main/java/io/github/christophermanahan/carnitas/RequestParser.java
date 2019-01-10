@@ -18,7 +18,7 @@ public class RequestParser implements Parser {
     public Optional<Request> parse(Receiver receiver) {
         this.receiver = receiver;
         try {
-            requestMethod = parseStatusLine(receiver.receiveLine());
+            parseStatusLine(receiver.receiveLine());
             parseRequest();
             return Optional.of(buildRequest());
         } catch (RuntimeException e) {
@@ -26,12 +26,11 @@ public class RequestParser implements Parser {
         }
     }
 
-    private String parseStatusLine(String statusLine) {
-        return List.of(statusLine.split(" ")).get(0);
+    private void parseStatusLine(String statusLine) {
+        requestMethod = List.of(statusLine.split(" ")).get(0);
     }
 
     private void parseRequest() {
-        System.out.println(receiving);
         while (receiving) {
             parseLine(receiver.receiveLine());
         }
