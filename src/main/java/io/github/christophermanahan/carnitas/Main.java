@@ -14,7 +14,7 @@ public class Main {
           Acceptor acceptor = new ConnectionAcceptor(serverSocket)
         ) {
             connectionAcceptor = acceptor;
-            new HTTPServer(acceptor, logger).run();
+//            new HTTPServer(acceptor, logger).run();
         } catch (IOException e) {
             logger.log(e.getMessage());
         }

@@ -17,4 +17,8 @@ public class RequestReceiver implements Receiver {
             throw new RuntimeException();
         }
     }
+
+    public String receiveCharacters(int amount) {
+        return null;
+    }
 }

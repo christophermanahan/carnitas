@@ -142,8 +142,8 @@ class HTTPServerTest {
             return closed ? new TestReceiver(null) : new TestReceiver(request);
         }
 
-        public void send(Response httpResponse) {
-            response = new String(httpResponse.serialize());
+        public void send(Response response) {
+            this.response = new String(response.serialize());
         }
 
         public void close() {
@@ -160,6 +160,10 @@ class HTTPServerTest {
 
         public String receiveLine() {
             return request;
+        }
+
+        public String receiveCharacters(int amount) {
+            return null;
         }
     }
 
