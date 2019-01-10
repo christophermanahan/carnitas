@@ -8,19 +8,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
     @Test
-    void requestsDataFromSocket() {
+    void getsReceiver() {
         String request = "GET http://localhost:80/simple_get HTTP/1.1";
         Socket socket = new TestSocket(request);
 
-        Optional<String> requested = new SocketConnection(socket).receive();
+        String requested = new SocketConnection(socket).receiver().receiveLine();
 
-        assertEquals(Optional.of(request), requested);
+        assertEquals(request, requested);
     }
 
     @Test

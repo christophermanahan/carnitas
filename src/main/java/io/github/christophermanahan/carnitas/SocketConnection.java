@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Optional;
 
 public class SocketConnection implements Connection {
     private final Socket socket;
@@ -13,12 +12,12 @@ public class SocketConnection implements Connection {
         this.socket = socket;
     }
 
-    public Optional<String> receive() {
+    public Receiver receiver() {
         try {
-            BufferedReader receiver = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            return Optional.ofNullable(receiver.readLine());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            return new RequestReceiver(reader);
         } catch (IOException e) {
-            return Optional.empty();
+            throw new RuntimeException(ErrorMessages.OPEN_INPUT_STREAM);
         }
     }
 

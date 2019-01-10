@@ -2,11 +2,14 @@ package io.github.christophermanahan.carnitas;
 
 class HTTPServer {
     private final Acceptor acceptor;
+    private final Parser parser;
+    private final Handler handler;
     private final Logger errorLogger;
-    private Connection connection;
 
-    HTTPServer(Acceptor acceptor, Logger errorLogger) {
+    HTTPServer(Acceptor acceptor, Parser parser, Handler handler, Logger errorLogger) {
         this.acceptor = acceptor;
+        this.parser = parser;
+        this.handler = handler;
         this.errorLogger = errorLogger;
     }
 
@@ -21,8 +24,8 @@ class HTTPServer {
     }
 
     private void serve(Connection connection) {
-        connection.receive()
-          .map(request -> new HTTPResponse())
+        parser.parse(connection.receiver())
+          .map(handler::handle)
           .ifPresent(connection::send);
     }
 }
