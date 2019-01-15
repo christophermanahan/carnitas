@@ -3,7 +3,6 @@ package io.github.christophermanahan.carnitas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +67,7 @@ class HTTPServer2Test {
     void itWillLogAMessageIfListenFails() {
         String message = "Failed!";
         Listener listener = new Listener() {
-            public SocketConnection listen() {
+            public Connection listen() {
                 throw new RuntimeException(message);
             }
 
@@ -88,16 +87,37 @@ class HTTPServer2Test {
     @Test
     void itWillLogAMessageIfSendFails() {
         String message = "Failed!";
-        class FailedSender extends ReadableConnection {
-            private FailedSender(String message) {
-                super(message + Constants.CRLF);
+        Connection connection = new Connection() {
+            private int index = -1;
+
+            public Receiver receiver() {
+                return null;
             }
 
             public void send(Response response) {
                 throw new RuntimeException(message);
             }
-        }
-        Listener listener = new TestListener(List.of(new FailedSender(message)));
+
+            public void close() {
+            }
+
+            public char read() {
+                index++;
+                return List.of(Constants.CRLF.split("")).get(index).charAt(0);
+            }
+        };
+        Listener listener = new Listener() {
+            public Connection listen() {
+                return connection;
+            }
+
+            public boolean isListening() {
+                return false;
+            }
+
+            public void close() {
+            }
+        };
 
         new HTTPServer2(parser, handler, logger).start(listener, new Once());
 
@@ -111,7 +131,7 @@ class HTTPServer2Test {
             this.connections = connections.iterator();
         }
 
-        public SocketConnection listen() {
+        public Connection listen() {
             return connections.next();
         }
 
@@ -124,13 +144,12 @@ class HTTPServer2Test {
         }
     }
 
-    private class ReadableConnection extends SocketConnection {
+    private class ReadableConnection implements Connection {
         private final String request;
         private int index;
         Response response;
 
         ReadableConnection(String request) {
-            super(new Socket());
             this.request = request;
             this.index = -1;
         }

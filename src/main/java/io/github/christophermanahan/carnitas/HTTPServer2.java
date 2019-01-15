@@ -19,7 +19,7 @@ class HTTPServer2 {
 
     private Runnable connect(Listener listener) {
         return () -> {
-            try (SocketConnection connection = listener.listen()) {
+            try (Connection connection = listener.listen()) {
                 serve(connection);
             } catch (RuntimeException e) {
                 logger.log(e.getMessage());
@@ -27,7 +27,7 @@ class HTTPServer2 {
         };
     }
 
-    private void serve(SocketConnection connection) {
+    private void serve(Connection connection) {
         parser.parse(new ConnectionReader(connection))
           .map(handler::handle)
           .ifPresent(connection::send);
