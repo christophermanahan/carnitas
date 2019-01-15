@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +55,7 @@ class HTTPServerTest {
                 super(connections);
             }
 
-            public TestConnection listen() {
+            public SocketConnection listen() {
                 connections.next();
                 throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
             }
@@ -114,7 +115,7 @@ class HTTPServerTest {
             this.connections = connections.iterator();
         }
 
-        public TestConnection listen() {
+        public SocketConnection listen() {
             return connections.next();
         }
 
@@ -125,12 +126,13 @@ class HTTPServerTest {
         }
     }
 
-    private class TestConnection implements Connection {
+    private class TestConnection extends SocketConnection {
         private String request;
         String response;
         private boolean closed;
 
         TestConnection(String request) {
+            super(new Socket());
             this.request = request;
             this.closed = false;
         }

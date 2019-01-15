@@ -10,7 +10,7 @@ public class ConnectionListener implements Listener {
         this.serverSocket = serverSocket;
     }
 
-    public Connection listen() {
+    public SocketConnection listen() {
         try {
             return new SocketConnection(serverSocket.accept());
         } catch (IOException e) {

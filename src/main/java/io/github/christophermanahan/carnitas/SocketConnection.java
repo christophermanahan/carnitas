@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class SocketConnection implements Connection {
+public class SocketConnection implements Connection, Readable {
     private final Socket socket;
 
     SocketConnection(Socket socket) {
@@ -19,6 +19,10 @@ public class SocketConnection implements Connection {
         } catch (IOException e) {
             throw new RuntimeException(ErrorMessages.OPEN_INPUT_STREAM);
         }
+    }
+
+    public char read() {
+        return 0;
     }
 
     public void send(Response response) {
