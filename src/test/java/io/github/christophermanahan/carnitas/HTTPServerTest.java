@@ -26,9 +26,9 @@ class HTTPServerTest {
     void sendsHTTPResponsesWhenTestConnectionSendsHTTPRequests() {
         String request = "GET /simple_get HTTP/1.1";
         List<TestConnection> connections = List.of(new TestConnection(request), new TestConnection(request), new TestConnection(request));
-        Acceptor acceptor = new TestAcceptor(connections);
+        Listener listener = new TestListener(connections);
 
-        new HTTPServer(acceptor, parser, handler, logger).run();
+        new HTTPServer(listener, parser, handler, logger).run();
 
         String expectedResponse = new String(new TestResponse(request).serialize());
         for (TestConnection connection : connections) {
@@ -40,29 +40,29 @@ class HTTPServerTest {
     void connectionIsClosedAfterResponse() {
         String request = "GET /simple_get HTTP/1.1";
         List<TestConnection> connections = List.of(new TestConnection(request));
-        Acceptor acceptor = new TestAcceptor(connections);
+        Listener listener = new TestListener(connections);
 
-        new HTTPServer(acceptor, parser, handler, logger).run();
+        new HTTPServer(listener, parser, handler, logger).run();
 
         Assertions.assertNull( connections.get(0).receiver().receiveLine());
     }
 
     @Test
     void logsExceptionIfAcceptFails() {
-        class AcceptorException extends TestAcceptor {
-            private AcceptorException(List<TestConnection> connections) {
+        class ListenerException extends TestListener {
+            private ListenerException(List<TestConnection> connections) {
                 super(connections);
             }
 
-            public TestConnection accept() {
+            public TestConnection listen() {
                 connections.next();
                 throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
             }
         }
         String request = "GET /simple_get HTTP/1.1";
-        Acceptor acceptor = new AcceptorException(List.of(new TestConnection(request)));
+        Listener listener = new ListenerException(List.of(new TestConnection(request)));
 
-        new HTTPServer(acceptor, parser, handler, logger).run();
+        new HTTPServer(listener, parser, handler, logger).run();
 
         assertEquals(ErrorMessages.ACCEPT_CONNECTION, logger.logged());
     }
@@ -79,9 +79,9 @@ class HTTPServerTest {
             }
         }
         String request = "GET /simple_get HTTP/1.1";
-        Acceptor acceptor = new TestAcceptor(List.of(new SendException(request)));
+        Listener listener = new TestListener(List.of(new SendException(request)));
 
-        new HTTPServer(acceptor, parser, handler, logger).run();
+        new HTTPServer(listener, parser, handler, logger).run();
 
         assertEquals(ErrorMessages.SEND_TO_CONNECTION, logger.logged());
     }
@@ -98,34 +98,32 @@ class HTTPServerTest {
             }
         }
         String request = "GET /simple_get HTTP/1.1";
-        Acceptor acceptor = new TestAcceptor(List.of(new CloseException(request)));
+        Listener listener = new TestListener(List.of(new CloseException(request)));
 
-        new HTTPServer(acceptor, parser, handler, logger).run();
+        new HTTPServer(listener, parser, handler, logger).run();
 
         assertEquals(ErrorMessages.CLOSE_CONNECTION, logger.logged());
     }
 
 
 
-    private class TestAcceptor implements Acceptor {
+    private class TestListener implements Listener {
         final Iterator<TestConnection> connections;
 
-        TestAcceptor(List<TestConnection> connections) {
+        TestListener(List<TestConnection> connections) {
             this.connections = connections.iterator();
         }
 
-        public TestConnection accept() {
+        public TestConnection listen() {
             return connections.next();
         }
 
         public void close() {}
 
-        public boolean isAccepting() {
+        public boolean isListening() {
             return connections.hasNext();
         }
     }
-
-
 
     private class TestConnection implements Connection {
         private String request;

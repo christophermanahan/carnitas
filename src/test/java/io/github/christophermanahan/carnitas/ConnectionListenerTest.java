@@ -12,13 +12,13 @@ import java.net.Socket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ConnectionAcceptorTest {
+class ConnectionListenerTest {
     @Test
     void listensForAConnection() throws IOException {
         String request = "GET http://localhost:80/simple_get HTTP/1.1";
         ServerSocket serverSocket = new TestServerSocket(request);
 
-        Connection connection = new ConnectionAcceptor(serverSocket).accept();
+        Connection connection = new ConnectionListener(serverSocket).listen();
 
         assertEquals(request, connection.receiver().receiveLine());
     }
@@ -27,8 +27,8 @@ class ConnectionAcceptorTest {
     void throwsExceptionIfConnectionAcceptionFails() throws IOException {
         ServerSocket serverSocket = new ConnectionException();
 
-        Acceptor acceptor = new ConnectionAcceptor(serverSocket);
-        RuntimeException e = assertThrows(RuntimeException.class, acceptor::accept);
+        Listener listener = new ConnectionListener(serverSocket);
+        RuntimeException e = assertThrows(RuntimeException.class, listener::listen);
 
         Assertions.assertEquals(ErrorMessages.ACCEPT_CONNECTION, e.getMessage());
     }
@@ -38,10 +38,10 @@ class ConnectionAcceptorTest {
         boolean closed = false;
         ServerSocket serverSocket = new ClosableServerSocket(closed);
 
-        Acceptor acceptor = new ConnectionAcceptor(serverSocket);
-        acceptor.close();
+        Listener listener = new ConnectionListener(serverSocket);
+        listener.close();
 
-        Assertions.assertFalse(acceptor.isAccepting());
+        Assertions.assertFalse(listener.isListening());
     }
 
     @Test
@@ -49,9 +49,9 @@ class ConnectionAcceptorTest {
         boolean closed = false;
         ServerSocket serverSocket = new ClosableServerSocket(closed);
 
-        Acceptor acceptor = new ConnectionAcceptor(serverSocket);
+        Listener listener = new ConnectionListener(serverSocket);
 
-        Assertions.assertTrue(acceptor.isAccepting());
+        Assertions.assertTrue(listener.isListening());
     }
 
     @Test
@@ -59,9 +59,9 @@ class ConnectionAcceptorTest {
         boolean closed = true;
         ServerSocket serverSocket = new ClosableServerSocket(closed);
 
-        Acceptor acceptor = new ConnectionAcceptor(serverSocket);
+        Listener listener = new ConnectionListener(serverSocket);
 
-        Assertions.assertFalse(acceptor.isAccepting());
+        Assertions.assertFalse(listener.isListening());
     }
 
     private class TestServerSocket extends ServerSocket {

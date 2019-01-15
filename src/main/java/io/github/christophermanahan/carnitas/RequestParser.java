@@ -62,6 +62,7 @@ public class RequestParser implements Parser {
     private void getBody(String received) {
         if (contentLength > 0 && received.isEmpty()) {
             body = receiver.receiveCharacters(contentLength);
+//            body = receiver.receiveLine();
             stopReceiving();
         }
     }

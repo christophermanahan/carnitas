@@ -3,14 +3,14 @@ package io.github.christophermanahan.carnitas;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-public class ConnectionAcceptor implements Acceptor {
+public class ConnectionListener implements Listener {
     private final ServerSocket serverSocket;
 
-    ConnectionAcceptor(ServerSocket serverSocket) {
+    ConnectionListener(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
 
-    public Connection accept() {
+    public Connection listen() {
         try {
             return new SocketConnection(serverSocket.accept());
         } catch (IOException e) {
@@ -26,7 +26,7 @@ public class ConnectionAcceptor implements Acceptor {
         }
     }
 
-    public boolean isAccepting() {
+    public boolean isListening() {
         return !serverSocket.isClosed();
     }
 }

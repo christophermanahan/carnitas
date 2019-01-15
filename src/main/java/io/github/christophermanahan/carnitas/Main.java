@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 public class Main {
-    private static Acceptor connectionAcceptor;
+    private static Listener connectionListener;
 
     public static void main(String[] args) {
         int port = args.length == 0 ? 33333 : Integer.parseInt(args[0]);
@@ -13,16 +13,16 @@ public class Main {
         Handler handler = new RequestHandler(new HTTPResponseBuilder());
         try (
           ServerSocket serverSocket = new ServerSocket(port);
-          Acceptor acceptor = new ConnectionAcceptor(serverSocket)
+          Listener listener = new ConnectionListener(serverSocket)
         ) {
-            connectionAcceptor = acceptor;
-            new HTTPServer(acceptor, parser, handler, logger).run();
+            connectionListener = listener;
+            new HTTPServer(listener, parser, handler, logger).run();
         } catch (IOException e) {
             logger.log(e.getMessage());
         }
     }
 
     public static void stop() {
-        connectionAcceptor.close();
+        connectionListener.close();
     }
 }
