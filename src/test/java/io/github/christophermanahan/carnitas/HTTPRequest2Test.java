@@ -2,6 +2,8 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPRequest2Test {
@@ -18,11 +20,11 @@ class HTTPRequest2Test {
     @Test
     void itHasABody() {
         String method = "GET";
-        String body = "name=<something>";
+        Optional<String> body = Optional.of("name=<something>");
         HTTPRequest2 request = new HTTPRequest2(method)
           .withBody(body);
 
-        String requestBody = request.body();
+        Optional<String> requestBody = request.body();
 
         assertEquals(body, requestBody);
     }

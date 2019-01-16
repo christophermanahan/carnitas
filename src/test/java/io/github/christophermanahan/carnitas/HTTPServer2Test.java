@@ -186,7 +186,8 @@ class HTTPServer2Test {
 
     private class TestParser implements Parser2 {
         public Optional<HTTPRequest2> parse(Reader reader) {
-            return Optional.of(new HTTPRequest2(reader.readUntil(Constants.CRLF)));
+            return reader.readUntil(Constants.CRLF)
+              .map(HTTPRequest2::new);
         }
     }
 

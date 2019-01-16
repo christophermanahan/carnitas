@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,9 +15,9 @@ class ConnectionReaderTest {
         Readable connection = new ReadConnection(request + Constants.CRLF);
         ConnectionReader reader = new ConnectionReader(connection);
 
-        String read = reader.readUntil(Constants.CRLF);
+        Optional<String> read = reader.readUntil(Constants.CRLF);
 
-        assertEquals(request, read);
+        assertEquals(Optional.of(request), read);
     }
 
     @Test
@@ -26,9 +27,9 @@ class ConnectionReaderTest {
         Readable connection = new ReadConnection(request + Constants.CRLF);
         Reader reader = new ConnectionReader(connection);
 
-        String read = reader.read(numberOfCharacters);
+        Optional<String> read = reader.read(numberOfCharacters);
 
-        assertEquals(request.substring(0,   numberOfCharacters), read);
+        assertEquals(Optional.of(request.substring(0, numberOfCharacters)), read);
 
     }
 

@@ -14,7 +14,6 @@ class RequestParser2Test {
         String request = method + " /simple_get " + Constants.VERSION
           + Constants.BLANK_LINE;
         Reader reader = new RequestReader(request);
-
         Parser2 parser = new RequestParser2();
 
         Optional<HTTPRequest2> parsed = parser.parse(reader);
@@ -32,15 +31,31 @@ class RequestParser2Test {
           + Constants.BLANK_LINE
           + body;
         Reader reader = new RequestReader(request);
-
         Parser2 parser = new RequestParser2();
 
         Optional<HTTPRequest2> parsed = parser.parse(reader);
 
         Optional<String> parsedMethod = parsed.map(HTTPRequest2::method);
-        Optional<String> parsedBody = parsed.map(HTTPRequest2::body);
+        Optional<String> parsedBody = parsed.flatMap(HTTPRequest2::body);
         assertEquals(Optional.of(method), parsedMethod);
         assertEquals(Optional.of(body), parsedBody);
+    }
+    @Test
+    void itIsEmptyIfReaderIsEmpty() {
+        Reader reader = new Reader() {
+            public Optional<String> readUntil(String delimiter) {
+                return Optional.empty();
+            }
+
+            public Optional<String> read(int numberOfCharacters) {
+                return Optional.empty();
+            }
+        };
+        Parser2 parser = new RequestParser2();
+
+        Optional<HTTPRequest2> parsed = parser.parse(reader);
+
+        assertEquals(Optional.empty(), parsed);
     }
 
     private class RequestReader implements Reader {
@@ -52,16 +67,20 @@ class RequestParser2Test {
             this.index = -1;
         }
 
-        public String readUntil(String delimiter) {
+        public Optional<String> readUntil(String delimiter) {
             index++;
-            return List.of(request.split(delimiter, -1)).get(index);
+            return Optional.of(
+              List.of(request.split(delimiter, -1)).get(index)
+            );
         }
 
-        public String read(int numberOfCharacters) {
+        public Optional<String> read(int numberOfCharacters) {
             index++;
-            return List.of(request.split(Constants.CRLF, -1))
-              .get(index)
-              .substring(0, numberOfCharacters);
+            return Optional.of(
+              List.of(request.split(Constants.CRLF, -1))
+                .get(index)
+                .substring(0, numberOfCharacters)
+            );
         }
     }
 }

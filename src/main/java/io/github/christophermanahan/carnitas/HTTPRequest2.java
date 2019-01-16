@@ -1,19 +1,21 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Optional;
+
 class HTTPRequest2 {
     private final String method;
-    private String body;
+    private Optional<String> body;
 
     HTTPRequest2(String method) {
         this.method = method;
     }
 
-    private HTTPRequest2(String method, String body) {
+    private HTTPRequest2(String method, Optional<String> body) {
         this.method = method;
         this.body = body;
     }
 
-    HTTPRequest2 withBody(String body) {
+    HTTPRequest2 withBody(Optional<String> body) {
         return new HTTPRequest2(method, body);
     }
 
@@ -21,7 +23,7 @@ class HTTPRequest2 {
         return method;
     }
 
-    String body() {
+    Optional<String> body() {
         return body;
     }
 }
