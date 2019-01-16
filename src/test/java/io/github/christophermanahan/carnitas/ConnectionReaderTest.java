@@ -24,7 +24,7 @@ class ConnectionReaderTest {
         String request = "GET http://localhost:80/simple_get " + Constants.VERSION;
         int numberOfCharacters = 3;
         Readable connection = new ReadConnection(request + Constants.CRLF);
-        ConnectionReader reader = new ConnectionReader(connection);
+        Reader reader = new ConnectionReader(connection);
 
         String read = reader.read(numberOfCharacters);
 

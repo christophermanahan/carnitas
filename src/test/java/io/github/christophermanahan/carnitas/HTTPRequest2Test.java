@@ -1,9 +1,8 @@
 package io.github.christophermanahan.carnitas;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPRequest2Test {
     @Test
@@ -13,6 +12,18 @@ class HTTPRequest2Test {
 
         String requestMethod = request.method();
 
-        Assertions.assertEquals(method, requestMethod);
+        assertEquals(method, requestMethod);
+    }
+
+    @Test
+    void itHasABody() {
+        String method = "GET";
+        String body = "name=<something>";
+        HTTPRequest2 request = new HTTPRequest2(method)
+          .withBody(body);
+
+        String requestBody = request.body();
+
+        assertEquals(body, requestBody);
     }
 }

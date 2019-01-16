@@ -3,14 +3,14 @@ package io.github.christophermanahan.carnitas;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-class ConnectionReader {
+class ConnectionReader implements Reader {
     private final Readable connection;
 
     ConnectionReader(Readable connection) {
         this.connection = connection;
     }
 
-    String readUntil(String delimiter) {
+    public String readUntil(String delimiter) {
         StringBuilder read = new StringBuilder();
         while (notFound(delimiter, read)) {
             read.append(connection.read());
@@ -22,7 +22,7 @@ class ConnectionReader {
         return read.indexOf(delimiter) == -1;
     }
 
-    String read(int numberOfCharacters) {
+    public String read(int numberOfCharacters) {
         return IntStream.range(0, numberOfCharacters)
           .mapToObj(i -> readToString())
           .collect(Collectors.joining(""));
