@@ -4,13 +4,13 @@ import java.util.Optional;
 
 class HTTPRequest2 {
     private final String method;
-    private Optional<String> body;
+    private Optional<String> body = Optional.empty();
 
     HTTPRequest2(String method) {
         this.method = method;
     }
 
-    private HTTPRequest2(String method, Optional<String> body) {
+    HTTPRequest2(String method, Optional<String> body) {
         this.method = method;
         this.body = body;
     }
