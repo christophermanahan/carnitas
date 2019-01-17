@@ -14,7 +14,7 @@ class RequestHandlerTest {
           new HTTPRequest("HEAD")
         );
 
-        String expectedResponse = HTTPResponse.VERSION + " 200 OK" + HTTPResponse.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " " + RequestHandler.OK + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
           + HTTPResponse.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
@@ -28,7 +28,7 @@ class RequestHandlerTest {
           new HTTPRequest("GET")
         );
 
-        String expectedResponse = HTTPResponse.VERSION + " 200 OK" + HTTPResponse.CRLF
+        String expectedResponse = HTTPResponse.VERSION +  " " + RequestHandler.OK + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
           + HTTPResponse.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
@@ -43,7 +43,7 @@ class RequestHandlerTest {
             .withBody(Optional.of("name=<something>"))
         );
 
-        String expectedResponse = HTTPResponse.VERSION + " 200 OK" + HTTPResponse.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " " + RequestHandler.OK + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
           + HTTPResponse.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
@@ -57,7 +57,7 @@ class RequestHandlerTest {
           new HTTPRequest("POST")
         );
 
-        String expectedResponse = HTTPResponse.VERSION + " 201 Created" + HTTPResponse.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " " + RequestHandler.CREATED + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
           + HTTPResponse.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
@@ -73,7 +73,7 @@ class RequestHandlerTest {
             .withBody(Optional.of(body))
         );
 
-        String expectedResponse = HTTPResponse.VERSION + " 201 Created" + HTTPResponse.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " " + RequestHandler.CREATED + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + body.length()
           + HTTPResponse.BLANK_LINE
           + body;

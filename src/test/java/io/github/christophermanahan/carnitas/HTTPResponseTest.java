@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class HTTPResponseTest {
     @Test
     void itSerializesToAFormattedHTTPResponseWithoutBody() {
-        String statusCode = "200 OK";
+        String statusCode = RequestHandler.OK;
         HTTPResponse httpResponse = new HTTPResponse(statusCode);
 
         String response = new String(httpResponse.serialize());
@@ -22,7 +22,7 @@ class HTTPResponseTest {
 
     @Test
     void itSerializesToAFormattedHTTPResponseWithBody() {
-        String statusCode = "201 Created";
+        String statusCode = RequestHandler.CREATED;
         String body = "name=<something>";
         HTTPResponse httpResponse = new HTTPResponse(statusCode)
           .withBody(Optional.of(body));
