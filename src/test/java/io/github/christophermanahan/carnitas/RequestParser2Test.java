@@ -27,7 +27,8 @@ class RequestParser2Test {
         String method = "GET";
         String body = "name=<something>";
         String request = method + " /simple_get " + Constants.VERSION + Constants.CRLF
-          + Headers.CONTENT_LENGTH + body.length()
+          + Headers.CONTENT_LENGTH + body.length() + Constants.CRLF
+          + "Test-Header: Test"
           + Constants.BLANK_LINE
           + body;
         Reader reader = new RequestReader(request);

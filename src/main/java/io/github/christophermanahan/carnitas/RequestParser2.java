@@ -28,7 +28,9 @@ public class RequestParser2 implements Parser2 {
         Optional<Integer> contentLength = Optional.empty();
         Optional<String> header;
         while((header = header(reader)).isPresent()) {
-            contentLength = ifContentLengthGet(header);
+            if (isContentLength(header)) {
+                contentLength = extractContentLength(header);
+            }
         }
         return contentLength;
     }
@@ -42,18 +44,16 @@ public class RequestParser2 implements Parser2 {
         return !header.isEmpty();
     }
 
-    private Optional<Integer> ifContentLengthGet(Optional<String> header) {
+    private boolean isContentLength(Optional<String> header) {
         return header
-          .filter(this::isContentLength)
-          .map(this::extractContentLength);
+          .filter(s -> s.contains(Headers.CONTENT_LENGTH))
+          .isPresent();
     }
 
-    private boolean isContentLength(String header) {
-        return header.contains(Headers.CONTENT_LENGTH);
-    }
-
-    private Integer extractContentLength(String contentLength) {
-        return Integer.parseInt(contentLength.substring(Headers.CONTENT_LENGTH.length()));
+    private Optional<Integer> extractContentLength(Optional<String> contentLength) {
+        return contentLength
+          .map(s -> s.substring(Headers.CONTENT_LENGTH.length()))
+          .map(Integer::parseInt);
     }
 
     private Optional<String> getBody(Reader reader, Optional<Integer> contentLength) {
