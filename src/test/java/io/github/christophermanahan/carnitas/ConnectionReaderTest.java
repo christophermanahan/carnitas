@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ConnectionReaderTest {
     @Test
     void itReadsCharactersUpToADelimiter() {
-        String request = "GET http://localhost:80/simple_get " + Constants.VERSION;
+        String request = "GET";
         Readable connection = new ReadConnection(request + Constants.CRLF);
         ConnectionReader reader = new ConnectionReader(connection);
 
@@ -22,7 +22,7 @@ class ConnectionReaderTest {
 
     @Test
     void itReadsANumberOfCharacters() {
-        String request = "GET http://localhost:80/simple_get " + Constants.VERSION;
+        String request = "GET";
         int numberOfCharacters = 3;
         Readable connection = new ReadConnection(request + Constants.CRLF);
         Reader reader = new ConnectionReader(connection);

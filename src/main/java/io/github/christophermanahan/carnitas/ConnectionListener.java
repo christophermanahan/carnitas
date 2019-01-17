@@ -17,16 +17,4 @@ public class ConnectionListener implements Listener {
             throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
         }
     }
-
-    public void close() {
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean isListening() {
-        return !serverSocket.isClosed();
-    }
 }

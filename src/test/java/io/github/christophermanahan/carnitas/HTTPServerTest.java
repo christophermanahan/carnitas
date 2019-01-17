@@ -66,17 +66,8 @@ class HTTPServerTest {
     @Test
     void itWillLogAMessageIfListenFails() {
         String message = "Failed!";
-        Listener listener = new Listener() {
-            public Connection listen() {
-                throw new RuntimeException(message);
-            }
-
-            public boolean isListening() {
-                return false;
-            }
-
-            public void close() {
-            }
+        Listener listener = () -> {
+            throw new RuntimeException(message);
         };
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
@@ -104,18 +95,7 @@ class HTTPServerTest {
                 );
             }
         };
-        Listener listener = new Listener() {
-            public Connection listen() {
-                return connection;
-            }
-
-            public boolean isListening() {
-                return false;
-            }
-
-            public void close() {
-            }
-        };
+        Listener listener = () -> connection;
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
@@ -131,14 +111,6 @@ class HTTPServerTest {
 
         public Connection listen() {
             return connections.next();
-        }
-
-        public boolean isListening() {
-            return false;
-        }
-
-        public void close() {
-
         }
     }
 

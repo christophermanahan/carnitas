@@ -25,44 +25,13 @@ class ConnectionListenerTest {
     }
 
     @Test
-    void throwsExceptionIfConnectionAcceptionFails() throws IOException {
+    void throwsExceptionIfConnectionAcceptationFails() throws IOException {
         ServerSocket serverSocket = new ConnectionException();
 
         Listener listener = new ConnectionListener(serverSocket);
         RuntimeException e = assertThrows(RuntimeException.class, listener::listen);
 
         Assertions.assertEquals(ErrorMessages.ACCEPT_CONNECTION, e.getMessage());
-    }
-
-    @Test
-    void closesServerSocket() throws IOException {
-        boolean closed = false;
-        ServerSocket serverSocket = new ClosableServerSocket(closed);
-
-        Listener listener = new ConnectionListener(serverSocket);
-        listener.close();
-
-        Assertions.assertFalse(listener.isListening());
-    }
-
-    @Test
-    void checksIfSocketIsOpen() throws IOException {
-        boolean closed = false;
-        ServerSocket serverSocket = new ClosableServerSocket(closed);
-
-        Listener listener = new ConnectionListener(serverSocket);
-
-        Assertions.assertTrue(listener.isListening());
-    }
-
-    @Test
-    void checkIfSocketIsClosed() throws IOException {
-        boolean closed = true;
-        ServerSocket serverSocket = new ClosableServerSocket(closed);
-
-        Listener listener = new ConnectionListener(serverSocket);
-
-        Assertions.assertFalse(listener.isListening());
     }
 
     private class TestServerSocket extends ServerSocket {
@@ -93,24 +62,8 @@ class ConnectionListenerTest {
             this.output = output;
         }
 
-        public OutputStream getOutputStream() throws IOException {
+        public OutputStream getOutputStream() {
             return output;
-        }
-    }
-
-    private class ClosableServerSocket extends ServerSocket {
-        private boolean closed;
-
-        ClosableServerSocket(boolean closed) throws IOException {
-            this.closed = closed;
-        }
-
-        public boolean isClosed() {
-            return closed;
-        }
-
-        public void close() {
-            closed = true;
         }
     }
 }

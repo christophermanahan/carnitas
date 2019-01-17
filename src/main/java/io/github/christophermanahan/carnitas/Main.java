@@ -13,10 +13,9 @@ public class Main {
         Handler handler = new RequestHandler();
         try (
           ServerSocket serverSocket = new ServerSocket(port);
-          Listener listener = new ConnectionListener(serverSocket)
         ) {
             socket = serverSocket;
-            new HTTPServer(parser, handler, logger).start(listener, new WhileOpen(socket));
+            new HTTPServer(parser, handler, logger).start(new ConnectionListener(socket), new WhileOpen(socket));
         } catch (IOException e) {
             logger.log(e.getMessage());
         }

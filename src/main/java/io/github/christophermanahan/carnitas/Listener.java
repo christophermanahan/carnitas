@@ -1,9 +1,5 @@
 package io.github.christophermanahan.carnitas;
 
-public interface Listener extends AutoCloseable {
+public interface Listener {
     Connection listen();
-
-    boolean isListening();
-
-    void close();
 }

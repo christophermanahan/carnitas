@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SocketConnectionTest {
     @Test
     void readsACharacter() {
-        String request = "GET /simple_get HTTP/1.1";
+        String request = "GET";
         Socket socket = new TestSocket(request);
 
         Optional<Character> read = new SocketConnection(socket).read();
