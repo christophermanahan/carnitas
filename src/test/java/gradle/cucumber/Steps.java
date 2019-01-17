@@ -41,42 +41,57 @@ public class Steps {
         this.port = port;
     }
 
-    @When("I send method {string} for {string} to host at the specified port {int} time(s)")
-    public void iSendMethodForToHostAtTheSpecifiedPortTimes(String method, String location, int times) throws IOException, InterruptedException {
-        for (int i = 0; i < times; i++) {
-            responses.add(new Client().request(port, method, location));
-        }
+    @When("I send method {string} for {string} to host at the specified port")
+    public void iSendMethodForToHostAtTheSpecifiedPortTimes(String method, String location) throws IOException, InterruptedException {
+        responses.add(new Client().request(port, method, location));
     }
 
-    @When("I send method {string} for {string} with body {string} to host at the specified port {int} time(s)")
-    public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String location, String body, int times) throws IOException, InterruptedException {
-        for (int i = 0; i < times; i++) {
-            responses.add(
-              new Client()
-                .setBody(body)
-                .request(port, method, location)
-            );
-        }
+    @When("I send method {string} for {string} with body {string} to host at the specified port")
+    public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String location, String body) throws IOException, InterruptedException {
+        responses.add(
+          new Client()
+            .setBody(body)
+            .request(port, method, location)
+        );
+    }
+
+    @Then("I should receive a response with version {string}")
+    public void iShouldReceive(String version) {
+        assertEquals(version, responses.get(0).version().toString());
+    }
+
+    @Then("Status code {int}")
+    public void statusCode(int code) {
+        assertEquals(code, responses.get(0).statusCode());
+    }
+
+    @And("Body {string}")
+    public void body(String body) {
+        assertEquals(body, responses.get(0).body());
     }
 
     @Then("I should receive responses with version {string}")
-    public void iShouldReceive(String version) {
+    public void iShouldReceiveResponsesWithVersion(String version) {
         for (HttpResponse response : responses) {
             assertEquals(version, response.version().toString());
         }
     }
 
-    @Then("Status codes {int}")
-    public void statusCode(int code) {
+    @And("The {int}(st|nd) response should have status code {int}")
+    public void theStResponseShouldHaveStatusCode(int index, int code) {
+        assertEquals(code, responses.get(index - 1).statusCode());
+    }
+
+    @And("Status codes {int}")
+    public void statusCodes(int code) {
         for (HttpResponse response : responses) {
             assertEquals(code, response.statusCode());
         }
     }
 
-    @And("Body {string}")
-    public void body(String body) {
-        for (HttpResponse response : responses) {
-            assertEquals(body, response.body());
-        }
+    @And("The {int}nd response should have body {string}")
+    public void theNdResponseShouldHaveBody(int index, String body) {
+        assertEquals(body, responses.get(index - 1).body());
     }
+
 }
