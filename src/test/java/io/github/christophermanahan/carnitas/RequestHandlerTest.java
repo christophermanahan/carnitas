@@ -14,9 +14,9 @@ class RequestHandlerTest {
           new HTTPRequest("HEAD")
         );
 
-        String expectedResponse = Constants.VERSION + " 200 OK" + Constants.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " 200 OK" + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
-          + Constants.BLANK_LINE;
+          + HTTPResponse.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 
@@ -28,9 +28,9 @@ class RequestHandlerTest {
           new HTTPRequest("GET")
         );
 
-        String expectedResponse = Constants.VERSION + " 200 OK" + Constants.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " 200 OK" + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
-          + Constants.BLANK_LINE;
+          + HTTPResponse.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 
@@ -43,9 +43,9 @@ class RequestHandlerTest {
             .withBody(Optional.of("name=<something>"))
         );
 
-        String expectedResponse = Constants.VERSION + " 200 OK" + Constants.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " 200 OK" + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
-          + Constants.BLANK_LINE;
+          + HTTPResponse.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 
@@ -57,9 +57,9 @@ class RequestHandlerTest {
           new HTTPRequest("POST")
         );
 
-        String expectedResponse = Constants.VERSION + " 201 Created" + Constants.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " 201 Created" + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
-          + Constants.BLANK_LINE;
+          + HTTPResponse.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 
@@ -73,9 +73,9 @@ class RequestHandlerTest {
             .withBody(Optional.of(body))
         );
 
-        String expectedResponse = Constants.VERSION + " 201 Created" + Constants.CRLF
+        String expectedResponse = HTTPResponse.VERSION + " 201 Created" + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + body.length()
-          + Constants.BLANK_LINE
+          + HTTPResponse.BLANK_LINE
           + body;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }

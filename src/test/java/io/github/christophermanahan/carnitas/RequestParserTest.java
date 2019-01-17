@@ -11,8 +11,8 @@ class RequestParserTest {
     @Test
     void itParsesRequestWithoutBody() {
         String method = "GET";
-        String request = method + " /simple_get " + Constants.VERSION
-          + Constants.BLANK_LINE;
+        String request = method + " /simple_get " + HTTPResponse.VERSION
+          + HTTPResponse.BLANK_LINE;
         Reader reader = new RequestReader(request);
         Parser parser = new RequestParser();
 
@@ -26,10 +26,10 @@ class RequestParserTest {
     void itParsesRequestWithBody() {
         String method = "GET";
         String body = "name=<something>";
-        String request = method + " /simple_get " + Constants.VERSION + Constants.CRLF
-          + Headers.CONTENT_LENGTH + body.length() + Constants.CRLF
+        String request = method + " /simple_get " + HTTPResponse.VERSION + HTTPResponse.CRLF
+          + Headers.CONTENT_LENGTH + body.length() + HTTPResponse.CRLF
           + "Test-Header: Test"
-          + Constants.BLANK_LINE
+          + HTTPResponse.BLANK_LINE
           + body;
         Reader reader = new RequestReader(request);
         Parser parser = new RequestParser();
@@ -78,7 +78,7 @@ class RequestParserTest {
         public Optional<String> read(int numberOfCharacters) {
             index++;
             return Optional.of(
-              List.of(request.split(Constants.CRLF, -1))
+              List.of(request.split(HTTPResponse.CRLF, -1))
                 .get(index)
                 .substring(0, numberOfCharacters)
             );

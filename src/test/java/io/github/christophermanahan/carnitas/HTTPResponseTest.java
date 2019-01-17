@@ -14,9 +14,9 @@ class HTTPResponseTest {
 
         String response = new String(httpResponse.serialize());
 
-        String expectedResponse = Constants.VERSION +  " " + statusCode + Constants.CRLF
+        String expectedResponse = HTTPResponse.VERSION +  " " + statusCode + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
-          + Constants.BLANK_LINE;
+          + HTTPResponse.BLANK_LINE;
         assertEquals(expectedResponse, response);
     }
 
@@ -29,9 +29,9 @@ class HTTPResponseTest {
 
         String response = new String(httpResponse.serialize());
 
-        String expectedResponse = Constants.VERSION +  " " + statusCode + Constants.CRLF
+        String expectedResponse = HTTPResponse.VERSION +  " " + statusCode + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + body.length()
-          + Constants.BLANK_LINE
+          + HTTPResponse.BLANK_LINE
           + body;
         assertEquals(expectedResponse, response);
     }

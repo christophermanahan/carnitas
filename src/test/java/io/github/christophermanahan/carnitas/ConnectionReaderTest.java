@@ -12,10 +12,10 @@ class ConnectionReaderTest {
     @Test
     void itReadsCharactersUpToADelimiter() {
         String request = "GET";
-        Readable connection = new ReadConnection(request + Constants.CRLF);
+        Readable connection = new ReadConnection(request + HTTPResponse.CRLF);
         ConnectionReader reader = new ConnectionReader(connection);
 
-        Optional<String> read = reader.readUntil(Constants.CRLF);
+        Optional<String> read = reader.readUntil(HTTPResponse.CRLF);
 
         assertEquals(Optional.of(request), read);
     }
@@ -24,7 +24,7 @@ class ConnectionReaderTest {
     void itReadsANumberOfCharacters() {
         String request = "GET";
         int numberOfCharacters = 3;
-        Readable connection = new ReadConnection(request + Constants.CRLF);
+        Readable connection = new ReadConnection(request + HTTPResponse.CRLF);
         Reader reader = new ConnectionReader(connection);
 
         Optional<String> read = reader.read(numberOfCharacters);
@@ -37,7 +37,7 @@ class ConnectionReaderTest {
     void itIsEmptyIfReadIsEmptyWhileReadingUntil() {
         Reader reader = new ConnectionReader(Optional::empty);
 
-        Optional<String> read = reader.readUntil(Constants.CRLF);
+        Optional<String> read = reader.readUntil(HTTPResponse.CRLF);
 
         assertEquals(Optional.empty(), read);
     }

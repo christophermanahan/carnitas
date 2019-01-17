@@ -12,7 +12,7 @@ public class RequestParser implements Parser {
     }
 
     private Optional<String> readLine(Reader reader) {
-        return reader.readUntil(Constants.CRLF);
+        return reader.readUntil(HTTPResponse.CRLF);
     }
 
     private Optional<String> getMethod(Reader reader) {

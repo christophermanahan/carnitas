@@ -26,7 +26,7 @@ class HTTPServerTest {
     @Test
     void itWillServeGETRequests() {
         String request = "GET";
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Constants.CRLF));
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
@@ -38,7 +38,7 @@ class HTTPServerTest {
     @Test
     void itWillServePOSTRequests() {
         String request = "POST";
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Constants.CRLF));
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
@@ -51,8 +51,8 @@ class HTTPServerTest {
     void itWillServeRequestsBasedOnContext() {
         String request = "GET";
         List<ReadableConnection> connections = List.of(
-          new ReadableConnection(request + Constants.CRLF),
-          new ReadableConnection(request + Constants.CRLF)
+          new ReadableConnection(request + HTTPResponse.CRLF),
+          new ReadableConnection(request + HTTPResponse.CRLF)
         );
         Listener listener = new TestListener(connections);
 
@@ -91,7 +91,7 @@ class HTTPServerTest {
             public Optional<Character> read() {
                 index++;
                 return Optional.of(
-                  List.of(Constants.CRLF.split("")).get(index).charAt(0)
+                  List.of(HTTPResponse.CRLF.split("")).get(index).charAt(0)
                 );
             }
         };
@@ -152,7 +152,7 @@ class HTTPServerTest {
 
     private class TestParser implements Parser {
         public Optional<HTTPRequest> parse(Reader reader) {
-            return reader.readUntil(Constants.CRLF)
+            return reader.readUntil(HTTPResponse.CRLF)
               .map(HTTPRequest::new);
         }
     }
