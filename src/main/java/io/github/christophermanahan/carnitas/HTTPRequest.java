@@ -1,19 +1,29 @@
 package io.github.christophermanahan.carnitas;
 
-public class HTTPRequest implements Request {
-    private final RequestMethod requestMethod;
-    private final String body;
+import java.util.Optional;
 
-    HTTPRequest(RequestMethod requestMethod, String body) {
-        this.requestMethod = requestMethod;
+class HTTPRequest {
+    private final String method;
+    private Optional<String> body = Optional.empty();
+
+    HTTPRequest(String method) {
+        this.method = method;
+    }
+
+    HTTPRequest(String method, Optional<String> body) {
+        this.method = method;
         this.body = body;
     }
 
-    public RequestMethod requestMethod() {
-        return requestMethod;
+    HTTPRequest withBody(Optional<String> body) {
+        return new HTTPRequest(method, body);
     }
 
-    public String body() {
+    String method() {
+        return method;
+    }
+
+    Optional<String> body() {
         return body;
     }
 }

@@ -2,176 +2,86 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RequestParserTest {
-    private String requestWithoutHeaders(String requestMethod) {
-        return requestMethod +  " /simple_method " + Constants.VERSION
+    @Test
+    void itParsesRequestWithoutBody() {
+        String method = "GET";
+        String request = method + " /simple_get " + Constants.VERSION
           + Constants.BLANK_LINE;
+        Reader reader = new RequestReader(request);
+        Parser parser = new RequestParser();
+
+        Optional<HTTPRequest> parsed = parser.parse(reader);
+
+        Optional<String> parsedRequest = parsed.map(HTTPRequest::method);
+        assertEquals(Optional.of(method), parsedRequest);
     }
 
-    private String requestWithHeaders(String requestMethod, String body) {
-        return  requestMethod +  " /simple_method " + Constants.VERSION + Constants.CRLF
-          + Headers.CONTENT_LENGTH + body.length()
+    @Test
+    void itParsesRequestWithBody() {
+        String method = "GET";
+        String body = "name=<something>";
+        String request = method + " /simple_get " + Constants.VERSION + Constants.CRLF
+          + Headers.CONTENT_LENGTH + body.length() + Constants.CRLF
+          + "Test-Header: Test"
           + Constants.BLANK_LINE
           + body;
+        Reader reader = new RequestReader(request);
+        Parser parser = new RequestParser();
+
+        Optional<HTTPRequest> parsed = parser.parse(reader);
+
+        Optional<String> parsedMethod = parsed.map(HTTPRequest::method);
+        Optional<String> parsedBody = parsed.flatMap(HTTPRequest::body);
+        assertEquals(Optional.of(method), parsedMethod);
+        assertEquals(Optional.of(body), parsedBody);
     }
-
     @Test
-    void parsesGETRequestWithoutBody() {
-        String requestMethod = "GET";
-        Receiver receiver = new TestReceiver(requestWithoutHeaders(requestMethod));
-        Parser parser = new RequestParser(new TestRequestBuilder());
-
-        Optional<Request> parsed = parser.parse(receiver);
-
-        String expectedRequest = requestMethod;
-        String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
-        assertEquals(expectedRequest, parsedRequest);
-    }
-
-    @Test
-    void parsesGETRequestWithBody() {
-        String requestMethod = "GET";
-        String body = "name=<something>";
-        Receiver receiver = new TestReceiver(requestWithHeaders(requestMethod, body));
-        Parser parser = new RequestParser(new TestRequestBuilder());
-
-        Optional<Request> parsed = parser.parse(receiver);
-
-        String expectedRequest = requestMethod;
-        String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
-        assertEquals(expectedRequest, parsedRequest);
-    }
-
-    @Test
-    void parsesPOSTRequestWithoutBody() {
-        String requestMethod = "POST";
-        Receiver receiver = new TestReceiver(requestWithoutHeaders(requestMethod));
-        Parser parser = new RequestParser(new TestRequestBuilder());
-
-        Optional<Request> parsed = parser.parse(receiver);
-
-        String expectedRequest = requestMethod;
-        String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
-        assertEquals(expectedRequest, parsedRequest);
-    }
-
-    @Test
-    void parsesPOSTRequestWithBody() {
-        String requestMethod = "POST";
-        String body = "name=<something>";
-        Receiver receiver = new TestReceiver(requestWithHeaders(requestMethod, body));
-        Parser parser = new RequestParser(new TestRequestBuilder());
-
-        Optional<Request> parsed = parser.parse(receiver);
-
-        String expectedRequest = requestMethod + body;
-        String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
-        assertEquals(expectedRequest, parsedRequest);
-    }
-
-
-    @Test
-    void parsesMultipleDifferentRequests() {
-        String requestMethod = "POST";
-        Parser parser = new RequestParser(new TestRequestBuilder());
-
-        String body = "name=<something>";
-        Receiver receiver = new TestReceiver(requestWithHeaders(requestMethod, body));
-
-        Optional<Request> parsed = parser.parse(receiver);
-
-        String expectedRequest = requestMethod + body;
-        String parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
-        assertEquals(expectedRequest, parsedRequest);
-
-        body = "name=<somethingElse>";
-        receiver = new TestReceiver(requestWithHeaders(requestMethod, body));
-
-        parsed = parser.parse(receiver);
-
-        expectedRequest = requestMethod + body;
-        parsedRequest = parsed.isEmpty() ? null : parsed.get().body();
-        assertEquals(expectedRequest, parsedRequest);
-    }
-
-    @Test
-    void parseIsEmptyIfReceiveFails() {
-        class FailedReceiver implements Receiver {
-            public String receiveLine() {
-                throw new RuntimeException();
+    void itIsEmptyIfReaderIsEmpty() {
+        Reader reader = new Reader() {
+            public Optional<String> readUntil(String delimiter) {
+                return Optional.empty();
             }
 
-            public String receiveCharacters(int amount) {
-                return null;
+            public Optional<String> read(int numberOfCharacters) {
+                return Optional.empty();
             }
-        }
-        Receiver receiver = new FailedReceiver();
-        Parser parser = new RequestParser(new TestRequestBuilder());
+        };
+        Parser parser = new RequestParser();
 
-        Optional<Request> parsed = parser.parse(receiver);
+        Optional<HTTPRequest> parsed = parser.parse(reader);
 
         assertEquals(Optional.empty(), parsed);
     }
 
-    private class TestReceiver implements Receiver {
-
-        private final Iterator<String> received;
-
-        TestReceiver(String request) {
-            List<String> lines = new ArrayList<>(Arrays.asList(request.split(Constants.CRLF)));
-            lines.add("");
-            this.received = lines.iterator();
-        }
-
-        public String receiveLine() {
-            return received.next();
-        }
-
-        public String receiveCharacters(int amount) {
-            return received.next();
-        }
-    }
-
-    private class TestRequestBuilder implements RequestBuilder {
-        private String requestMethod;
-        private String body;
-
-        public RequestBuilder requestMethod(String requestMethod) {
-            this.requestMethod = requestMethod;
-            return this;
-        }
-
-        public RequestBuilder body(String body) {
-            this.body = body;
-            return this;
-        }
-
-        public Request build() {
-            return body == null ? new TestRequest(requestMethod) : new TestRequest(requestMethod + body);
-        }
-    }
-
-    private class TestRequest implements Request {
+    private class RequestReader implements Reader {
         private final String request;
+        private int index;
 
-        TestRequest(String request) {
+        RequestReader(String request) {
             this.request = request;
+            this.index = -1;
         }
 
-        public RequestMethod requestMethod() {
-            return null;
+        public Optional<String> readUntil(String delimiter) {
+            index++;
+            return Optional.of(
+              List.of(request.split(delimiter, -1)).get(index)
+            );
         }
 
-        public String body() {
-            return request;
+        public Optional<String> read(int numberOfCharacters) {
+            index++;
+            return Optional.of(
+              List.of(request.split(Constants.CRLF, -1))
+                .get(index)
+                .substring(0, numberOfCharacters)
+            );
         }
     }
 }

@@ -1,210 +1,193 @@
 package io.github.christophermanahan.carnitas;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
-    private TestLogger logger;
     private TestParser parser;
     private TestHandler handler;
+    private TestLogger logger;
 
     @BeforeEach
     void setup() {
-        logger = new TestLogger();
         parser = new TestParser();
         handler = new TestHandler();
+        logger = new TestLogger();
     }
 
     @Test
-    void sendsHTTPResponsesWhenTestConnectionSendsHTTPRequests() {
-        String request = "GET /simple_get HTTP/1.1";
-        List<TestConnection> connections = List.of(new TestConnection(request), new TestConnection(request), new TestConnection(request));
+    void itWillServeGETRequests() {
+        String request = "GET";
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Constants.CRLF));
         Listener listener = new TestListener(connections);
 
-        new HTTPServer(listener, parser, handler, logger).run();
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        String expectedResponse = new String(new TestResponse(request).serialize());
-        for (TestConnection connection : connections) {
-            assertEquals(expectedResponse, connection.response);
-        }
+        byte[] expectedResponse = new HTTPResponse(request).serialize();
+        assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
     }
 
     @Test
-    void connectionIsClosedAfterResponse() {
-        String request = "GET /simple_get HTTP/1.1";
-        List<TestConnection> connections = List.of(new TestConnection(request));
+    void itWillServePOSTRequests() {
+        String request = "POST";
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Constants.CRLF));
         Listener listener = new TestListener(connections);
 
-        new HTTPServer(listener, parser, handler, logger).run();
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        Assertions.assertNull( connections.get(0).receiver().receiveLine());
+        byte[] expectedResponse = new HTTPResponse(request).serialize();
+        assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
     }
 
     @Test
-    void logsExceptionIfAcceptFails() {
-        class ListenerException extends TestListener {
-            private ListenerException(List<TestConnection> connections) {
-                super(connections);
-            }
+    void itWillServeRequestsBasedOnContext() {
+        String request = "GET";
+        List<ReadableConnection> connections = List.of(
+          new ReadableConnection(request + Constants.CRLF),
+          new ReadableConnection(request + Constants.CRLF)
+        );
+        Listener listener = new TestListener(connections);
 
-            public SocketConnection listen() {
-                connections.next();
-                throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
-            }
-        }
-        String request = "GET /simple_get HTTP/1.1";
-        Listener listener = new ListenerException(List.of(new TestConnection(request)));
+        new HTTPServer(parser, handler, logger).start(listener, new Twice());
 
-        new HTTPServer(listener, parser, handler, logger).run();
-
-        assertEquals(ErrorMessages.ACCEPT_CONNECTION, logger.logged());
+        byte[] expectedResponse = new HTTPResponse(request).serialize();
+        assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
+        assertArrayEquals(expectedResponse, connections.get(1).response.serialize());
     }
 
     @Test
-    void logsExceptionIfSendFails() {
-        class SendException extends TestConnection {
-            private SendException(String request) {
-                super(request);
+    void itWillLogAMessageIfListenFails() {
+        String message = "Failed!";
+        Listener listener = new Listener() {
+            public Connection listen() {
+                throw new RuntimeException(message);
             }
 
-            public void send(Response response) {
-                throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);
-            }
-        }
-        String request = "GET /simple_get HTTP/1.1";
-        Listener listener = new TestListener(List.of(new SendException(request)));
-
-        new HTTPServer(listener, parser, handler, logger).run();
-
-        assertEquals(ErrorMessages.SEND_TO_CONNECTION, logger.logged());
-    }
-
-    @Test
-    void logsExceptionIfCloseFails() {
-        class CloseException extends TestConnection {
-            private CloseException(String request) {
-                super(request);
+            public boolean isListening() {
+                return false;
             }
 
             public void close() {
-                throw new RuntimeException(ErrorMessages.CLOSE_CONNECTION);
             }
-        }
-        String request = "GET /simple_get HTTP/1.1";
-        Listener listener = new TestListener(List.of(new CloseException(request)));
+        };
 
-        new HTTPServer(listener, parser, handler, logger).run();
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        assertEquals(ErrorMessages.CLOSE_CONNECTION, logger.logged());
+        assertEquals(message, logger.logged());
     }
 
+    @Test
+    void itWillLogAMessageIfSendFails() {
+        String message = "Failed!";
+        Connection connection = new Connection() {
+            private int index = -1;
 
+            public void send(HTTPResponse response) {
+                throw new RuntimeException(message);
+            }
+
+            public void close() {
+            }
+
+            public Optional<Character> read() {
+                index++;
+                return Optional.of(
+                  List.of(Constants.CRLF.split("")).get(index).charAt(0)
+                );
+            }
+        };
+        Listener listener = new Listener() {
+            public Connection listen() {
+                return connection;
+            }
+
+            public boolean isListening() {
+                return false;
+            }
+
+            public void close() {
+            }
+        };
+
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
+
+        assertEquals(message, logger.logged());
+    }
 
     private class TestListener implements Listener {
-        final Iterator<TestConnection> connections;
+        private final Iterator<ReadableConnection> connections;
 
-        TestListener(List<TestConnection> connections) {
+        TestListener(List<ReadableConnection> connections) {
             this.connections = connections.iterator();
         }
 
-        public SocketConnection listen() {
+        public Connection listen() {
             return connections.next();
         }
 
-        public void close() {}
-
         public boolean isListening() {
-            return connections.hasNext();
-        }
-    }
-
-    private class TestConnection extends SocketConnection {
-        private String request;
-        String response;
-        private boolean closed;
-
-        TestConnection(String request) {
-            super(new Socket());
-            this.request = request;
-            this.closed = false;
-        }
-
-        public Receiver receiver() {
-            return closed ? new TestReceiver(null) : new TestReceiver(request);
-        }
-
-        public void send(Response response) {
-            this.response = new String(response.serialize());
+            return false;
         }
 
         public void close() {
-            closed = true;
+
         }
     }
 
-    private class TestReceiver implements Receiver {
+    private class ReadableConnection implements Connection {
         private final String request;
+        private int index;
+        HTTPResponse response;
 
-        TestReceiver(String request) {
+        ReadableConnection(String request) {
             this.request = request;
+            this.index = -1;
         }
 
-        public String receiveLine() {
-            return request;
+        public Optional<Character> read() {
+            index++;
+            return Optional.of(request.charAt(index));
         }
 
-        public String receiveCharacters(int amount) {
-            return null;
+        public void send(HTTPResponse response) {
+            this.response = response;
+        }
+
+        public void close() {
+        }
+    }
+
+    private class Once implements Consumer<Runnable> {
+        public void accept(Runnable runnable) {
+            runnable.run();
+        }
+    }
+
+    private class Twice implements Consumer<Runnable> {
+        public void accept(Runnable runnable) {
+            runnable.run();
+            runnable.run();
         }
     }
 
     private class TestParser implements Parser {
-        public Optional<Request> parse(Receiver receiver) {
-            String received = receiver.receiveLine();
-            Request request = received.isEmpty() ? null : new TestRequest(received);
-            return Optional.ofNullable(request);
-        }
-    }
-
-    private class TestRequest implements Request {
-        private final String request;
-
-        TestRequest(String request) {
-            this.request = request;
-        }
-
-        public RequestMethod requestMethod() {
-            return null;
-        }
-
-        public String body() {
-            return request;
+        public Optional<HTTPRequest> parse(Reader reader) {
+            return reader.readUntil(Constants.CRLF)
+              .map(HTTPRequest::new);
         }
     }
 
     private class TestHandler implements Handler {
-        public Response handle(Request request) {
-            return new TestResponse(request.body());
-        }
-    }
-
-    private class TestResponse implements Response {
-        private final String request;
-
-        TestResponse(String request) {
-            this.request = request;
-        }
-
-        public byte[] serialize() {
-            return request.getBytes();
+        public HTTPResponse handle(HTTPRequest request) {
+            return new HTTPResponse(request.method());
         }
     }
 
@@ -223,4 +206,5 @@ class HTTPServerTest {
             log.append(message);
         }
     }
+
 }

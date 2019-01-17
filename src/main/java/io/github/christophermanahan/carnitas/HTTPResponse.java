@@ -1,24 +1,29 @@
 package io.github.christophermanahan.carnitas;
 
-public class HTTPResponse implements Response {
-    private final String statusCode;
-    private final String version;
-    private final String body;
-    private final String headers;
+import java.util.Optional;
 
-    HTTPResponse(String statusCode, String version, String body, String header) {
+class HTTPResponse {
+    private final String statusCode;
+    private Optional<String> body = Optional.empty();
+
+    HTTPResponse(String statusCode) {
         this.statusCode = statusCode;
-        this.version = version;
-        this.body = body;
-        this.headers = header;
     }
 
-    public byte[] serialize() {
-        return (
-          version + " " + statusCode + Constants.CRLF
-            + headers
-            + Constants.BLANK_LINE
-            + body
+    private HTTPResponse(String statusCode, Optional<String> body) {
+        this.statusCode = statusCode;
+        this.body = body;
+    }
+
+    HTTPResponse withBody(Optional<String> body) {
+        return new HTTPResponse(statusCode, body);
+    }
+
+    byte[] serialize() {
+        return (Constants.VERSION + " " + statusCode + Constants.CRLF
+          + Headers.CONTENT_LENGTH + body.orElse("").length()
+          + Constants.BLANK_LINE
+          + body.orElse("")
         ).getBytes();
     }
 }

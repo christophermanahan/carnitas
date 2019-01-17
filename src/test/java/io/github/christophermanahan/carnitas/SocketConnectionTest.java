@@ -14,18 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
     @Test
-    void getsReceiver() {
-        String request = "GET http://localhost:80/simple_get HTTP/1.1";
-        Socket socket = new TestSocket(request);
-
-        String requested = new SocketConnection(socket).receiver().receiveLine();
-
-        assertEquals(request, requested);
-    }
-
-    @Test
     void readsACharacter() {
-        String request = "GET http://localhost:80/simple_get HTTP/1.1";
+        String request = "GET /simple_get HTTP/1.1";
         Socket socket = new TestSocket(request);
 
         Optional<Character> read = new SocketConnection(socket).read();
@@ -35,12 +25,12 @@ class SocketConnectionTest {
 
     @Test
     void sendsResponseBytesToSocket() throws IOException {
-        String request = "GET http://localhost:80/simple_get HTTP/1.1";
+        HTTPResponse response = new HTTPResponse("GET");
         Socket socket = new TestSocket(null);
 
-        new SocketConnection(socket).send(new TestResponse(request));
+        new SocketConnection(socket).send(response);
 
-        assertEquals(request, socket.getOutputStream().toString());
+        assertEquals(new String(response.serialize()), socket.getOutputStream().toString());
     }
 
     @Test
@@ -97,18 +87,6 @@ class SocketConnectionTest {
 
         public boolean isClosed() {
             return closed;
-        }
-    }
-
-    private class TestResponse implements Response {
-        private final String request;
-
-        TestResponse(String request) {
-            this.request = request;
-        }
-
-        public byte[] serialize() {
-            return request.getBytes();
         }
     }
 

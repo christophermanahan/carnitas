@@ -3,88 +3,80 @@ package io.github.christophermanahan.carnitas;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 class RequestHandlerTest {
     @Test
-    void creates200ResponsesFromGETRequests() {
-        Handler handler = new RequestHandler(new TestResponseBuilder());
+    void creates200ResponsesFromHEADRequests() {
+        Handler handler = new RequestHandler();
 
-        Response response = handler.handle(new GETRequest());
+        HTTPResponse response = handler.handle(
+          new HTTPRequest("HEAD")
+        );
 
-        String expectedResponse = StatusCodes.GET + Constants.VERSION;
+        String expectedResponse = Constants.VERSION + " 200 OK" + Constants.CRLF
+          + Headers.CONTENT_LENGTH + 0
+          + Constants.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 
     @Test
-    void creates201ResponsesFromPOSTRequests() {
-        String body = "name=<something>";
-        Handler handler = new RequestHandler(new TestResponseBuilder());
+    void creates200ResponsesFromGETRequestsWithoutBody() {
+        Handler handler = new RequestHandler();
 
-        Response response = handler.handle(new POSTRequest(body));
+        HTTPResponse response = handler.handle(
+          new HTTPRequest("GET")
+        );
 
-        String expectedResponse = StatusCodes.POST + Constants.VERSION + body;
+        String expectedResponse = Constants.VERSION + " 200 OK" + Constants.CRLF
+          + Headers.CONTENT_LENGTH + 0
+          + Constants.BLANK_LINE;
         Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 
-    private class TestResponseBuilder implements ResponseBuilder {
-        private String statusCode;
-        private String version;
-        private String body;
+    @Test
+    void creates200ResponsesFromGETRequestsWithBody() {
+        Handler handler = new RequestHandler();
 
-        public ResponseBuilder statusCode(String statusCode) {
-            this.statusCode = statusCode;
-            return this;
-        }
+        HTTPResponse response = handler.handle(
+          new HTTPRequest("GET")
+            .withBody(Optional.of("name=<something>"))
+        );
 
-        public ResponseBuilder version(String version) {
-            this.version = version;
-            return this;
-        }
-
-        public ResponseBuilder body(String body) {
-            this.body = body;
-            return this;
-        }
-
-        public Response build() {
-            return body == null ? new TestResponse(statusCode + version) : new TestResponse(statusCode + version + body);
-        }
+        String expectedResponse = Constants.VERSION + " 200 OK" + Constants.CRLF
+          + Headers.CONTENT_LENGTH + 0
+          + Constants.BLANK_LINE;
+        Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 
-    private class TestResponse implements Response {
-        private final String response;
+    @Test
+    void creates201ResponsesFromPOSTRequestsWithoutBody() {
+        Handler handler = new RequestHandler();
 
-        TestResponse(String response) {
-            this.response = response;
-        }
+        HTTPResponse response = handler.handle(
+          new HTTPRequest("POST")
+        );
 
-        public byte[] serialize() {
-            return response.getBytes();
-        }
+        String expectedResponse = Constants.VERSION + " 201 Created" + Constants.CRLF
+          + Headers.CONTENT_LENGTH + 0
+          + Constants.BLANK_LINE;
+        Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 
-    private class GETRequest implements Request {
-        public RequestMethod requestMethod() {
-            return RequestMethod.GET;
-        }
+    @Test
+    void creates201ResponsesFromPOSTRequestsWithBody() {
+        String body = "name=<something>";
+        Handler handler = new RequestHandler();
 
-        public String body() {
-            return null;
-        }
-    }
+        HTTPResponse response = handler.handle(
+          new HTTPRequest("POST")
+            .withBody(Optional.of(body))
+        );
 
-    private class POSTRequest implements Request {
-        private final String body;
-
-        public POSTRequest(String body) {
-            this.body = body;
-        }
-
-        public RequestMethod requestMethod() {
-            return RequestMethod.POST;
-        }
-
-        public String body() {
-            return body;
-        }
+        String expectedResponse = Constants.VERSION + " 201 Created" + Constants.CRLF
+          + Headers.CONTENT_LENGTH + body.length()
+          + Constants.BLANK_LINE
+          + body;
+        Assertions.assertEquals(expectedResponse, new String(response.serialize()));
     }
 }

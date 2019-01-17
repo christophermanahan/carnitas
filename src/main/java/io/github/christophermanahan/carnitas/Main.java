@@ -9,14 +9,14 @@ public class Main {
     public static void main(String[] args) {
         int port = args.length == 0 ? 33333 : Integer.parseInt(args[0]);
         Logger logger = new ErrorLogger();
-        Parser2 parser = new RequestParser2();
-        Handler2 handler = new RequestHandler2();
+        Parser parser = new RequestParser();
+        Handler handler = new RequestHandler();
         try (
           ServerSocket serverSocket = new ServerSocket(port);
           Listener listener = new ConnectionListener(serverSocket)
         ) {
             socket = serverSocket;
-            new HTTPServer2(parser, handler, logger).start(listener, new WhileOpen(socket));
+            new HTTPServer(parser, handler, logger).start(listener, new WhileOpen(socket));
         } catch (IOException e) {
             logger.log(e.getMessage());
         }

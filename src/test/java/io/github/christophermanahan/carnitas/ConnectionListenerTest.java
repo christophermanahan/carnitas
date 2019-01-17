@@ -3,24 +3,25 @@ package io.github.christophermanahan.carnitas;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ConnectionListenerTest {
     @Test
     void listensForAConnection() throws IOException {
-        String request = "GET http://localhost:80/simple_get HTTP/1.1";
-        ServerSocket serverSocket = new TestServerSocket(request);
+        HTTPResponse response = new HTTPResponse("GET");
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ServerSocket serverSocket = new TestServerSocket(output);
 
         Connection connection = new ConnectionListener(serverSocket).listen();
 
-        assertEquals(request, connection.receiver().receiveLine());
+        connection.send(response);
+        assertArrayEquals(response.serialize(), output.toByteArray());
     }
 
     @Test
@@ -65,14 +66,14 @@ class ConnectionListenerTest {
     }
 
     private class TestServerSocket extends ServerSocket {
-        private final String request;
+        private final ByteArrayOutputStream output;
 
-        TestServerSocket(String request) throws IOException {
-            this.request = request;
+        TestServerSocket(ByteArrayOutputStream output) throws IOException {
+            this.output = output;
         }
 
         public Socket accept() {
-            return new TestSocket(request);
+            return new TestSocket(output);
         }
     }
 
@@ -86,14 +87,14 @@ class ConnectionListenerTest {
     }
 
     private class TestSocket extends Socket {
-        private final String request;
+        private final ByteArrayOutputStream output;
 
-        TestSocket(String request) {
-            this.request = request;
+        TestSocket(ByteArrayOutputStream output) {
+            this.output = output;
         }
 
-        public InputStream getInputStream() {
-            return new ByteArrayInputStream(request.getBytes());
+        public OutputStream getOutputStream() throws IOException {
+            return output;
         }
     }
 

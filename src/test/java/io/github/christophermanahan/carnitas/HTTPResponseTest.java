@@ -1,22 +1,38 @@
 package io.github.christophermanahan.carnitas;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPResponseTest {
     @Test
-    void createsResponseBytes() {
-        String statusCode = StatusCodes.GET;
-        String version = Constants.VERSION;
+    void itSerializesToAFormattedHTTPResponseWithoutBody() {
+        String statusCode = "200 OK";
+        HTTPResponse httpResponse = new HTTPResponse(statusCode);
+
+        String response = new String(httpResponse.serialize());
+
+        String expectedResponse = Constants.VERSION +  " " + statusCode + Constants.CRLF
+          + Headers.CONTENT_LENGTH + 0
+          + Constants.BLANK_LINE;
+        assertEquals(expectedResponse, response);
+    }
+
+    @Test
+    void itSerializesToAFormattedHTTPResponseWithBody() {
+        String statusCode = "201 Created";
         String body = "name=<something>";
-        String headers = Headers.CONTENT_LENGTH + body.length();
+        HTTPResponse httpResponse = new HTTPResponse(statusCode)
+          .withBody(Optional.of(body));
 
-        String response = new String(new HTTPResponse(statusCode, version, body, headers).serialize());
+        String response = new String(httpResponse.serialize());
 
-        String expectedResponse = version + " " + statusCode + Constants.CRLF
-          + headers
+        String expectedResponse = Constants.VERSION +  " " + statusCode + Constants.CRLF
+          + Headers.CONTENT_LENGTH + body.length()
           + Constants.BLANK_LINE
           + body;
-        Assertions.assertEquals(expectedResponse, response);
+        assertEquals(expectedResponse, response);
     }
 }
