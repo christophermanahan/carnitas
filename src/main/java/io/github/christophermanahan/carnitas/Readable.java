@@ -1,5 +1,7 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Optional;
+
 interface Readable {
-    public char read();
+    Optional<Character> read();
 }

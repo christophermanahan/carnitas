@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Optional;
 
 public class SocketConnection implements Connection, Readable {
     private final Socket socket;
@@ -21,8 +22,12 @@ public class SocketConnection implements Connection, Readable {
         }
     }
 
-    public char read() {
-        return 0;
+    public Optional<Character> read() {
+        try {
+            return Optional.of((char) socket.getInputStream().read());
+        } catch (IOException e) {
+            return Optional.empty();
+        }
     }
 
     public void send(Response response) {

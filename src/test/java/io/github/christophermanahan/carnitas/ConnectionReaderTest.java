@@ -33,6 +33,24 @@ class ConnectionReaderTest {
 
     }
 
+    @Test
+    void itIsEmptyIfReadIsEmptyWhileReadingUntil() {
+        Reader reader = new ConnectionReader(Optional::empty);
+
+        Optional<String> read = reader.readUntil(Constants.CRLF);
+
+        assertEquals(Optional.empty(), read);
+    }
+
+    @Test
+    void itIsEmptyIfReadIsEmptyWhileReadingANumberOfCharacter() {
+        Reader reader = new ConnectionReader(Optional::empty);
+
+        Optional<String> read = reader.read(1);
+
+        assertEquals(Optional.empty(), read);
+    }
+
     private class ReadConnection implements Readable {
         private final Iterator<String> request;
 
@@ -40,8 +58,8 @@ class ConnectionReaderTest {
             this.request = List.of(request.split("")).iterator();
         }
 
-        public char read() {
-            return request.next().charAt(0);
+        public Optional<Character> read() {
+            return Optional.of(request.next().charAt(0));
         }
     }
 }

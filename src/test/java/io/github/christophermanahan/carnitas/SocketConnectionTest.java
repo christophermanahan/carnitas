@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +21,16 @@ class SocketConnectionTest {
         String requested = new SocketConnection(socket).receiver().receiveLine();
 
         assertEquals(request, requested);
+    }
+
+    @Test
+    void readsACharacter() {
+        String request = "GET http://localhost:80/simple_get HTTP/1.1";
+        Socket socket = new TestSocket(request);
+
+        Optional<Character> read = new SocketConnection(socket).read();
+
+        assertEquals(Optional.of(request.charAt(0)), read);
     }
 
     @Test

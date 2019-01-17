@@ -101,9 +101,11 @@ class HTTPServer2Test {
             public void close() {
             }
 
-            public char read() {
+            public Optional<Character> read() {
                 index++;
-                return List.of(Constants.CRLF.split("")).get(index).charAt(0);
+                return Optional.of(
+                  List.of(Constants.CRLF.split("")).get(index).charAt(0)
+                );
             }
         };
         Listener listener = new Listener() {
@@ -158,9 +160,9 @@ class HTTPServer2Test {
             return null;
         }
 
-        public char read() {
+        public Optional<Character> read() {
             index++;
-            return request.charAt(index);
+            return Optional.of(request.charAt(index));
         }
 
         public void send(Response response) {
