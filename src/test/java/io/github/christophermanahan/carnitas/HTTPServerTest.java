@@ -79,8 +79,6 @@ class HTTPServerTest {
     void itWillLogAMessageIfSendFails() {
         String message = "Failed!";
         Connection connection = new Connection() {
-            private int index = -1;
-
             public void send(HTTPResponse response) {
                 throw new RuntimeException(message);
             }
@@ -89,13 +87,11 @@ class HTTPServerTest {
             }
 
             public Optional<Character> read() {
-                index++;
-                return Optional.of(
-                  List.of(HTTPResponse.CRLF.split("")).get(index).charAt(0)
-                );
+                return Optional.empty();
             }
         };
         Listener listener = () -> connection;
+        Parser parser = reader -> Optional.of(new HTTPRequest("GET"));
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 

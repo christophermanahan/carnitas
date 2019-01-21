@@ -7,16 +7,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class ErrorLoggerTest {
     @Test
     void logsErrorMessagesAppendedWithNewLine() {
         String error = "Failed due to <error>";
         OutputStream output = new ByteArrayOutputStream();
         System.setOut(new PrintStream(output));
+        System.setProperty("line.separator", HTTPResponse.CRLF);
         Logger logger = new ErrorLogger();
 
         logger.log(error);
 
-        Assertions.assertEquals(error.concat("\r\n"), output.toString());
+        assertEquals(error.concat(HTTPResponse.CRLF), output.toString());
     }
 }
