@@ -3,30 +3,18 @@ package io.github.christophermanahan.carnitas;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-public class ConnectionAcceptor implements Acceptor {
+public class ConnectionListener implements Listener {
     private final ServerSocket serverSocket;
 
-    ConnectionAcceptor(ServerSocket serverSocket) {
+    ConnectionListener(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
 
-    public Connection accept() {
+    public SocketConnection listen() {
         try {
             return new SocketConnection(serverSocket.accept());
         } catch (IOException e) {
             throw new RuntimeException(ErrorMessages.ACCEPT_CONNECTION);
         }
-    }
-
-    public void close() {
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean isAccepting() {
-        return !serverSocket.isClosed();
     }
 }

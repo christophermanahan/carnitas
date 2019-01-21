@@ -7,6 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class ErrorLoggerTest {
     @Test
     void logsErrorMessagesAppendedWithNewLine() {
@@ -17,6 +19,6 @@ class ErrorLoggerTest {
 
         logger.log(error);
 
-        Assertions.assertEquals(error.concat("\n"), output.toString());
+        assertEquals(error, output.toString().strip());
     }
 }

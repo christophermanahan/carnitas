@@ -1,12 +1,32 @@
 package io.github.christophermanahan.carnitas;
 
-public class HTTPResponse implements Response {
-    static final String VERSION = "HTTP/1.1";
-    static final String GET = "200 OK";
-    static final String CL = "Content-Length: 0";
-    static final String CRLF = "\r\n";
+import java.util.Optional;
 
-    public byte[] serialize() {
-        return String.format("%s %s%s%s%s%s", VERSION, GET, CRLF, CL, CRLF, CRLF).getBytes();
+class HTTPResponse {
+    static final String VERSION = "HTTP/1.1";
+    static final String CRLF = "\r\n";
+    static final String BLANK_LINE = "\r\n\r\n";
+    private final String statusCode;
+    private Optional<String> body = Optional.empty();
+
+    HTTPResponse(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    private HTTPResponse(String statusCode, Optional<String> body) {
+        this.statusCode = statusCode;
+        this.body = body;
+    }
+
+    HTTPResponse withBody(Optional<String> body) {
+        return new HTTPResponse(statusCode, body);
+    }
+
+    byte[] serialize() {
+        return (VERSION + " " + statusCode + CRLF
+          + Headers.CONTENT_LENGTH + body.orElse("").length()
+          + BLANK_LINE
+          + body.orElse("")
+        ).getBytes();
     }
 }

@@ -1,28 +1,35 @@
 package io.github.christophermanahan.carnitas;
 
-class HTTPServer {
-    private final Acceptor acceptor;
-    private final Logger errorLogger;
-    private Connection connection;
+import java.util.function.Consumer;
 
-    HTTPServer(Acceptor acceptor, Logger errorLogger) {
-        this.acceptor = acceptor;
-        this.errorLogger = errorLogger;
+class HTTPServer {
+    private final Parser parser;
+    private final Handler handler;
+    private final Logger logger;
+
+    HTTPServer(Parser parser, Handler handler, Logger logger) {
+        this.parser = parser;
+        this.handler = handler;
+        this.logger = logger;
     }
 
-    void run() {
-        while (acceptor.isAccepting()) {
-            try (Connection connection = acceptor.accept()) {
+    void start(Listener listener, Consumer<Runnable> context) {
+        context.accept(connect(listener));
+    }
+
+    private Runnable connect(Listener listener) {
+        return () -> {
+            try (Connection connection = listener.listen()) {
                 serve(connection);
             } catch (RuntimeException e) {
-                errorLogger.log(e.getMessage());
+                logger.log(e.getMessage());
             }
-        }
+        };
     }
 
     private void serve(Connection connection) {
-        connection.receive()
-          .map(request -> new HTTPResponse())
+        parser.parse(new ConnectionReader(connection))
+          .map(handler::handle)
           .ifPresent(connection::send);
     }
 }
