@@ -2,6 +2,7 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,28 +61,18 @@ class RequestParserTest {
     }
 
     private class RequestReader implements Reader {
-        private final String request;
-        private int index;
+        private final Iterator<String> request;
 
         RequestReader(String request) {
-            this.request = request;
-            this.index = -1;
+            this.request = List.of(request.split(HTTPResponse.CRLF, -1)).iterator();
         }
 
         public Optional<String> readUntil(String delimiter) {
-            index++;
-            return Optional.of(
-              List.of(request.split(delimiter, -1)).get(index)
-            );
+            return Optional.of(request.next());
         }
 
         public Optional<String> read(int numberOfCharacters) {
-            index++;
-            return Optional.of(
-              List.of(request.split(HTTPResponse.CRLF, -1))
-                .get(index)
-                .substring(0, numberOfCharacters)
-            );
+            return Optional.of(request.next().substring(0, numberOfCharacters));
         }
     }
 }
