@@ -115,18 +115,15 @@ class HTTPServerTest {
     }
 
     private class ReadableConnection implements Connection {
-        private final String request;
-        private int index;
+        private final Iterator<String> request;
         HTTPResponse response;
 
         ReadableConnection(String request) {
-            this.request = request;
-            this.index = -1;
+            this.request = List.of(request.split("")).iterator();
         }
 
         public Optional<Character> read() {
-            index++;
-            return Optional.of(request.charAt(index));
+            return Optional.of(request.next().charAt(0));
         }
 
         public void send(HTTPResponse response) {

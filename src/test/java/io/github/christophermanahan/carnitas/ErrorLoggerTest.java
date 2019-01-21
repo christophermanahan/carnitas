@@ -17,6 +17,6 @@ class ErrorLoggerTest {
 
         logger.log(error);
 
-        Assertions.assertEquals(error.concat("\n"), output.toString());
+        Assertions.assertEquals(error.concat("\r\n"), output.toString());
     }
 }
