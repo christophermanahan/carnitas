@@ -5,7 +5,6 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.github.christophermanahan.carnitas.Main;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -19,21 +18,21 @@ public class Steps {
     private String port;
 
     private static boolean running = false;
+    private Process process;
 
     @Before
-    public void BeforeAll() {
+    public void setup() throws IOException {
         if (!running) {
-            String[] port = {"33333"};
-            new Thread(() -> Main.main(port)).start();
+            process = new ProcessBuilder("java", "-jar", "build/libs/carnitas-1.0-SNAPSHOT.jar").start();
 
-            Runtime.getRuntime().addShutdownHook(AfterAll());
+            Runtime.getRuntime().addShutdownHook(teardown());
 
             running = true;
         }
     }
 
-    private Thread AfterAll() {
-        return new Thread(Main::stop);
+    private Thread teardown() {
+        return new Thread(process::destroy);
     }
 
     @Given("The server is running on port {string}")
