@@ -49,7 +49,7 @@ public class Steps {
     public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String location, String body) throws IOException, InterruptedException {
         responses.add(
           new Client()
-            .setBody(body)
+            .withBody(body)
             .request(port, method, location)
         );
     }
@@ -92,5 +92,4 @@ public class Steps {
     public void theNdResponseShouldHaveBody(int index, String body) {
         assertEquals(body, responses.get(index - 1).body());
     }
-
 }
