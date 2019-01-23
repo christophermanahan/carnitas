@@ -7,20 +7,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
     private TestParser parser;
-    private TestRouter router;
+    private TestHandler handler;
     private TestLogger logger;
 
     @BeforeEach
     void setup() {
         parser = new TestParser();
-        router = new TestRouter();
+        handler = new TestHandler();
         logger = new TestLogger();
     }
 
@@ -30,7 +29,7 @@ class HTTPServerTest {
         List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
         Listener listener = new TestListener(connections);
 
-        new HTTPServer(parser, router, logger).start(listener, new Once());
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         byte[] expectedResponse = new HTTPResponse(request).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
@@ -42,7 +41,7 @@ class HTTPServerTest {
         List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
         Listener listener = new TestListener(connections);
 
-        new HTTPServer(parser, router, logger).start(listener, new Once());
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         byte[] expectedResponse = new HTTPResponse(request).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
@@ -57,7 +56,7 @@ class HTTPServerTest {
         );
         Listener listener = new TestListener(connections);
 
-        new HTTPServer(parser, router, logger).start(listener, new Twice());
+        new HTTPServer(parser, handler, logger).start(listener, new Twice());
 
         byte[] expectedResponse = new HTTPResponse(request).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
@@ -71,7 +70,7 @@ class HTTPServerTest {
             throw new RuntimeException(message);
         };
 
-        new HTTPServer(parser, router, logger).start(listener, new Once());
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());
     }
@@ -93,7 +92,7 @@ class HTTPServerTest {
         };
         Listener listener = () -> connection;
         Parser parser = reader -> Optional.of(new HTTPRequest("GET", "simple_get"));
-        new HTTPServer(parser, router, logger).start(listener, new Once());
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());
     }
@@ -150,20 +149,8 @@ class HTTPServerTest {
         }
     }
 
-    private class TestRouter implements Router {
-        public RequestRouter get(String uri, Function<HTTPRequest, HTTPResponse> router) {
-            return null;
-        }
-
-        public RequestRouter head(String uri, Function<HTTPRequest, HTTPResponse> router) {
-            return null;
-        }
-
-        public RequestRouter post(String uri, Function<HTTPRequest, HTTPResponse> router) {
-            return null;
-        }
-
-        public HTTPResponse process(HTTPRequest request) {
+    private class TestHandler implements Handler {
+        public HTTPResponse handle(HTTPRequest request) {
             return new HTTPResponse(request.method() + " " + request.uri());
         }
     }

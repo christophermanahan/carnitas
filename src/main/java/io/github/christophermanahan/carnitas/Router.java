@@ -9,5 +9,5 @@ interface Router {
 
     RequestRouter post(String uri, Function<HTTPRequest, HTTPResponse> handler);
 
-    HTTPResponse process(HTTPRequest request);
+    HTTPResponse handle(HTTPRequest request);
 }

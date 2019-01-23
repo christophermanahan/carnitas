@@ -28,7 +28,7 @@ public class Main {
           .orElse(33333);
     }
 
-    private static Router router() {
+    private static Handler router() {
         return new RequestRouter()
           .get("/simple_get", (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK))
           .head("/simple_get", (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK))

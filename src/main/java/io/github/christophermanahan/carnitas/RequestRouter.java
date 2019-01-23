@@ -3,7 +3,7 @@ package io.github.christophermanahan.carnitas;
 import java.util.HashMap;
 import java.util.function.Function;
 
-class RequestRouter implements Router {
+class RequestRouter implements Handler {
     private final HashMap<Route, Function<HTTPRequest, HTTPResponse>> map;
     static final String GET = "GET";
     static final String HEAD = "HEAD";
@@ -28,7 +28,7 @@ class RequestRouter implements Router {
         return this;
     }
 
-    public HTTPResponse process(HTTPRequest request) {
+    public HTTPResponse handle(HTTPRequest request) {
         if (routeAdded(request)) {
             return handleRoute(request);
         } else {

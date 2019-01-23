@@ -14,7 +14,7 @@ class RequestRouterTest {
         RequestRouter router = new RequestRouter()
           .get("simple_get", handler);
 
-        HTTPResponse response = router.process(request);
+        HTTPResponse response = router.handle(request);
 
         assertArrayEquals(handler.apply(request).serialize(), response.serialize());
     }
@@ -26,7 +26,7 @@ class RequestRouterTest {
         RequestRouter router = new RequestRouter()
           .head("simple_get", handler);
 
-        HTTPResponse response = router.process(request);
+        HTTPResponse response = router.handle(request);
 
         assertArrayEquals(handler.apply(request).serialize(), response.serialize());
     }
@@ -38,7 +38,7 @@ class RequestRouterTest {
         RequestRouter router = new RequestRouter()
           .post("simple_post", handler);
 
-        HTTPResponse response = router.process(request);
+        HTTPResponse response = router.handle(request);
 
         assertArrayEquals(handler.apply(request).serialize(), response.serialize());
     }
@@ -50,7 +50,7 @@ class RequestRouterTest {
         RequestRouter router = new RequestRouter()
           .get( "simple_get", handler);
 
-        HTTPResponse response = router.process(request);
+        HTTPResponse response = router.handle(request);
 
         assertArrayEquals(new HTTPResponse("404 Not Found").serialize(), response.serialize());
     }
@@ -63,7 +63,7 @@ class RequestRouterTest {
           .get( "simple_get", handler)
           .get("simple_get_again", handler);
 
-        HTTPResponse response = router.process(request);
+        HTTPResponse response = router.handle(request);
 
         assertArrayEquals(new HTTPResponse(StatusCodes.OK).serialize(), response.serialize());
 
