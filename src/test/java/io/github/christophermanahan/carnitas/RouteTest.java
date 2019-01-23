@@ -2,27 +2,36 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.function.Function;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RouteTest {
+    @Test
+    void itHasAMethod() {
+        String method = "GET";
+
+        Route route = new Route(method, "/simple_get");
+
+        assertEquals(method, route.method());
+    }
+
     @Test
     void itHasAUri() {
         String uri = "/simple_get";
 
-        Route route = new Route(uri, (HTTPRequest r) -> new HTTPResponse(StatusCodes.OK));
+        Route route = new Route("GET", uri);
 
         assertEquals(uri, route.uri());
     }
 
     @Test
-    void itHasAHandler() {
-        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest r) -> new HTTPResponse(StatusCodes.OK);
+    void itCanCheckEquality() {
+        String method = "GET";
+        String uri = "/simple_get";
 
-        Route route = new Route("/simple_get", handler);
+        Route route1 = new Route(method, uri);
+        Route route = new Route(method, uri);
 
-        assertEquals(handler, route.handler());
+        assertTrue(route1.equals(route));
     }
-
 }

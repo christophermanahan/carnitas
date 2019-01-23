@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class RequestRouterTest {
     @Test
-    void itProcessesAGETRequestIntoAResponseIfTheRouteHasBeenAdded() {
+    void itProcessesAGETRequestIntoAResponseIfTheRouteHasBeenAdded2() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK);
         HTTPRequest request = new HTTPRequest(RequestRouter.GET, "simple_get");
         RequestRouter router = new RequestRouter()
@@ -20,7 +20,7 @@ class RequestRouterTest {
     }
 
     @Test
-    void itProcessesAHEADRequestIntoAResponseIfTheRouteHasBeenAdded() {
+    void itProcessesAHEADRequestIntoAResponseIfTheRouteHasBeenAdded2() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK);
         HTTPRequest request = new HTTPRequest(RequestRouter.HEAD, "simple_get");
         RequestRouter router = new RequestRouter()
@@ -32,7 +32,7 @@ class RequestRouterTest {
     }
 
     @Test
-    void itProcessesAPOSTRequestIntoAResponseIfTheRouteHasBeenAdded() {
+    void itProcessesAPOSTRequestIntoAResponseIfTheRouteHasBeenAdded2() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(StatusCodes.CREATED);
         HTTPRequest request = new HTTPRequest(RequestRouter.POST, "simple_post");
         RequestRouter router = new RequestRouter()
@@ -44,7 +44,7 @@ class RequestRouterTest {
     }
 
     @Test
-    void itProcessesARequestIntoANotFoundResponseIfTheRouteHasNotBeenAdded() {
+    void itProcessesARequestIntoANotFoundResponseIfTheRouteHasNotBeenAdded2() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK);
         HTTPRequest request = new HTTPRequest(RequestRouter.POST, "simple_post");
         RequestRouter router = new RequestRouter()
@@ -56,7 +56,7 @@ class RequestRouterTest {
     }
 
     @Test
-    void itProcessesAGETRequestIntoAResponseIfMultipleRoutesHaveBeenAdded() {
+    void itProcessesAGETRequestIntoAResponseIfMultipleRoutesHaveBeenAdded2() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK);
         HTTPRequest request = new HTTPRequest(RequestRouter.GET, "simple_get_again");
         RequestRouter router = new RequestRouter()

@@ -1,21 +1,23 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.function.Function;
-
 public class Route {
+    private final String method;
     private final String uri;
-    private final Function<HTTPRequest, HTTPResponse> handler;
 
-    public Route(String uri, Function<HTTPRequest, HTTPResponse> handler) {
+    Route(String method, String uri) {
+        this.method = method;
         this.uri = uri;
-        this.handler = handler;
+    }
+
+    public String method() {
+        return method;
     }
 
     public String uri() {
         return uri;
     }
 
-    public Function<HTTPRequest, HTTPResponse> handler() {
-        return handler;
+    public boolean equals(Route route) {
+        return method.equals(route.method) && uri.equals(route.uri);
     }
 }
