@@ -11,7 +11,6 @@ class RequestRouter implements Router {
     static final String GET = "GET";
     static final String HEAD = "HEAD";
     static final String POST = "POST";
-    static final String NOT_FOUND = "404 Not Found";
 
     RequestRouter() {
         this.map = new HashMap<>();
@@ -20,30 +19,30 @@ class RequestRouter implements Router {
         map.put(POST, new ArrayList<>());
     }
 
-    public RequestRouter get(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
+    public RequestRouter get(String uri, Function<HTTPRequest, HTTPResponse> handler) {
         map.get(GET).add(new Route(uri, handler));
         return this;
     }
 
-    public RequestRouter head(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
+    public RequestRouter head(String uri, Function<HTTPRequest, HTTPResponse> handler) {
         map.get(HEAD).add(new Route(uri, handler));
         return this;
     }
 
-    public RequestRouter post(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
+    public RequestRouter post(String uri, Function<HTTPRequest, HTTPResponse> handler) {
         map.get(POST).add(new Route(uri, handler));
         return this;
     }
 
-    public HTTPResponse process(HTTPRequest2 request) {
+    public HTTPResponse process(HTTPRequest request) {
         if (uriAdded(request)) {
             return handledResponse(request);
         } else {
-            return new HTTPResponse(NOT_FOUND);
+            return new HTTPResponse(StatusCodes.NOT_FOUND);
         }
     }
 
-    private HTTPResponse handledResponse(HTTPRequest2 request) {
+    private HTTPResponse handledResponse(HTTPRequest request) {
         return map.get(request.method()).stream()
           .filter(matchRoute(request))
           .map(handle(request))
@@ -51,27 +50,27 @@ class RequestRouter implements Router {
           .get();
     }
 
-    private boolean uriAdded(HTTPRequest2 request) {
+    private boolean uriAdded(HTTPRequest request) {
         return map.values().stream()
           .map(list -> anyMatchesUri(list, request))
           .reduce(false, (hasUri, acc) -> hasUri || acc);
     }
 
-    private boolean anyMatchesUri(List<Route> routes, HTTPRequest2 request) {
+    private boolean anyMatchesUri(List<Route> routes, HTTPRequest request) {
         return routes.stream()
           .map(matchUri(request))
           .reduce(false, (hasUri, acc) -> hasUri || acc);
     }
 
-    private Function<Route, Boolean> matchUri(HTTPRequest2 request) {
+    private Function<Route, Boolean> matchUri(HTTPRequest request) {
         return route -> route.uri().equals(request.uri());
     }
 
-    private Predicate<Route> matchRoute(HTTPRequest2 request) {
+    private Predicate<Route> matchRoute(HTTPRequest request) {
         return route -> route.uri().equals(request.uri());
     }
 
-    private Function<Route, HTTPResponse> handle(HTTPRequest2 request) {
+    private Function<Route, HTTPResponse> handle(HTTPRequest request) {
         return route -> route.handler().apply(request);
     }
 }

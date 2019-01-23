@@ -5,19 +5,12 @@ import java.util.Optional;
 
 public class RequestParser implements Parser {
     public Optional<HTTPRequest> parse(Reader reader) {
-        Optional<String> method = getMethod(readLine(reader));
-        Optional<Integer> contentLength = parseHeadersForContentLength(reader);
-        Optional<String> body = getBody(reader, contentLength);
-        return request(method, body);
-    }
-
-    public Optional<HTTPRequest2> parse2(Reader reader) {
         Optional<String> statusLine = readLine(reader);
         Optional<String> method = getMethod(statusLine);
         Optional<String> uri = getUri(statusLine);
         Optional<Integer> contentLength = parseHeadersForContentLength(reader);
         Optional<String> body = getBody(reader, contentLength);
-        return request2(method, uri, body);
+        return request(method, uri, body);
     }
 
     private Optional<String> getMethod(Optional<String> statusLine) {
@@ -80,13 +73,9 @@ public class RequestParser implements Parser {
           .flatMap(reader::read);
     }
 
-    private Optional<HTTPRequest> request(Optional<String> method, Optional<String> body) {
-        return method.map(s -> new HTTPRequest(s).withBody(body));
-    }
-
-    private Optional<HTTPRequest2> request2(Optional<String> method, Optional<String> uri, Optional<String> body) {
+    private Optional<HTTPRequest> request(Optional<String> method, Optional<String> uri, Optional<String> body) {
         if (method.isPresent() && uri.isPresent()) {
-            return Optional.of(new HTTPRequest2(method.get(), uri.get()).withBody(body));
+            return Optional.of(new HTTPRequest(method.get(), uri.get()).withBody(body));
         } else {
             return Optional.empty();
         }

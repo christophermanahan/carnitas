@@ -11,14 +11,14 @@ class RouteTest {
     void itHasAUri() {
         String uri = "/simple_get";
 
-        Route route = new Route(uri, (HTTPRequest2 r) -> new HTTPResponse("200 OK"));
+        Route route = new Route(uri, (HTTPRequest r) -> new HTTPResponse(StatusCodes.OK));
 
         assertEquals(uri, route.uri());
     }
 
     @Test
     void itHasAHandler() {
-        Function<HTTPRequest2, HTTPResponse> handler = (HTTPRequest2 r) -> new HTTPResponse("200 OK");
+        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest r) -> new HTTPResponse(StatusCodes.OK);
 
         Route route = new Route("/simple_get", handler);
 

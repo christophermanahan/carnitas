@@ -7,7 +7,7 @@ import java.util.Optional;
 public class Main {
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(port(args))) {
-            new HTTPServer2(
+            new HTTPServer(
               new RequestParser(),
               router(),
               new ErrorLogger()
@@ -30,9 +30,9 @@ public class Main {
 
     private static Router router() {
         return new RequestRouter()
-          .get("/simple_get", (HTTPRequest2 request) -> new HTTPResponse("200 OK"))
-          .head("/simple_get", (HTTPRequest2 request) -> new HTTPResponse("200 OK"))
-          .post("/simple_post", (HTTPRequest2 request) -> new HTTPResponse("201 Created")
+          .get("/simple_get", (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK))
+          .head("/simple_get", (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK))
+          .post("/simple_post", (HTTPRequest request) -> new HTTPResponse(StatusCodes.CREATED)
             .withBody(request.body())
           );
     }

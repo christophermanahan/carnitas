@@ -4,12 +4,12 @@ import java.util.function.Consumer;
 
 class HTTPServer {
     private final Parser parser;
-    private final Handler handler;
+    private final Router router;
     private final Logger logger;
 
-    HTTPServer(Parser parser, Handler handler, Logger logger) {
+    HTTPServer(Parser parser, Router router, Logger logger) {
         this.parser = parser;
-        this.handler = handler;
+        this.router = router;
         this.logger = logger;
     }
 
@@ -29,7 +29,7 @@ class HTTPServer {
 
     private void serve(Connection connection) {
         parser.parse(new ConnectionReader(connection))
-          .map(handler::handle)
+          .map(router::process)
           .ifPresent(connection::send);
     }
 }

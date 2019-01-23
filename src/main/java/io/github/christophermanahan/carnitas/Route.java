@@ -4,9 +4,9 @@ import java.util.function.Function;
 
 public class Route {
     private final String uri;
-    private final Function<HTTPRequest2, HTTPResponse> handler;
+    private final Function<HTTPRequest, HTTPResponse> handler;
 
-    public Route(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
+    public Route(String uri, Function<HTTPRequest, HTTPResponse> handler) {
         this.uri = uri;
         this.handler = handler;
     }
@@ -15,7 +15,7 @@ public class Route {
         return uri;
     }
 
-    public Function<HTTPRequest2, HTTPResponse> handler() {
+    public Function<HTTPRequest, HTTPResponse> handler() {
         return handler;
     }
 }
