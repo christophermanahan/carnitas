@@ -41,16 +41,16 @@ public class Steps {
     }
 
     @When("I send method {string} for {string} to host at the specified port")
-    public void iSendMethodForToHostAtTheSpecifiedPortTimes(String method, String location) throws IOException, InterruptedException {
-        responses.add(new Client().request(port, method, location));
+    public void iSendMethodForToHostAtTheSpecifiedPortTimes(String method, String uri) throws IOException, InterruptedException {
+        responses.add(new Client().request(port, method, uri));
     }
 
     @When("I send method {string} for {string} with body {string} to host at the specified port")
-    public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String location, String body) throws IOException, InterruptedException {
+    public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String uri, String body) throws IOException, InterruptedException {
         responses.add(
           new Client()
             .withBody(body)
-            .request(port, method, location)
+            .request(port, method, uri)
         );
     }
 
