@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class HTTPResponseTest {
     @Test
     void itSerializesToAFormattedHTTPResponseWithoutBody() {
-        String statusCode = StatusCodes.OK;
+        HTTPResponse.StatusCode statusCode = HTTPResponse.StatusCode.OK;
         HTTPResponse httpResponse = new HTTPResponse(statusCode);
 
         String response = new String(httpResponse.serialize());
 
-        String expectedResponse = HTTPResponse.VERSION +  " " + statusCode + HTTPResponse.CRLF
+        String expectedResponse = HTTPResponse.VERSION +  " " + statusCode.value + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + 0
           + HTTPResponse.BLANK_LINE;
         assertEquals(expectedResponse, response);
@@ -22,14 +22,14 @@ class HTTPResponseTest {
 
     @Test
     void itSerializesToAFormattedHTTPResponseWithBody() {
-        String statusCode = StatusCodes.CREATED;
+        HTTPResponse.StatusCode statusCode = HTTPResponse.StatusCode.CREATED;
         String body = "name=<something>";
         HTTPResponse httpResponse = new HTTPResponse(statusCode)
           .withBody(Optional.of(body));
 
         String response = new String(httpResponse.serialize());
 
-        String expectedResponse = HTTPResponse.VERSION +  " " + statusCode + HTTPResponse.CRLF
+        String expectedResponse = HTTPResponse.VERSION +  " " + statusCode.value + HTTPResponse.CRLF
           + Headers.CONTENT_LENGTH + body.length()
           + HTTPResponse.BLANK_LINE
           + body;

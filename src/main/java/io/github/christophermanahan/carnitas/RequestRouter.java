@@ -13,17 +13,17 @@ class RequestRouter implements Handler {
         this.map = new HashMap<>();
     }
 
-    public RequestRouter get(String uri, Function<HTTPRequest, HTTPResponse> handler) {
+    RequestRouter get(String uri, Function<HTTPRequest, HTTPResponse> handler) {
         map.put(new Route(GET, uri), handler);
         return this;
     }
 
-    public RequestRouter head(String uri, Function<HTTPRequest, HTTPResponse> handler) {
+    RequestRouter head(String uri, Function<HTTPRequest, HTTPResponse> handler) {
         map.put(new Route(HEAD, uri), handler);
         return this;
     }
 
-    public RequestRouter post(String uri, Function<HTTPRequest, HTTPResponse> handler) {
+    RequestRouter post(String uri, Function<HTTPRequest, HTTPResponse> handler) {
         map.put(new Route(POST, uri), handler);
         return this;
     }
@@ -32,7 +32,7 @@ class RequestRouter implements Handler {
         if (routeAdded(request)) {
             return handleRoute(request);
         } else {
-            return new HTTPResponse(StatusCodes.NOT_FOUND);
+            return new HTTPResponse(HTTPResponse.StatusCode.NOT_FOUND);
         }
     }
 

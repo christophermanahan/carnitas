@@ -30,9 +30,9 @@ public class Main {
 
     private static Handler router() {
         return new RequestRouter()
-          .get("/simple_get", (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK))
-          .head("/simple_get", (HTTPRequest request) -> new HTTPResponse(StatusCodes.OK))
-          .post("/simple_post", (HTTPRequest request) -> new HTTPResponse(StatusCodes.CREATED)
+          .get("/simple_get", (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK))
+          .head("/simple_get", (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK))
+          .post("/simple_post", (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.CREATED)
             .withBody(request.body())
           );
     }
