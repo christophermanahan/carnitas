@@ -60,6 +60,65 @@ class RequestParserTest {
         assertEquals(Optional.empty(), parsed);
     }
 
+    @Test
+    void itParsesRequestWithoutBody2() {
+        String method = "GET";
+        String uri = "/simple_get";
+        String body = "name=<something>";
+        String request = method + " " + uri + " " + HTTPResponse.VERSION
+          + HTTPResponse.BLANK_LINE;
+        Reader reader = new RequestReader(request);
+        Parser parser = new RequestParser();
+
+        Optional<HTTPRequest2> parsed = parser.parse2(reader);
+
+        Optional<String> parsedMethod = parsed.map(HTTPRequest2::method);
+        Optional<String> parsedUri = parsed.map(HTTPRequest2::uri);
+        assertEquals(Optional.of(method), parsedMethod);
+        assertEquals(Optional.of(uri), parsedUri);
+    }
+
+    @Test
+    void itParsesRequestWithBody2() {
+        String method = "GET";
+        String uri = "/simple_get";
+        String body = "name=<something>";
+        String request = method + " " + uri + " " + HTTPResponse.VERSION + HTTPResponse.CRLF
+          + Headers.CONTENT_LENGTH + body.length() + HTTPResponse.CRLF
+          + "Test-Header: Test"
+          + HTTPResponse.BLANK_LINE
+          + body;
+        Reader reader = new RequestReader(request);
+        Parser parser = new RequestParser();
+
+        Optional<HTTPRequest2> parsed = parser.parse2(reader);
+
+        Optional<String> parsedMethod = parsed.map(HTTPRequest2::method);
+        Optional<String> parsedUri = parsed.map(HTTPRequest2::uri);
+        Optional<String> parsedBody = parsed.flatMap(HTTPRequest2::body);
+        assertEquals(Optional.of(method), parsedMethod);
+        assertEquals(Optional.of(uri), parsedUri);
+        assertEquals(Optional.of(body), parsedBody);
+    }
+
+    @Test
+    void itIsEmptyIfReaderIsEmpty2() {
+        Reader reader = new Reader() {
+            public Optional<String> readUntil(String delimiter) {
+                return Optional.empty();
+            }
+
+            public Optional<String> read(int numberOfCharacters) {
+                return Optional.empty();
+            }
+        };
+        Parser parser = new RequestParser();
+
+        Optional<HTTPRequest2> parsed = parser.parse2(reader);
+
+        assertEquals(Optional.empty(), parsed);
+    }
+
     private class RequestReader implements Reader {
         private final Iterator<String> request;
 

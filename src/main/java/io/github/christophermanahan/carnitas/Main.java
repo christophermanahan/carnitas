@@ -7,9 +7,9 @@ import java.util.Optional;
 public class Main {
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(port(args))) {
-            new HTTPServer(
+            new HTTPServer2(
               new RequestParser(),
-              new RequestHandler(),
+              router(),
               new ErrorLogger()
             ).start(
               new ConnectionListener(serverSocket),
@@ -26,5 +26,14 @@ public class Main {
           .map(b -> b[0])
           .map(Integer::parseInt)
           .orElse(33333);
+    }
+
+    private static Router router() {
+        return new RequestRouter()
+          .get("/simple_get", (HTTPRequest2 request) -> new HTTPResponse("200 OK"))
+          .head("/simple_get", (HTTPRequest2 request) -> new HTTPResponse("200 OK"))
+          .post("/simple_post", (HTTPRequest2 request) -> new HTTPResponse("201 Created")
+            .withBody(request.body())
+          );
     }
 }

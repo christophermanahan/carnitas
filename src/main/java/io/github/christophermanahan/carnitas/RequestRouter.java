@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-class RequestRouter {
+class RequestRouter implements Router {
     private final HashMap<String, List<Route>> map;
     static final String GET = "GET";
     static final String HEAD = "HEAD";
@@ -20,22 +20,22 @@ class RequestRouter {
         map.put(POST, new ArrayList<>());
     }
 
-    RequestRouter get(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
+    public RequestRouter get(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
         map.get(GET).add(new Route(uri, handler));
         return this;
     }
 
-    RequestRouter head(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
+    public RequestRouter head(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
         map.get(HEAD).add(new Route(uri, handler));
         return this;
     }
 
-    RequestRouter post(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
+    public RequestRouter post(String uri, Function<HTTPRequest2, HTTPResponse> handler) {
         map.get(POST).add(new Route(uri, handler));
         return this;
     }
 
-    HTTPResponse process(HTTPRequest2 request) {
+    public HTTPResponse process(HTTPRequest2 request) {
         if (uriAdded(request)) {
             return handledResponse(request);
         } else {

@@ -7,29 +7,30 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class HTTPServerTest {
+class HTTPServer2Test {
     private TestParser parser;
-    private TestHandler handler;
+    private TestRouter router;
     private TestLogger logger;
 
     @BeforeEach
     void setup() {
         parser = new TestParser();
-        handler = new TestHandler();
+        router = new TestRouter();
         logger = new TestLogger();
     }
 
     @Test
     void itWillServeGETRequests() {
-        String request = "GET";
+        String request = "GET /simple_get";
         List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
         Listener listener = new TestListener(connections);
 
-        new HTTPServer(parser, handler, logger).start(listener, new Once());
+        new HTTPServer2(parser, router, logger).start(listener, new Once());
 
         byte[] expectedResponse = new HTTPResponse(request).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
@@ -37,11 +38,11 @@ class HTTPServerTest {
 
     @Test
     void itWillServePOSTRequests() {
-        String request = "POST";
+        String request = "POST simple_post";
         List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
         Listener listener = new TestListener(connections);
 
-        new HTTPServer(parser, handler, logger).start(listener, new Once());
+        new HTTPServer2(parser, router, logger).start(listener, new Once());
 
         byte[] expectedResponse = new HTTPResponse(request).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
@@ -49,14 +50,14 @@ class HTTPServerTest {
 
     @Test
     void itWillServeRequestsBasedOnContext() {
-        String request = "GET";
+        String request = "GET simple_get";
         List<ReadableConnection> connections = List.of(
           new ReadableConnection(request + HTTPResponse.CRLF),
           new ReadableConnection(request + HTTPResponse.CRLF)
         );
         Listener listener = new TestListener(connections);
 
-        new HTTPServer(parser, handler, logger).start(listener, new Twice());
+        new HTTPServer2(parser, router, logger).start(listener, new Twice());
 
         byte[] expectedResponse = new HTTPResponse(request).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
@@ -70,7 +71,7 @@ class HTTPServerTest {
             throw new RuntimeException(message);
         };
 
-        new HTTPServer(parser, handler, logger).start(listener, new Once());
+        new HTTPServer2(parser, router, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());
     }
@@ -93,14 +94,14 @@ class HTTPServerTest {
         Listener listener = () -> connection;
         Parser parser = new Parser() {
             public Optional<HTTPRequest> parse(Reader reader) {
-                return Optional.of(new HTTPRequest("GET"));
+                return Optional.empty();
             }
 
             public Optional<HTTPRequest2> parse2(Reader reader) {
-                return Optional.empty();
+                return Optional.of(new HTTPRequest2("GET", "simple_get"));
             }
         };
-        new HTTPServer(parser, handler, logger).start(listener, new Once());
+        new HTTPServer2(parser, router, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());
     }
@@ -152,18 +153,29 @@ class HTTPServerTest {
 
     private class TestParser implements Parser {
         public Optional<HTTPRequest> parse(Reader reader) {
-            return reader.readUntil(HTTPResponse.CRLF)
-              .map(HTTPRequest::new);
+            return Optional.empty();
         }
 
         public Optional<HTTPRequest2> parse2(Reader reader) {
-            return Optional.empty();
+            return Optional.of(new HTTPRequest2(reader.readUntil(" ").get(), reader.readUntil(HTTPResponse.CRLF).get()));
         }
     }
 
-    private class TestHandler implements Handler {
-        public HTTPResponse handle(HTTPRequest request) {
-            return new HTTPResponse(request.method());
+    private class TestRouter implements Router {
+        public RequestRouter get(String uri, Function<HTTPRequest2, HTTPResponse> router) {
+            return null;
+        }
+
+        public RequestRouter head(String uri, Function<HTTPRequest2, HTTPResponse> router) {
+            return null;
+        }
+
+        public RequestRouter post(String uri, Function<HTTPRequest2, HTTPResponse> router) {
+            return null;
+        }
+
+        public HTTPResponse process(HTTPRequest2 request) {
+            return new HTTPResponse(request.method() + " " + request.uri());
         }
     }
 
