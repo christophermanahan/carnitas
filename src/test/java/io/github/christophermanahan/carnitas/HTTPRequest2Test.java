@@ -6,11 +6,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class HTTPRequestTest {
+class HTTPRequest2Test {
     @Test
     void itHasAMethod() {
         String method = "GET";
-        HTTPRequest request = new HTTPRequest(method);
+        HTTPRequest2 request = new HTTPRequest2(method, "simple_get");
 
         String requestMethod = request.method();
 
@@ -18,9 +18,19 @@ class HTTPRequestTest {
     }
 
     @Test
+    void itHasAUri() {
+        String uri = "simple_get";
+        HTTPRequest2 request = new HTTPRequest2("GET", uri);
+
+        String requestUri = request.uri();
+
+        assertEquals(uri, requestUri);
+    }
+
+    @Test
     void itHasABody() {
         Optional<String> body = Optional.of("name=<something>");
-        HTTPRequest request = new HTTPRequest("GET")
+        HTTPRequest2 request = new HTTPRequest2("GET", "simple_get")
           .withBody(body);
 
         Optional<String> requestBody = request.body();

@@ -63,8 +63,6 @@ public class RequestParser implements Parser {
     }
 
     private Optional<HTTPRequest> request(Optional<String> method, Optional<String> body) {
-        return method
-          .map(HTTPRequest::new)
-          .map(request -> request.withBody(body));
+        return method.map(s -> new HTTPRequest(s).withBody(body));
     }
 }
