@@ -13,5 +13,4 @@ class HeadersTest {
 
         assertEquals(Headers.CONTENT_LENGTH + length, header);
     }
-
 }
