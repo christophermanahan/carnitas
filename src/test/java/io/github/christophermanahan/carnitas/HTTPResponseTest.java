@@ -15,7 +15,7 @@ class HTTPResponseTest {
         String response = new String(httpResponse.serialize());
 
         String expectedResponse = HTTPResponse.VERSION +  " " + statusCode.value + HTTPResponse.CRLF
-          + Headers.CONTENT_LENGTH + 0
+          + Headers.contentLength(0)
           + HTTPResponse.BLANK_LINE;
         assertEquals(expectedResponse, response);
     }
@@ -30,7 +30,7 @@ class HTTPResponseTest {
         String response = new String(httpResponse.serialize());
 
         String expectedResponse = HTTPResponse.VERSION +  " " + statusCode.value + HTTPResponse.CRLF
-          + Headers.CONTENT_LENGTH + body.length()
+          + Headers.contentLength(body.length())
           + HTTPResponse.BLANK_LINE
           + body;
         assertEquals(expectedResponse, response);

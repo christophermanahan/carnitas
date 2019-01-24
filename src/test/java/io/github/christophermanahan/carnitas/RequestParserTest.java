@@ -33,7 +33,7 @@ class RequestParserTest {
         String uri = "/simple_get";
         String body = "name=<something>";
         String request = method + " " + uri + " " + HTTPResponse.VERSION + HTTPResponse.CRLF
-          + Headers.CONTENT_LENGTH + body.length() + HTTPResponse.CRLF
+          + Headers.contentLength(body.length()) + HTTPResponse.CRLF
           + "Test-Header: Test"
           + HTTPResponse.BLANK_LINE
           + body;

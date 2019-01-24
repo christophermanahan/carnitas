@@ -37,7 +37,7 @@ class HTTPResponse {
 
     byte[] serialize() {
         return (VERSION + " " + statusCode.value + CRLF
-          + Headers.CONTENT_LENGTH + body.orElse("").length()
+          + Headers.contentLength(body.orElse("").length())
           + BLANK_LINE
           + body.orElse("")
         ).getBytes();
