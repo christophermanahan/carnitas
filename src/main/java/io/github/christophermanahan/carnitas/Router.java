@@ -32,7 +32,7 @@ class Router implements Handler {
         if (routeAdded(request)) {
             return handleRoute(request);
         } else {
-            return new HTTPResponse(HTTPResponse.StatusCode.NOT_FOUND);
+            return new HTTPResponse(HTTPResponse.Status.NOT_FOUND);
         }
     }
 

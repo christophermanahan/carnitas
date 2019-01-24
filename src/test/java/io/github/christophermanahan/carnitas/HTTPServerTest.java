@@ -31,7 +31,7 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        byte[] expectedResponse = new HTTPResponse(HTTPResponse.StatusCode.OK).serialize();
+        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.OK).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
     }
 
@@ -43,7 +43,7 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        byte[] expectedResponse = new HTTPResponse(HTTPResponse.StatusCode.CREATED).serialize();
+        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.CREATED).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
     }
 
@@ -58,7 +58,7 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Twice());
 
-        byte[] expectedResponse = new HTTPResponse(HTTPResponse.StatusCode.OK).serialize();
+        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.OK).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
         assertArrayEquals(expectedResponse, connections.get(1).response.serialize());
     }
@@ -150,7 +150,7 @@ class HTTPServerTest {
 
     private class TestHandler implements Handler {
         public HTTPResponse handle(HTTPRequest request) {
-            HTTPResponse.StatusCode code = request.method().equals("GET") ? HTTPResponse.StatusCode.OK : HTTPResponse.StatusCode.CREATED;
+            HTTPResponse.Status code = request.method().equals("GET") ? HTTPResponse.Status.OK : HTTPResponse.Status.CREATED;
             return new HTTPResponse(code);
         }
     }

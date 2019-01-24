@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 class RouterTest {
     @Test
     void itProcessesAGETRequestIntoAResponseIfTheRouteHasBeenAdded() {
-        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK);
+        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.OK);
         HTTPRequest request = new HTTPRequest(Router.GET, "/simple_get");
         Router router = new Router()
           .get("/simple_get", handler);
@@ -21,7 +21,7 @@ class RouterTest {
 
     @Test
     void itProcessesAHEADRequestIntoAResponseIfTheRouteHasBeenAdded() {
-        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK);
+        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.OK);
         HTTPRequest request = new HTTPRequest(Router.HEAD, "/simple_get");
         Router router = new Router()
           .head("/simple_get", handler);
@@ -33,7 +33,7 @@ class RouterTest {
 
     @Test
     void itProcessesAPOSTRequestIntoAResponseIfTheRouteHasBeenAdded() {
-        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.CREATED);
+        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.CREATED);
         HTTPRequest request = new HTTPRequest(Router.POST, "/simple_post");
         Router router = new Router()
           .post("/simple_post", handler);
@@ -45,19 +45,19 @@ class RouterTest {
 
     @Test
     void itProcessesARequestIntoANotFoundResponseIfTheRouteHasNotBeenAdded() {
-        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK);
+        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.OK);
         HTTPRequest request = new HTTPRequest(Router.POST, "/simple_post");
         Router router = new Router()
           .get( "/simple_get", handler);
 
         HTTPResponse response = router.handle(request);
 
-        assertArrayEquals(new HTTPResponse(HTTPResponse.StatusCode.NOT_FOUND).serialize(), response.serialize());
+        assertArrayEquals(new HTTPResponse(HTTPResponse.Status.NOT_FOUND).serialize(), response.serialize());
     }
 
     @Test
     void itProcessesAGETRequestIntoAResponseIfMultipleRoutesHaveBeenAdded() {
-        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK);
+        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.OK);
         HTTPRequest request = new HTTPRequest(Router.GET, "simple_get_again");
         Router router = new Router()
           .get( "/simple_get", handler)
@@ -65,7 +65,7 @@ class RouterTest {
 
         HTTPResponse response = router.handle(request);
 
-        assertArrayEquals(new HTTPResponse(HTTPResponse.StatusCode.OK).serialize(), response.serialize());
+        assertArrayEquals(new HTTPResponse(HTTPResponse.Status.OK).serialize(), response.serialize());
 
     }
 }

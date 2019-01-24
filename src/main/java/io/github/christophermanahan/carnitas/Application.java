@@ -6,9 +6,9 @@ class Application {
 
     static Handler router() {
         return new Router()
-          .get(SIMPLE_GET, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK))
-          .head(SIMPLE_GET, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK))
-          .post(SIMPLE_POST, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.CREATED)
+          .get(SIMPLE_GET, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.OK))
+          .head(SIMPLE_GET, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.OK))
+          .post(SIMPLE_POST, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.CREATED)
             .withBody(request.body())
           );
     }
