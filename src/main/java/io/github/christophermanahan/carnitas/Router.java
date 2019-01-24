@@ -1,7 +1,9 @@
 package io.github.christophermanahan.carnitas;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class Router implements Handler {
     private final HashMap<Route, Function<HTTPRequest, HTTPResponse>> map;
@@ -31,9 +33,20 @@ class Router implements Handler {
     public HTTPResponse handle(HTTPRequest request) {
         if (routeAdded(request)) {
             return handleRoute(request);
+        } else if (uriAddedToAnyMethod(request)) {
+            return methodNotAllowed(request);
         } else {
-            return new HTTPResponse(HTTPResponse.Status.NOT_FOUND);
+            return notFound();
         }
+    }
+
+    private Route route(HTTPRequest request) {
+        return new Route(request.method(), request.uri());
+    }
+
+    private boolean routeAdded(HTTPRequest request) {
+        return map.keySet().stream()
+          .anyMatch(route -> route.equals(route(request)));
     }
 
     private HTTPResponse handleRoute(HTTPRequest request) {
@@ -45,12 +58,26 @@ class Router implements Handler {
         ).apply(request);
     }
 
-    private boolean routeAdded(HTTPRequest request) {
+    private boolean uriAddedToAnyMethod(HTTPRequest request) {
         return map.keySet().stream()
-          .anyMatch(route -> route.equals(route(request)));
+          .anyMatch(route -> route.uri().equals(request.uri()));
     }
 
-    private Route route(HTTPRequest request) {
-        return new Route(request.method(), request.uri());
+    private HTTPResponse methodNotAllowed(HTTPRequest request) {
+        return new HTTPResponse(HTTPResponse.Status.METHOD_NOT_ALLOWED)
+          .withHeaders(List.of(
+            Headers.allow(allowedMethods(request)))
+          );
+    }
+
+    private List<String> allowedMethods(HTTPRequest request) {
+        return map.keySet().stream()
+          .filter(route -> route.uri().equals(request.uri()))
+          .map(Route::method)
+          .collect(Collectors.toList());
+    }
+
+    private HTTPResponse notFound() {
+        return new HTTPResponse(HTTPResponse.Status.NOT_FOUND);
     }
 }
