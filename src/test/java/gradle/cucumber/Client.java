@@ -15,16 +15,16 @@ class Client {
         this.httpBody = HttpRequest.BodyPublishers.noBody();
     }
 
-    HttpResponse<String> request(String port, String method, String location) throws IOException, InterruptedException {
+    HttpResponse<String> request(String port, String method, String uri) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:" + port + location))
-            .version(HttpClient.Version.HTTP_1_1)
-            .method(method, httpBody)
-            .build();
+          .uri(URI.create("http://localhost:" + port + uri))
+          .version(HttpClient.Version.HTTP_1_1)
+          .method(method, httpBody)
+          .build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    Client setBody(String body) {
+    Client withBody(String body) {
         this.httpBody = HttpRequest.BodyPublishers.ofString(body);
         return this;
     }

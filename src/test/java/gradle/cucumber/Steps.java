@@ -41,16 +41,16 @@ public class Steps {
     }
 
     @When("I send method {string} for {string} to host at the specified port")
-    public void iSendMethodForToHostAtTheSpecifiedPortTimes(String method, String location) throws IOException, InterruptedException {
-        responses.add(new Client().request(port, method, location));
+    public void iSendMethodForToHostAtTheSpecifiedPortTimes(String method, String uri) throws IOException, InterruptedException {
+        responses.add(new Client().request(port, method, uri));
     }
 
     @When("I send method {string} for {string} with body {string} to host at the specified port")
-    public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String location, String body) throws IOException, InterruptedException {
+    public void iSendMethodForWithBodyToHostAtTheSpecifiedPort(String method, String uri, String body) throws IOException, InterruptedException {
         responses.add(
           new Client()
-            .setBody(body)
-            .request(port, method, location)
+            .withBody(body)
+            .request(port, method, uri)
         );
     }
 
@@ -92,5 +92,4 @@ public class Steps {
     public void theNdResponseShouldHaveBody(int index, String body) {
         assertEquals(body, responses.get(index - 1).body());
     }
-
 }

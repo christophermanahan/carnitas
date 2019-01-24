@@ -12,23 +12,28 @@ class RequestParserTest {
     @Test
     void itParsesRequestWithoutBody() {
         String method = "GET";
-        String request = method + " /simple_get " + HTTPResponse.VERSION
+        String uri = "/simple_get";
+        String body = "name=<something>";
+        String request = method + " " + uri + " " + HTTPResponse.VERSION
           + HTTPResponse.BLANK_LINE;
         Reader reader = new RequestReader(request);
         Parser parser = new RequestParser();
 
         Optional<HTTPRequest> parsed = parser.parse(reader);
 
-        Optional<String> parsedRequest = parsed.map(HTTPRequest::method);
-        assertEquals(Optional.of(method), parsedRequest);
+        Optional<String> parsedMethod = parsed.map(HTTPRequest::method);
+        Optional<String> parsedUri = parsed.map(HTTPRequest::uri);
+        assertEquals(Optional.of(method), parsedMethod);
+        assertEquals(Optional.of(uri), parsedUri);
     }
 
     @Test
     void itParsesRequestWithBody() {
         String method = "GET";
+        String uri = "/simple_get";
         String body = "name=<something>";
-        String request = method + " /simple_get " + HTTPResponse.VERSION + HTTPResponse.CRLF
-          + Headers.CONTENT_LENGTH + body.length() + HTTPResponse.CRLF
+        String request = method + " " + uri + " " + HTTPResponse.VERSION + HTTPResponse.CRLF
+          + Headers.contentLength(body.length()) + HTTPResponse.CRLF
           + "Test-Header: Test"
           + HTTPResponse.BLANK_LINE
           + body;
@@ -38,10 +43,13 @@ class RequestParserTest {
         Optional<HTTPRequest> parsed = parser.parse(reader);
 
         Optional<String> parsedMethod = parsed.map(HTTPRequest::method);
+        Optional<String> parsedUri = parsed.map(HTTPRequest::uri);
         Optional<String> parsedBody = parsed.flatMap(HTTPRequest::body);
         assertEquals(Optional.of(method), parsedMethod);
+        assertEquals(Optional.of(uri), parsedUri);
         assertEquals(Optional.of(body), parsedBody);
     }
+
     @Test
     void itIsEmptyIfReaderIsEmpty() {
         Reader reader = new Reader() {

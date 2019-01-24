@@ -5,23 +5,34 @@ import java.util.Optional;
 
 public class RequestParser implements Parser {
     public Optional<HTTPRequest> parse(Reader reader) {
-        Optional<String> method = getMethod(reader);
+        Optional<String> statusLine = readLine(reader);
+        Optional<String> method = getMethod(statusLine);
+        Optional<String> uri = getUri(statusLine);
         Optional<Integer> contentLength = parseHeadersForContentLength(reader);
         Optional<String> body = getBody(reader, contentLength);
-        return request(method, body);
+        return request(method, uri, body);
+    }
+
+    private Optional<String> getMethod(Optional<String> statusLine) {
+        return statusLine
+          .map(this::extractMethod);
+    }
+
+    private Optional<String> getUri(Optional<String> statusLine) {
+        return statusLine
+          .map(this::extractUri);
     }
 
     private Optional<String> readLine(Reader reader) {
         return reader.readUntil(HTTPResponse.CRLF);
     }
 
-    private Optional<String> getMethod(Reader reader) {
-        return readLine(reader)
-          .map(this::extractMethod);
-    }
-
     private String extractMethod(String statusLine) {
         return List.of(statusLine.split(" ")).get(0);
+    }
+
+    private String extractUri(String statusLine) {
+        return List.of(statusLine.split(" ")).get(1);
     }
 
     private Optional<Integer> parseHeadersForContentLength(Reader reader) {
@@ -62,9 +73,11 @@ public class RequestParser implements Parser {
           .flatMap(reader::read);
     }
 
-    private Optional<HTTPRequest> request(Optional<String> method, Optional<String> body) {
-        return method
-          .map(HTTPRequest::new)
-          .map(request -> request.withBody(body));
+    private Optional<HTTPRequest> request(Optional<String> method, Optional<String> uri, Optional<String> body) {
+        if (method.isPresent() && uri.isPresent()) {
+            return Optional.of(new HTTPRequest(method.get(), uri.get()).withBody(body));
+        } else {
+            return Optional.empty();
+        }
     }
 }

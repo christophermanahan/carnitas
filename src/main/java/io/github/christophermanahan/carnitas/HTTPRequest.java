@@ -2,28 +2,35 @@ package io.github.christophermanahan.carnitas;
 
 import java.util.Optional;
 
-class HTTPRequest {
+public class HTTPRequest {
     private final String method;
-    private Optional<String> body = Optional.empty();
+    private final String uri;
+    private Optional<String> body;
 
-    HTTPRequest(String method) {
+    HTTPRequest(String method, String uri) {
         this.method = method;
+        this.uri = uri;
     }
 
-    HTTPRequest(String method, Optional<String> body) {
+    private HTTPRequest(String method, String uri, Optional<String> body) {
         this.method = method;
+        this.uri = uri;
         this.body = body;
     }
 
     HTTPRequest withBody(Optional<String> body) {
-        return new HTTPRequest(method, body);
+        return new HTTPRequest(method, uri, body);
     }
 
-    String method() {
+    public String method() {
         return method;
     }
 
-    Optional<String> body() {
+    public String uri() {
+        return uri;
+    }
+
+    public Optional<String> body() {
         return body;
     }
 }

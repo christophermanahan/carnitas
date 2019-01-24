@@ -25,31 +25,31 @@ class HTTPServerTest {
 
     @Test
     void itWillServeGETRequests() {
-        String request = "GET";
+        String request = "GET /simple_get";
         List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        byte[] expectedResponse = new HTTPResponse(request).serialize();
+        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.OK).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
     }
 
     @Test
     void itWillServePOSTRequests() {
-        String request = "POST";
+        String request = "POST simple_post";
         List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        byte[] expectedResponse = new HTTPResponse(request).serialize();
+        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.CREATED).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
     }
 
     @Test
     void itWillServeRequestsBasedOnContext() {
-        String request = "GET";
+        String request = "GET simple_get";
         List<ReadableConnection> connections = List.of(
           new ReadableConnection(request + HTTPResponse.CRLF),
           new ReadableConnection(request + HTTPResponse.CRLF)
@@ -58,7 +58,7 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Twice());
 
-        byte[] expectedResponse = new HTTPResponse(request).serialize();
+        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.OK).serialize();
         assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
         assertArrayEquals(expectedResponse, connections.get(1).response.serialize());
     }
@@ -91,8 +91,7 @@ class HTTPServerTest {
             }
         };
         Listener listener = () -> connection;
-        Parser parser = reader -> Optional.of(new HTTPRequest("GET"));
-
+        Parser parser = reader -> Optional.of(new HTTPRequest("GET", "/simple_get"));
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());
@@ -145,14 +144,14 @@ class HTTPServerTest {
 
     private class TestParser implements Parser {
         public Optional<HTTPRequest> parse(Reader reader) {
-            return reader.readUntil(HTTPResponse.CRLF)
-              .map(HTTPRequest::new);
+            return Optional.of(new HTTPRequest(reader.readUntil(" ").get(), reader.readUntil(HTTPResponse.CRLF).get()));
         }
     }
 
     private class TestHandler implements Handler {
         public HTTPResponse handle(HTTPRequest request) {
-            return new HTTPResponse(request.method());
+            HTTPResponse.Status code = request.method().equals("GET") ? HTTPResponse.Status.OK : HTTPResponse.Status.CREATED;
+            return new HTTPResponse(code);
         }
     }
 
