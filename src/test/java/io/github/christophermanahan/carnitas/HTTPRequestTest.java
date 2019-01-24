@@ -10,7 +10,7 @@ class HTTPRequestTest {
     @Test
     void itHasAMethod() {
         String method = "GET";
-        HTTPRequest request = new HTTPRequest(method, "simple_get");
+        HTTPRequest request = new HTTPRequest(method, "/simple_get");
 
         String requestMethod = request.method();
 
@@ -19,7 +19,7 @@ class HTTPRequestTest {
 
     @Test
     void itHasAUri() {
-        String uri = "simple_get";
+        String uri = "/simple_get";
         HTTPRequest request = new HTTPRequest("GET", uri);
 
         String requestUri = request.uri();
@@ -30,7 +30,7 @@ class HTTPRequestTest {
     @Test
     void itHasABody() {
         Optional<String> body = Optional.of("name=<something>");
-        HTTPRequest request = new HTTPRequest("GET", "simple_get")
+        HTTPRequest request = new HTTPRequest("GET", "/simple_get")
           .withBody(body);
 
         Optional<String> requestBody = request.body();

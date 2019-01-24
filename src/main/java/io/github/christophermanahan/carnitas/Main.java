@@ -9,7 +9,7 @@ public class Main {
         try (ServerSocket serverSocket = new ServerSocket(port(args))) {
             new HTTPServer(
               new RequestParser(),
-              router(),
+              Application.router(),
               new ErrorLogger()
             ).start(
               new ConnectionListener(serverSocket),
@@ -26,14 +26,5 @@ public class Main {
           .map(b -> b[0])
           .map(Integer::parseInt)
           .orElse(33333);
-    }
-
-    private static Handler router() {
-        return new Router()
-          .get("/simple_get", (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK))
-          .head("/simple_get", (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK))
-          .post("/simple_post", (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.CREATED)
-            .withBody(request.body())
-          );
     }
 }

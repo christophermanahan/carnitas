@@ -91,7 +91,7 @@ class HTTPServerTest {
             }
         };
         Listener listener = () -> connection;
-        Parser parser = reader -> Optional.of(new HTTPRequest("GET", "simple_get"));
+        Parser parser = reader -> Optional.of(new HTTPRequest("GET", "/simple_get"));
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());

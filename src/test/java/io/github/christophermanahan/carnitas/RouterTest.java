@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class RouterTest {
     @Test
-    void itProcessesAGETRequestIntoAResponseIfTheRouteHasBeenAdded2() {
+    void itProcessesAGETRequestIntoAResponseIfTheRouteHasBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK);
-        HTTPRequest request = new HTTPRequest(Router.GET, "simple_get");
+        HTTPRequest request = new HTTPRequest(Router.GET, "/simple_get");
         Router router = new Router()
-          .get("simple_get", handler);
+          .get("/simple_get", handler);
 
         HTTPResponse response = router.handle(request);
 
@@ -20,11 +20,11 @@ class RouterTest {
     }
 
     @Test
-    void itProcessesAHEADRequestIntoAResponseIfTheRouteHasBeenAdded2() {
+    void itProcessesAHEADRequestIntoAResponseIfTheRouteHasBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK);
-        HTTPRequest request = new HTTPRequest(Router.HEAD, "simple_get");
+        HTTPRequest request = new HTTPRequest(Router.HEAD, "/simple_get");
         Router router = new Router()
-          .head("simple_get", handler);
+          .head("/simple_get", handler);
 
         HTTPResponse response = router.handle(request);
 
@@ -32,11 +32,11 @@ class RouterTest {
     }
 
     @Test
-    void itProcessesAPOSTRequestIntoAResponseIfTheRouteHasBeenAdded2() {
+    void itProcessesAPOSTRequestIntoAResponseIfTheRouteHasBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.CREATED);
-        HTTPRequest request = new HTTPRequest(Router.POST, "simple_post");
+        HTTPRequest request = new HTTPRequest(Router.POST, "/simple_post");
         Router router = new Router()
-          .post("simple_post", handler);
+          .post("/simple_post", handler);
 
         HTTPResponse response = router.handle(request);
 
@@ -44,11 +44,11 @@ class RouterTest {
     }
 
     @Test
-    void itProcessesARequestIntoANotFoundResponseIfTheRouteHasNotBeenAdded2() {
+    void itProcessesARequestIntoANotFoundResponseIfTheRouteHasNotBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK);
-        HTTPRequest request = new HTTPRequest(Router.POST, "simple_post");
+        HTTPRequest request = new HTTPRequest(Router.POST, "/simple_post");
         Router router = new Router()
-          .get( "simple_get", handler);
+          .get( "/simple_get", handler);
 
         HTTPResponse response = router.handle(request);
 
@@ -56,11 +56,11 @@ class RouterTest {
     }
 
     @Test
-    void itProcessesAGETRequestIntoAResponseIfMultipleRoutesHaveBeenAdded2() {
+    void itProcessesAGETRequestIntoAResponseIfMultipleRoutesHaveBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new HTTPResponse(HTTPResponse.StatusCode.OK);
         HTTPRequest request = new HTTPRequest(Router.GET, "simple_get_again");
         Router router = new Router()
-          .get( "simple_get", handler)
+          .get( "/simple_get", handler)
           .get("simple_get_again", handler);
 
         HTTPResponse response = router.handle(request);
