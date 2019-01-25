@@ -33,7 +33,7 @@ class Router implements Handler {
     public HTTPResponse handle(HTTPRequest request) {
         if (routeAdded(request)) {
             return handleRoute(request);
-        } else if (uriAddedToAnyMethod(request)) {
+        } else if (allowedUri(request)) {
             return methodNotAllowed(request);
         } else {
             return notFound();
@@ -58,7 +58,7 @@ class Router implements Handler {
         ).apply(request);
     }
 
-    private boolean uriAddedToAnyMethod(HTTPRequest request) {
+    private boolean allowedUri(HTTPRequest request) {
         return map.keySet().stream()
           .anyMatch(route -> route.uri().equals(request.uri()));
     }
