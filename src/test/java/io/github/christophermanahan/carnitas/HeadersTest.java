@@ -19,11 +19,11 @@ class HeadersTest {
 
     @Test
     void itCanConstructAnAllowHeader() {
-        List<String> methods = List.of(Router.GET, Router.HEAD);
+        List<HTTPRequest.Method> methods = List.of(HTTPRequest.Method.GET, HTTPRequest.Method.HEAD);
 
         String header = Headers.allow(methods);
 
-        String expectedHeader = Headers.ALLOW + Router.GET + " " + Router.HEAD;
+        String expectedHeader = Headers.ALLOW + HTTPRequest.Method.GET + " " + HTTPRequest.Method.HEAD;
         Assertions.assertEquals(expectedHeader, header);
     }
 }

@@ -1,15 +1,15 @@
 package io.github.christophermanahan.carnitas;
 
 public class Route {
-    private final String method;
+    private final HTTPRequest.Method method;
     private final String uri;
 
-    Route(String method, String uri) {
+    Route(HTTPRequest.Method method, String uri) {
         this.method = method;
         this.uri = uri;
     }
 
-    public String method() {
+    public HTTPRequest.Method method() {
         return method;
     }
 
@@ -17,7 +17,7 @@ public class Route {
         return uri;
     }
 
-    public boolean equals(Route route) {
+    boolean equals(Route route) {
         return method.equals(route.method) && uri.equals(route.uri);
     }
 }

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RequestParserTest {
     @Test
     void itParsesRequestWithoutBody() {
-        String method = "GET";
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
         String request = method + " " + uri + " " + HTTPResponse.VERSION
@@ -21,7 +21,7 @@ class RequestParserTest {
 
         Optional<HTTPRequest> parsed = parser.parse(reader);
 
-        Optional<String> parsedMethod = parsed.map(HTTPRequest::method);
+        Optional<HTTPRequest.Method> parsedMethod = parsed.map(HTTPRequest::method);
         Optional<String> parsedUri = parsed.map(HTTPRequest::uri);
         assertEquals(Optional.of(method), parsedMethod);
         assertEquals(Optional.of(uri), parsedUri);
@@ -29,7 +29,7 @@ class RequestParserTest {
 
     @Test
     void itParsesRequestWithBody() {
-        String method = "GET";
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
         String request = method + " " + uri + " " + HTTPResponse.VERSION + HTTPResponse.CRLF
@@ -42,7 +42,7 @@ class RequestParserTest {
 
         Optional<HTTPRequest> parsed = parser.parse(reader);
 
-        Optional<String> parsedMethod = parsed.map(HTTPRequest::method);
+        Optional<HTTPRequest.Method> parsedMethod = parsed.map(HTTPRequest::method);
         Optional<String> parsedUri = parsed.map(HTTPRequest::uri);
         Optional<String> parsedBody = parsed.flatMap(HTTPRequest::body);
         assertEquals(Optional.of(method), parsedMethod);

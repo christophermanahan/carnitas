@@ -75,7 +75,12 @@ public class RequestParser implements Parser {
 
     private Optional<HTTPRequest> request(Optional<String> method, Optional<String> uri, Optional<String> body) {
         if (method.isPresent() && uri.isPresent()) {
-            return Optional.of(new HTTPRequest(method.get(), uri.get()).withBody(body));
+            return Optional.of(
+              new HTTPRequest(
+                HTTPRequest.Method.valueOf(method.get()),
+                uri.get()
+              ).withBody(body)
+            );
         } else {
             return Optional.empty();
         }

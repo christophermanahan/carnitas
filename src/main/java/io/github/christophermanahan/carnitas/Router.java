@@ -7,26 +7,23 @@ import java.util.stream.Collectors;
 
 class Router implements Handler {
     private final HashMap<Route, Function<HTTPRequest, HTTPResponse>> map;
-    static final String GET = "GET";
-    static final String HEAD = "HEAD";
-    static final String POST = "POST";
 
     Router() {
         this.map = new HashMap<>();
     }
 
     Router get(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        map.put(new Route(GET, uri), handler);
+        map.put(new Route(HTTPRequest.Method.GET, uri), handler);
         return this;
     }
 
     Router head(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        map.put(new Route(HEAD, uri), handler);
+        map.put(new Route(HTTPRequest.Method.HEAD, uri), handler);
         return this;
     }
 
     Router post(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        map.put(new Route(POST, uri), handler);
+        map.put(new Route(HTTPRequest.Method.POST, uri), handler);
         return this;
     }
 
@@ -70,7 +67,7 @@ class Router implements Handler {
           );
     }
 
-    private List<String> allowedMethods(HTTPRequest request) {
+    private List<HTTPRequest.Method> allowedMethods(HTTPRequest request) {
         return map.keySet().stream()
           .filter(route -> route.uri().equals(request.uri()))
           .map(Route::method)

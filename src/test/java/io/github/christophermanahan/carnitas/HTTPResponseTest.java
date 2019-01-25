@@ -24,7 +24,7 @@ class HTTPResponseTest {
     @Test
     void itSerializesToAFormattedHTTPResponseWithHeaders() {
         HTTPResponse.Status status = HTTPResponse.Status.METHOD_NOT_ALLOWED;
-        String header = Headers.allow(List.of(Router.GET, Router.HEAD));
+        String header = Headers.allow(List.of(HTTPRequest.Method.GET, HTTPRequest.Method.HEAD));
         HTTPResponse httpResponse = new HTTPResponse(status)
           .withHeaders(List.of(header, header));
 
