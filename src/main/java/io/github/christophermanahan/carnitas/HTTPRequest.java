@@ -3,16 +3,22 @@ package io.github.christophermanahan.carnitas;
 import java.util.Optional;
 
 public class HTTPRequest {
-    private final String method;
+    private final Method method;
     private final String uri;
     private Optional<String> body;
 
-    HTTPRequest(String method, String uri) {
+    enum Method {
+        GET,
+        HEAD,
+        POST
+    }
+
+    HTTPRequest(Method method, String uri) {
         this.method = method;
         this.uri = uri;
     }
 
-    private HTTPRequest(String method, String uri, Optional<String> body) {
+    private HTTPRequest(Method method, String uri, Optional<String> body) {
         this.method = method;
         this.uri = uri;
         this.body = body;
@@ -22,7 +28,7 @@ public class HTTPRequest {
         return new HTTPRequest(method, uri, body);
     }
 
-    public String method() {
+    public Method method() {
         return method;
     }
 
@@ -33,4 +39,5 @@ public class HTTPRequest {
     public Optional<String> body() {
         return body;
     }
+
 }

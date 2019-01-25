@@ -91,7 +91,7 @@ class HTTPServerTest {
             }
         };
         Listener listener = () -> connection;
-        Parser parser = reader -> Optional.of(new HTTPRequest("GET", "/simple_get"));
+        Parser parser = reader -> Optional.of(new HTTPRequest(HTTPRequest.Method.GET, "/simple_get"));
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());
@@ -144,13 +144,15 @@ class HTTPServerTest {
 
     private class TestParser implements Parser {
         public Optional<HTTPRequest> parse(Reader reader) {
-            return Optional.of(new HTTPRequest(reader.readUntil(" ").get(), reader.readUntil(HTTPResponse.CRLF).get()));
+            HTTPRequest.Method method = HTTPRequest.Method.valueOf(reader.readUntil(" ").get());
+            String uri = reader.readUntil(HTTPResponse.CRLF).get();
+            return Optional.of(new HTTPRequest(method, uri));
         }
     }
 
     private class TestHandler implements Handler {
         public HTTPResponse handle(HTTPRequest request) {
-            HTTPResponse.Status code = request.method().equals("GET") ? HTTPResponse.Status.OK : HTTPResponse.Status.CREATED;
+            HTTPResponse.Status code = request.method().equals(HTTPRequest.Method.GET) ? HTTPResponse.Status.OK : HTTPResponse.Status.CREATED;
             return new HTTPResponse(code);
         }
     }
