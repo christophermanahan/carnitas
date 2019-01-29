@@ -3,9 +3,11 @@ package io.github.christophermanahan.carnitas;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RouterTest {
     @Test
@@ -82,5 +84,95 @@ class RouterTest {
         HTTPResponse expectedResponse = new HTTPResponse(HTTPResponse.Status.METHOD_NOT_ALLOWED)
           .withHeaders(List.of(Headers.allow(List.of(HTTPRequest.Method.POST))));
         assertArrayEquals(expectedResponse.serialize(), response.serialize());
+    }
+
+    @Test
+    void itProcessesAGETRequestIntoAResponseIfTheRouteHasBeenAdded2() {
+        Function<HTTPRequest, HTTPResponse2> handler = (HTTPRequest request) -> new HTTPResponse2(
+          HTTPResponse2.Status.OK, List.of(), Optional.empty()
+        );
+        HTTPRequest request = new HTTPRequest(HTTPRequest.Method.GET, "/simple_get");
+        Router router = new Router()
+          .get2("/simple_get", handler);
+
+        HTTPResponse2 response = router.handle2(request);
+
+        assertTrue(handler.apply(request).equals(response));
+    }
+
+    @Test
+    void itProcessesAHEADRequestIntoAResponseIfTheRouteHasBeenAdded2() {
+        Function<HTTPRequest, HTTPResponse2> handler = (HTTPRequest request) -> new HTTPResponse2(
+          HTTPResponse2.Status.OK, List.of(), Optional.empty()
+        );
+        HTTPRequest request = new HTTPRequest(HTTPRequest.Method.HEAD, "/simple_get");
+        Router router = new Router()
+          .head2("/simple_get", handler);
+
+        HTTPResponse2 response = router.handle2(request);
+
+        assertTrue(handler.apply(request).equals(response));
+    }
+
+    @Test
+    void itProcessesAPOSTRequestIntoAResponseIfTheRouteHasBeenAdded2() {
+        Function<HTTPRequest, HTTPResponse2> handler = (HTTPRequest request) -> new HTTPResponse2(
+          HTTPResponse2.Status.CREATED, List.of(), Optional.empty()
+        );
+        HTTPRequest request = new HTTPRequest(HTTPRequest.Method.POST, "/simple_post");
+        Router router = new Router()
+          .post2("/simple_post", handler);
+
+        HTTPResponse2 response = router.handle2(request);
+
+        assertTrue(handler.apply(request).equals(response));
+    }
+
+    @Test
+    void itProcessesARequestIntoANotFoundResponseIfTheRouteHasNotBeenAdded2() {
+        Function<HTTPRequest, HTTPResponse2> handler = (HTTPRequest request) -> new HTTPResponse2(
+          HTTPResponse2.Status.OK, List.of(), Optional.empty()
+        );
+        HTTPRequest request = new HTTPRequest(HTTPRequest.Method.POST, "/simple_post");
+        Router router = new Router()
+          .get2( "/simple_get", handler);
+
+        HTTPResponse2 response = router.handle2(request);
+
+        assertTrue(handler.apply(request).equals(response));
+    }
+
+    @Test
+    void itProcessesAGETRequestIntoAResponseIfMultipleRoutesHaveBeenAdded2() {
+        Function<HTTPRequest, HTTPResponse2> handler = (HTTPRequest request) -> new HTTPResponse2(
+          HTTPResponse2.Status.OK, List.of(), Optional.empty()
+        );
+        HTTPRequest request = new HTTPRequest(HTTPRequest.Method.GET, "simple_get_again");
+        Router router = new Router()
+          .get2( "/simple_get", handler)
+          .get2("simple_get_again", handler);
+
+        HTTPResponse2 response = router.handle2(request);
+
+        assertTrue(handler.apply(request).equals(response));
+    }
+
+    @Test
+    void itProcessesAPOSTRequestIntoAResponseIfTheRouteHasBeenAddedToDifferentMethodsThanTheRequestMethod2() {
+        Function<HTTPRequest, HTTPResponse2> handler = (HTTPRequest request) -> new HTTPResponse2(
+          HTTPResponse2.Status.CREATED, List.of(), Optional.empty()
+        );
+        HTTPRequest request = new HTTPRequest(HTTPRequest.Method.GET, "/simple_post");
+        Router router = new Router()
+          .post2("/simple_post", handler);
+
+        HTTPResponse2 response = router.handle2(request);
+
+        HTTPResponse2 expectedResponse = new HTTPResponse2(
+          HTTPResponse2.Status.METHOD_NOT_ALLOWED,
+          List.of(Headers.allow(List.of(HTTPRequest.Method.POST))),
+          Optional.empty()
+        );
+        assertTrue(expectedResponse.equals(response));
     }
 }
