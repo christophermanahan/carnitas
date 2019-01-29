@@ -120,11 +120,13 @@ class Router implements Handler {
     private Supplier<HTTPResponse2> not(List<HTTPRequest.Method> allowed) {
         return new ResponseBuilder()
           .setStatus(HTTPResponse2.Status.METHOD_NOT_ALLOWED)
+          .addHeader(Headers.contentLength(0))
           .addHeader(Headers.allow(allowed));
     }
 
     private Supplier<HTTPResponse2> notFound2() {
         return new ResponseBuilder()
-          .setStatus(HTTPResponse2.Status.NOT_FOUND);
+          .setStatus(HTTPResponse2.Status.NOT_FOUND)
+          .addHeader(Headers.contentLength(0));
     }
 }

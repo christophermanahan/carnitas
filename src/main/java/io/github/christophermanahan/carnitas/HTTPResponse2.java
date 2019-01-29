@@ -8,6 +8,8 @@ public class HTTPResponse2 {
     private final List<String> headers;
     private final Optional<String> body;
 
+    static final String VERSION = "HTTP/1.1";
+
     enum Status {
         OK ("200 OK"),
         CREATED("201 Created"),
@@ -27,8 +29,20 @@ public class HTTPResponse2 {
         this.body = body;
     }
 
+    Status status() {
+        return status;
+    }
+
+    public List<String> headers() {
+        return headers;
+    }
+
+    public Optional<String> body() {
+        return body;
+    }
+
     boolean equals(HTTPResponse2 response) {
-        return body.equals(response.body)
+        return status.equals(response.status)
           && headers.equals(response.headers)
           && body.equals(response.body);
     }
