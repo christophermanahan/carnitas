@@ -18,4 +18,8 @@ class Application implements Handler {
     public HTTPResponse handle(HTTPRequest request) {
         return router.handle(request);
     }
+
+    public HTTPResponse2 handle2(HTTPRequest httpRequest) {
+        return null;
+    }
 }

@@ -83,6 +83,9 @@ class HTTPServerTest {
                 throw new RuntimeException(message);
             }
 
+            public void send2(HTTPResponse2 response2) {
+            }
+
             public void close() {
             }
 
@@ -125,6 +128,9 @@ class HTTPServerTest {
             this.response = response;
         }
 
+        public void send2(HTTPResponse2 response) {
+        }
+
         public void close() {
         }
     }
@@ -154,6 +160,10 @@ class HTTPServerTest {
         public HTTPResponse handle(HTTPRequest request) {
             HTTPResponse.Status code = request.method().equals(HTTPRequest.Method.GET) ? HTTPResponse.Status.OK : HTTPResponse.Status.CREATED;
             return new HTTPResponse(code);
+        }
+
+        public HTTPResponse2 handle2(HTTPRequest httpRequest) {
+            return null;
         }
     }
 
