@@ -21,14 +21,6 @@ public class SocketConnection implements Connection, Readable {
 
     public void send(HTTPResponse response) {
         try {
-            socket.getOutputStream().write(response.serialize());
-        } catch (IOException e) {
-            throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);
-        }
-    }
-
-    public void send2(HTTPResponse2 response) {
-        try {
             socket.getOutputStream().write(new Serializer().serialize(response));
         } catch (IOException e) {
             throw new RuntimeException(ErrorMessages.SEND_TO_CONNECTION);

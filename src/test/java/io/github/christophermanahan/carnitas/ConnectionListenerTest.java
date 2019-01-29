@@ -1,6 +1,5 @@
 package io.github.christophermanahan.carnitas;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -9,19 +8,22 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConnectionListenerTest {
     @Test
     void listensForAConnection() throws IOException {
-        HTTPResponse response = new HTTPResponse(HTTPResponse.Status.OK);
+        HTTPResponse response = new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.OK)
+          .get();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ServerSocket serverSocket = new TestServerSocket(output);
 
         Connection connection = new ConnectionListener(serverSocket).listen();
 
         connection.send(response);
-        assertArrayEquals(response.serialize(), output.toByteArray());
+        assertEquals(new String(new Serializer().serialize(response)), new String(output.toByteArray()));
     }
 
     @Test
@@ -31,7 +33,7 @@ class ConnectionListenerTest {
         Listener listener = new ConnectionListener(serverSocket);
         RuntimeException e = assertThrows(RuntimeException.class, listener::listen);
 
-        Assertions.assertEquals(ErrorMessages.ACCEPT_CONNECTION, e.getMessage());
+        assertEquals(ErrorMessages.ACCEPT_CONNECTION, e.getMessage());
     }
 
     private class TestServerSocket extends ServerSocket {

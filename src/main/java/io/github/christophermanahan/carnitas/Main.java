@@ -9,9 +9,9 @@ public class Main {
         try (ServerSocket serverSocket = new ServerSocket(port(args))) {
             new HTTPServer(
               new RequestParser(),
-              new Application2(),
+              new Application(),
               new ErrorLogger()
-            ).start2(
+            ).start(
               new ConnectionListener(serverSocket),
               new WhileOpen(serverSocket)
             );

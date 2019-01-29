@@ -32,24 +32,4 @@ class HTTPServer {
           .map(handler::handle)
           .ifPresent(connection::send);
     }
-
-    void start2(Listener listener, Consumer<Runnable> context) {
-        context.accept(connect2(listener));
-    }
-
-    private Runnable connect2(Listener listener) {
-        return () -> {
-            try (Connection connection = listener.listen()) {
-                serve2(connection);
-            } catch (RuntimeException e) {
-                logger.log(e.getMessage());
-            }
-        };
-    }
-
-    private void serve2(Connection connection) {
-        parser.parse(new ConnectionReader(connection))
-          .map(handler::handle2)
-          .ifPresent(connection::send2);
-    }
 }

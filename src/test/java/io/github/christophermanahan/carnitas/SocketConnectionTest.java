@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SocketConnectionTest {
     @Test
-    void readsACharacter() {
+    void itReadsACharacter() {
         String request = "GET";
         Socket socket = new TestSocket(request);
 
@@ -24,17 +24,19 @@ class SocketConnectionTest {
     }
 
     @Test
-    void sendsResponseBytesToSocket() throws IOException {
-        HTTPResponse response = new HTTPResponse(HTTPResponse.Status.OK);
+    void itSendsResponseBytesToTheSocket() throws IOException {
+        HTTPResponse response = new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.OK)
+          .get();
         Socket socket = new TestSocket(null);
 
         new SocketConnection(socket).send(response);
 
-        assertEquals(new String(response.serialize()), socket.getOutputStream().toString());
+        assertEquals(new String(new Serializer().serialize(response)), socket.getOutputStream().toString());
     }
 
     @Test
-    void throwsExceptionIfSendFails() {
+    void itThrowsAnExceptionIfSendFails() {
         Socket socket = new OutputStreamException();
         Connection connection = new SocketConnection(socket);
 
@@ -44,7 +46,7 @@ class SocketConnectionTest {
     }
 
     @Test
-    void closeClosesSocketConnection() {
+    void itClosesTheSocketConnection() {
         Socket socket = new TestSocket(null);
 
         new SocketConnection(socket).close();
@@ -53,7 +55,7 @@ class SocketConnectionTest {
     }
 
     @Test
-    void throwsExceptionIfCloseFails() {
+    void itThrowsAnExceptionIfCloseFails() {
         Socket socket = new CloseException();
         Connection connection = new SocketConnection(socket);
 

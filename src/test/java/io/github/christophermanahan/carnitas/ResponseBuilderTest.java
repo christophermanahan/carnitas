@@ -10,32 +10,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ResponseBuilderTest {
     @Test
     void itCanBuildAnHTTPResponse() {
-        HTTPResponse2.Status status = HTTPResponse2.Status.OK;
+        HTTPResponse.Status status = HTTPResponse.Status.OK;
         String contentLength = Headers.contentLength(0);
         String allow = Headers.allow(List.of(HTTPRequest.Method.GET));
         List<String> headers = List.of(contentLength, allow);
         Optional<String> body = Optional.of("name=<something>");
         ResponseBuilder builder = new ResponseBuilder();
 
-        HTTPResponse2 response = builder.setStatus(status)
+        HTTPResponse response = builder
+          .setStatus(status)
           .addHeader(contentLength)
           .addHeader(allow)
           .setBody(body)
           .get();
 
-        HTTPResponse2 expectedResponse = new HTTPResponse2(status, headers, body);
+        HTTPResponse expectedResponse = new HTTPResponse(status, headers, body);
         assertTrue(expectedResponse.equals(response));
     }
 
     @Test
     void itCanBuildAnHTTPResponseWithOptionalHeadersAndBody() {
-        HTTPResponse2.Status status = HTTPResponse2.Status.OK;
+        HTTPResponse.Status status = HTTPResponse.Status.OK;
         ResponseBuilder builder = new ResponseBuilder();
 
-        HTTPResponse2 response = builder.setStatus(status)
+        HTTPResponse response = builder
+          .setStatus(status)
           .get();
 
-        HTTPResponse2 expectedResponse = new HTTPResponse2(status, List.of(), Optional.empty());
+        HTTPResponse expectedResponse = new HTTPResponse(status, List.of(), Optional.empty());
         assertTrue(expectedResponse.equals(response));
     }
 }

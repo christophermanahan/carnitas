@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class HTTPMethodTest {
+class HTTPRequestTest {
     @Test
     void itHasAMethod() {
         HTTPRequest.Method method = HTTPRequest.Method.GET;

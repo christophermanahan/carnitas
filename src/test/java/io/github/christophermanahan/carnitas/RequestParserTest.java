@@ -15,7 +15,7 @@ class RequestParserTest {
         String uri = "/simple_get";
         String body = "name=<something>";
         String request = method + " " + uri + " " + HTTPResponse.VERSION
-          + HTTPResponse.BLANK_LINE;
+          + Serializer.BLANK_LINE;
         Reader reader = new RequestReader(request);
         Parser parser = new RequestParser();
 
@@ -32,10 +32,10 @@ class RequestParserTest {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
-        String request = method + " " + uri + " " + HTTPResponse.VERSION + HTTPResponse.CRLF
-          + Headers.contentLength(body.length()) + HTTPResponse.CRLF
+        String request = method + " " + uri + " " + HTTPResponse.VERSION + Serializer.CRLF
+          + Headers.contentLength(body.length()) + Serializer.CRLF
           + "Test-Header: Test"
-          + HTTPResponse.BLANK_LINE
+          + Serializer.BLANK_LINE
           + body;
         Reader reader = new RequestReader(request);
         Parser parser = new RequestParser();
@@ -72,7 +72,7 @@ class RequestParserTest {
         private final Iterator<String> request;
 
         RequestReader(String request) {
-            this.request = List.of(request.split(HTTPResponse.CRLF, -1)).iterator();
+            this.request = List.of(request.split(Serializer.CRLF, -1)).iterator();
         }
 
         public Optional<String> readUntil(String delimiter) {

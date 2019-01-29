@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class ResponseBuilder implements Supplier<HTTPResponse2> {
-    private HTTPResponse2.Status status;
+public class ResponseBuilder implements Supplier<HTTPResponse> {
+    private HTTPResponse.Status status;
     private List<String> headers = new ArrayList<>();
     private Optional<String> body = Optional.empty();
 
-    public ResponseBuilder setStatus(HTTPResponse2.Status status) {
+    public ResponseBuilder setStatus(HTTPResponse.Status status) {
         this.status = status;
         return this;
     }
@@ -25,8 +25,8 @@ public class ResponseBuilder implements Supplier<HTTPResponse2> {
         return this;
     }
 
-    public HTTPResponse2 get() {
-        return new HTTPResponse2(status, headers, body);
+    public HTTPResponse get() {
+        return new HTTPResponse(status, headers, body);
     }
 
 }
