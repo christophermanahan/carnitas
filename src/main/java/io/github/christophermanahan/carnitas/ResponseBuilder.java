@@ -28,5 +28,4 @@ public class ResponseBuilder implements Supplier<HTTPResponse> {
     public HTTPResponse get() {
         return new HTTPResponse(status, headers, body);
     }
-
 }
