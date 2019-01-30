@@ -49,9 +49,13 @@ class Router implements Handler {
 
     private List<HTTPRequest.Method> allowed(HTTPRequest request) {
         return map.keySet().stream()
-          .filter(route -> route.uri().equals(request.uri()))
+          .filter(matchesUriOf(request))
           .map(Route::method)
           .collect(Collectors.toList());
+    }
+
+    private Predicate<Route> matchesUriOf(HTTPRequest request) {
+        return route -> route.uri().equals(request.uri());
     }
 
     private Supplier<HTTPResponse> not(List<HTTPRequest.Method> allowed) {

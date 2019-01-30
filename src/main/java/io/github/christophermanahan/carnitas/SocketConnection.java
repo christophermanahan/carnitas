@@ -19,7 +19,7 @@ public class SocketConnection implements Connection, Readable {
         }
     }
 
-public Optional<String> readAll() {
+    public Optional<String> readAll() {
         try {
             return Optional.of(new String(socket.getInputStream().readAllBytes()));
         } catch (IOException e) {
