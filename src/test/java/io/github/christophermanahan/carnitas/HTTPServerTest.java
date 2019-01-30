@@ -84,7 +84,7 @@ class HTTPServerTest {
     void itWillLogAMessageIfSendFails() {
         String message = "Failed!";
         Connection connection = new Connection() {
-            public void send(HTTPResponse response2) {
+            public void send(HTTPResponse response) {
                 throw new RuntimeException(message);
             }
 
