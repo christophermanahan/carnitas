@@ -31,14 +31,14 @@ class Router implements Handler {
 
     public HTTPResponse handle(HTTPRequest request) {
         return map.keySet().stream()
-          .filter(matcherFor(request))
+          .filter(matches(request))
           .findFirst()
           .map(map::get)
           .map(handler -> handler.apply(request))
           .orElseGet(handler(request));
     }
 
-    private Predicate<Route> matcherFor(HTTPRequest request) {
+    private Predicate<Route> matches(HTTPRequest request) {
         return route -> route.equals(new Route(request.method(), request.uri()));
     }
 
