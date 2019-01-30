@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RouterTest {
     @Test
@@ -19,7 +19,7 @@ class RouterTest {
 
         HTTPResponse response = router.handle(request);
 
-        assertTrue(handler.apply(request).equals(response));
+        assertEquals(handler.apply(request), response);
     }
 
     @Test
@@ -33,7 +33,7 @@ class RouterTest {
 
         HTTPResponse response = router.handle(request);
 
-        assertTrue(handler.apply(request).equals(response));
+        assertEquals(handler.apply(request), response);
     }
 
     @Test
@@ -47,7 +47,7 @@ class RouterTest {
 
         HTTPResponse response = router.handle(request);
 
-        assertTrue(handler.apply(request).equals(response));
+        assertEquals(handler.apply(request), response);
     }
 
     @Test
@@ -62,7 +62,7 @@ class RouterTest {
 
         HTTPResponse response = router.handle(request);
 
-        assertTrue(handler.apply(request).equals(response));
+        assertEquals(handler.apply(request), response);
     }
 
     @Test
@@ -80,11 +80,11 @@ class RouterTest {
           .setStatus(HTTPResponse.Status.NOT_FOUND)
           .addHeader(Headers.contentLength(0))
           .get();
-        assertTrue(expectedResponse.equals(response));
+        assertEquals(expectedResponse, response);
     }
 
     @Test
-    void itProcessesARequestIntoAMethodNotAllowedResponseIfTheRouteHasBeenAddedToDifferentMethodsThanTheRequestMethod() {
+    void itDoesNotAllowRequestsToRoutesThatCannotRespondToTheRequestMethod() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
           .setStatus(HTTPResponse.Status.CREATED)
           .get();
@@ -99,6 +99,6 @@ class RouterTest {
           .addHeader(Headers.contentLength(0))
           .addHeader(Headers.allow(List.of(HTTPRequest.Method.POST)))
           .get();
-        assertTrue(expectedResponse.equals(response));
+        assertEquals(expectedResponse, response);
     }
 }
