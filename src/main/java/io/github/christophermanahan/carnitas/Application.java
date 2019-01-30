@@ -1,5 +1,7 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.function.Function;
+
 class Application implements Handler {
     private final Handler router;
 
@@ -8,11 +10,24 @@ class Application implements Handler {
 
     Application() {
         this.router = new Router()
-          .get(SIMPLE_GET, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.OK))
-          .head(SIMPLE_GET, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.OK))
-          .post(SIMPLE_POST, (HTTPRequest request) -> new HTTPResponse(HTTPResponse.Status.CREATED)
-            .withBody(request.body())
-          );
+          .get(SIMPLE_GET, okHandler())
+          .head(SIMPLE_GET, okHandler())
+          .post(SIMPLE_POST, createdHandler());
+    }
+
+    private Function<HTTPRequest, HTTPResponse> okHandler() {
+        return (HTTPRequest request) -> new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.OK)
+          .addHeader(Headers.contentLength(0))
+          .get();
+    }
+
+    private Function<HTTPRequest, HTTPResponse> createdHandler() {
+        return (HTTPRequest request) -> new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.CREATED)
+          .addHeader(Headers.contentLength(request.body().orElse("").length()))
+          .setBody(request.body())
+          .get();
     }
 
     public HTTPResponse handle(HTTPRequest request) {

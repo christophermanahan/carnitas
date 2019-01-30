@@ -3,6 +3,8 @@ package io.github.christophermanahan.carnitas;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 class Router implements Handler {
@@ -28,53 +30,40 @@ class Router implements Handler {
     }
 
     public HTTPResponse handle(HTTPRequest request) {
-        if (routeAdded(request)) {
-            return handleRoute(request);
-        } else if (allowedUri(request)) {
-            return methodNotAllowed(request);
-        } else {
-            return notFound();
-        }
-    }
-
-    private Route route(HTTPRequest request) {
-        return new Route(request.method(), request.uri());
-    }
-
-    private boolean routeAdded(HTTPRequest request) {
         return map.keySet().stream()
-          .anyMatch(route -> route.equals(route(request)));
+          .filter(matches(request))
+          .findFirst()
+          .map(map::get)
+          .map(handler -> handler.apply(request))
+          .orElseGet(handler(request));
     }
 
-    private HTTPResponse handleRoute(HTTPRequest request) {
-        return map.get(
-          map.keySet().stream()
-            .filter(route -> route.equals(route(request)))
-            .findFirst()
-            .get()
-        ).apply(request);
+    private Predicate<Route> matches(HTTPRequest request) {
+        return route -> route.equals(new Route(request.method(), request.uri()));
     }
 
-    private boolean allowedUri(HTTPRequest request) {
-        return map.keySet().stream()
-          .anyMatch(route -> route.uri().equals(request.uri()));
+    private Supplier<HTTPResponse> handler(HTTPRequest request) {
+        List<HTTPRequest.Method> allowed = allowed(request);
+        return allowed.isEmpty() ? notFound() : not(allowed);
     }
 
-    private HTTPResponse methodNotAllowed(HTTPRequest request) {
-        return new HTTPResponse(HTTPResponse.Status.METHOD_NOT_ALLOWED)
-          .withHeaders(List.of(
-            Headers.allow(allowedMethods(request)))
-          );
-    }
-
-    private List<HTTPRequest.Method> allowedMethods(HTTPRequest request) {
+    private List<HTTPRequest.Method> allowed(HTTPRequest request) {
         return map.keySet().stream()
           .filter(route -> route.uri().equals(request.uri()))
           .map(Route::method)
           .collect(Collectors.toList());
     }
 
-    private HTTPResponse notFound() {
-        return new HTTPResponse(HTTPResponse.Status.NOT_FOUND);
+    private Supplier<HTTPResponse> not(List<HTTPRequest.Method> allowed) {
+        return new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.METHOD_NOT_ALLOWED)
+          .addHeader(Headers.contentLength(0))
+          .addHeader(Headers.allow(allowed));
+    }
+
+    private Supplier<HTTPResponse> notFound() {
+        return new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.NOT_FOUND)
+          .addHeader(Headers.contentLength(0));
     }
 }

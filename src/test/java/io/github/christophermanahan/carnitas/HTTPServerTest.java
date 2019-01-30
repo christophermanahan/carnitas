@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HTTPServerTest {
     private TestParser parser;
@@ -26,41 +25,47 @@ class HTTPServerTest {
     @Test
     void itWillServeGETRequests() {
         String request = "GET /simple_get";
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Serializer.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.OK).serialize();
-        assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
+        HTTPResponse expectedResponse = new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.OK)
+          .get();
+        assertTrue(expectedResponse.equals(connections.get(0).response));
     }
 
     @Test
     void itWillServePOSTRequests() {
         String request = "POST simple_post";
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request + HTTPResponse.CRLF));
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Serializer.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.CREATED).serialize();
-        assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
+        HTTPResponse expectedResponse = new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.CREATED)
+          .get();
+        assertTrue(expectedResponse.equals(connections.get(0).response));
     }
 
     @Test
     void itWillServeRequestsBasedOnContext() {
         String request = "GET simple_get";
         List<ReadableConnection> connections = List.of(
-          new ReadableConnection(request + HTTPResponse.CRLF),
-          new ReadableConnection(request + HTTPResponse.CRLF)
+          new ReadableConnection(request + Serializer.CRLF),
+          new ReadableConnection(request + Serializer.CRLF)
         );
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Twice());
 
-        byte[] expectedResponse = new HTTPResponse(HTTPResponse.Status.OK).serialize();
-        assertArrayEquals(expectedResponse, connections.get(0).response.serialize());
-        assertArrayEquals(expectedResponse, connections.get(1).response.serialize());
+        HTTPResponse expectedResponse = new ResponseBuilder()
+          .setStatus(HTTPResponse.Status.OK)
+          .get();
+        assertTrue(expectedResponse.equals(connections.get(0).response));
+        assertTrue(expectedResponse.equals(connections.get(1).response));
     }
 
     @Test
@@ -111,7 +116,7 @@ class HTTPServerTest {
 
     private class ReadableConnection implements Connection {
         private final Iterator<String> request;
-        HTTPResponse response;
+        private HTTPResponse response;
 
         ReadableConnection(String request) {
             this.request = List.of(request.split("")).iterator();
@@ -145,7 +150,7 @@ class HTTPServerTest {
     private class TestParser implements Parser {
         public Optional<HTTPRequest> parse(Reader reader) {
             HTTPRequest.Method method = HTTPRequest.Method.valueOf(reader.readUntil(" ").get());
-            String uri = reader.readUntil(HTTPResponse.CRLF).get();
+            String uri = reader.readUntil(Serializer.CRLF).get();
             return Optional.of(new HTTPRequest(method, uri));
         }
     }
@@ -153,7 +158,9 @@ class HTTPServerTest {
     private class TestHandler implements Handler {
         public HTTPResponse handle(HTTPRequest request) {
             HTTPResponse.Status code = request.method().equals(HTTPRequest.Method.GET) ? HTTPResponse.Status.OK : HTTPResponse.Status.CREATED;
-            return new HTTPResponse(code);
+            return new ResponseBuilder()
+              .setStatus(code)
+              .get();
         }
     }
 

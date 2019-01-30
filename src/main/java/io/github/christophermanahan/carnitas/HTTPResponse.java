@@ -3,15 +3,12 @@ package io.github.christophermanahan.carnitas;
 import java.util.List;
 import java.util.Optional;
 
-class HTTPResponse {
+public class HTTPResponse {
     private final Status status;
-    private List<String> headers = List.of();
-    private Optional<String> body = Optional.empty();
+    private final List<String> headers;
+    private final Optional<String> body;
 
     static final String VERSION = "HTTP/1.1";
-    static final String CRLF = "\r\n";
-    static final String BLANK_LINE = "\r\n\r\n";
-
 
     enum Status {
         OK ("200 OK"),
@@ -26,38 +23,28 @@ class HTTPResponse {
         }
     }
 
-    HTTPResponse(Status status) {
-        this.status = status;
-    }
-
-    private HTTPResponse(Status status, List<String> headers, Optional<String> body) {
+    HTTPResponse(Status status, List<String> headers, Optional<String> body) {
         this.status = status;
         this.headers = headers;
         this.body = body;
     }
 
-    HTTPResponse withHeaders(List<String> headers) {
-        return new HTTPResponse(status, headers, body);
+    Status status() {
+        return status;
     }
 
-    HTTPResponse withBody(Optional<String> body) {
-        return new HTTPResponse(status, headers, body);
+    public List<String> headers() {
+        return headers;
     }
 
-    byte[] serialize() {
-        return (VERSION + " " + status.code + CRLF
-          + headers()
-          + BLANK_LINE
-          + body.orElse("")
-        ).getBytes();
+    public Optional<String> body() {
+        return body;
     }
 
-    private String headers() {
-        if (headers.isEmpty()) {
-            return Headers.contentLength(body.orElse("").length());
-        } else {
-            return Headers.contentLength(body.orElse("").length()) + CRLF
-              + String.join(CRLF, headers);
-        }
+    public boolean equals(Object object) {
+        HTTPResponse response = (HTTPResponse) object;
+        return status.equals(response.status)
+          && headers.equals(response.headers)
+          && body.equals(response.body);
     }
 }

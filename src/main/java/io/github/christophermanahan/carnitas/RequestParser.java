@@ -24,7 +24,7 @@ public class RequestParser implements Parser {
     }
 
     private Optional<String> readLine(Reader reader) {
-        return reader.readUntil(HTTPResponse.CRLF);
+        return reader.readUntil(Serializer.CRLF);
     }
 
     private String extractMethod(String statusLine) {
