@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class HTTPResponseTest {
     @Test
@@ -57,9 +58,7 @@ class HTTPResponseTest {
           .setBody(body)
           .get();
 
-        boolean equal = response.equals(otherResponse);
-
-        assertTrue(equal);
+        assertEquals(response, otherResponse);
     }
 
     @Test
@@ -71,9 +70,7 @@ class HTTPResponseTest {
           .setStatus(HTTPResponse.Status.CREATED)
           .get();
 
-        boolean equal = response.equals(otherResponse);
-
-        assertFalse(equal);
+        assertNotEquals(response, otherResponse);
     }
 
     @Test
@@ -88,8 +85,7 @@ class HTTPResponseTest {
           .addHeader(Headers.contentLength(1))
           .get();
 
-        boolean equal = response.equals(otherResponse);
-        assertFalse(equal);
+        assertNotEquals(response, otherResponse);
     }
 
     @Test
@@ -104,8 +100,6 @@ class HTTPResponseTest {
           .setBody(Optional.of("name=<something-else>"))
           .get();
 
-        boolean equal = response.equals(otherResponse);
-
-        assertFalse(equal);
+        assertNotEquals(response, otherResponse);
     }
 }

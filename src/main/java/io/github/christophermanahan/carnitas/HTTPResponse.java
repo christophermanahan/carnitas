@@ -41,7 +41,8 @@ public class HTTPResponse {
         return body;
     }
 
-    boolean equals(HTTPResponse response) {
+    public boolean equals(Object object) {
+        HTTPResponse response = (HTTPResponse) object;
         return status.equals(response.status)
           && headers.equals(response.headers)
           && body.equals(response.body);
