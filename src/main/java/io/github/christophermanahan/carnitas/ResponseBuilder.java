@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ResponseBuilder implements Supplier<HTTPResponse> {
-    private HTTPResponse.Status status;
+    private HTTPResponse.Status status = HTTPResponse.Status.OK;
     private List<String> headers = new ArrayList<>();
     private Optional<String> body = Optional.empty();
 
