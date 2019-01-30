@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ResponseBuilderTest {
     @Test
@@ -25,7 +25,7 @@ class ResponseBuilderTest {
           .get();
 
         HTTPResponse expectedResponse = new HTTPResponse(status, headers, body);
-        assertTrue(expectedResponse.equals(response));
+        assertEquals(expectedResponse, response);
     }
 
     @Test
@@ -38,6 +38,6 @@ class ResponseBuilderTest {
           .get();
 
         HTTPResponse expectedResponse = new HTTPResponse(status, List.of(), Optional.empty());
-        assertTrue(expectedResponse.equals(response));
+        assertEquals(expectedResponse, response);
     }
 }
