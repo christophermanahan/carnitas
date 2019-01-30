@@ -19,6 +19,14 @@ public class SocketConnection implements Connection, Readable {
         }
     }
 
+public Optional<String> readAll() {
+        try {
+            return Optional.of(new String(socket.getInputStream().readAllBytes()));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
     public void send(HTTPResponse response) {
         try {
             socket.getOutputStream().write(new Serializer().serialize(response));

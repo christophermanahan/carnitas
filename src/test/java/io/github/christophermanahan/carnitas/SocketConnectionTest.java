@@ -24,6 +24,33 @@ class SocketConnectionTest {
     }
 
     @Test
+    void itReadsInTheSocketInput() {
+        String body = "name=<something>";
+        String request = HTTPRequest.Method.POST + "/simple_post " + HTTPResponse.VERSION
+          + Headers.contentLength(body.length())
+          + Serializer.BLANK_LINE
+          + body;
+        Socket socket = new TestSocket(request);
+
+        Optional<String> read = new SocketConnection(socket).readAll();
+
+        assertEquals(Optional.of(request), read);
+    }
+
+    @Test
+    void itIsEmptyIfSocketInputFails() {
+        class ReadStreamExcepetion extends Socket {
+            public InputStream getInputStream() throws IOException {
+                throw new IOException();
+            }
+        }
+
+        Optional<String> read = new SocketConnection(new ReadStreamExcepetion()).readAll();
+
+        assertEquals(Optional.empty(), read);
+    }
+
+    @Test
     void itSendsResponseBytesToTheSocket() throws IOException {
         HTTPResponse response = new ResponseBuilder()
           .setStatus(HTTPResponse.Status.OK)
@@ -37,8 +64,12 @@ class SocketConnectionTest {
 
     @Test
     void itThrowsAnExceptionIfSendFails() {
-        Socket socket = new OutputStreamException();
-        Connection connection = new SocketConnection(socket);
+        class OutputStreamException extends Socket {
+            public OutputStream getOutputStream() throws IOException {
+                throw new IOException();
+            }
+        }
+        Connection connection = new SocketConnection(new OutputStreamException());
 
         RuntimeException e = assertThrows(RuntimeException.class, ()->{ connection.send(null); });
 
@@ -56,8 +87,12 @@ class SocketConnectionTest {
 
     @Test
     void itThrowsAnExceptionIfCloseFails() {
-        Socket socket = new CloseException();
-        Connection connection = new SocketConnection(socket);
+        class CloseException extends Socket {
+            public synchronized void close() throws IOException {
+                throw new IOException();
+            }
+        }
+        Connection connection = new SocketConnection(new CloseException());
 
         RuntimeException e = assertThrows(RuntimeException.class, connection::close);
 
@@ -89,18 +124,6 @@ class SocketConnectionTest {
 
         public boolean isClosed() {
             return closed;
-        }
-    }
-
-    private class OutputStreamException extends Socket {
-        public OutputStream getOutputStream() throws IOException {
-            throw new IOException();
-        }
-    }
-
-    private class CloseException extends Socket {
-        public synchronized void close() throws IOException {
-            throw new IOException();
         }
     }
 }

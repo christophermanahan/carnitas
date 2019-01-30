@@ -84,6 +84,10 @@ class HTTPServerTest {
     void itWillLogAMessageIfSendFails() {
         String message = "Failed!";
         Connection connection = new Connection() {
+            public Optional<String> readAll() {
+                return Optional.empty();
+            }
+
             public void send(HTTPResponse response) {
                 throw new RuntimeException(message);
             }
@@ -120,6 +124,10 @@ class HTTPServerTest {
 
         ReadableConnection(String request) {
             this.request = List.of(request.split("")).iterator();
+        }
+
+        public Optional<String> readAll() {
+            return Optional.empty();
         }
 
         public Optional<Character> read() {
