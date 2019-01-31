@@ -3,11 +3,11 @@ package io.github.christophermanahan.carnitas;
 import java.util.function.Consumer;
 
 class HTTPServer {
-    private final Parser parser;
+    private final Parser<byte[], HTTPRequest> parser;
     private final Handler handler;
     private final Logger logger;
 
-    HTTPServer(Parser parser, Handler handler, Logger logger) {
+    HTTPServer(Parser<byte[], HTTPRequest> parser, Handler handler, Logger logger) {
         this.parser = parser;
         this.handler = handler;
         this.logger = logger;

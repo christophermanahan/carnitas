@@ -10,29 +10,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RequestBuilderTest {
     @Test
     void itCanBuildAnHTTPRequest() {
-        Route route = new Route(HTTPRequest.Method.GET, "/simple_get");
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        String uri = "/simple_get";
         String body = "name=<something>";
         String header = Headers.contentLength(body.length());
 
         HTTPRequest request = new RequestBuilder()
-          .setRoute(route)
+          .setMethod(method)
+          .setUri(uri)
           .addHeader(header)
           .setBody(Optional.of(body))
           .get();
 
-        HTTPRequest expectedRequest = new HTTPRequest(route, List.of(header), Optional.of(body));
+        HTTPRequest expectedRequest = new HTTPRequest(new Route(method, uri), List.of(header), Optional.of(body));
         assertEquals(expectedRequest, request);
     }
 
     @Test
     void itCanBuildAnHTTPRequestWithOptionalHeadersAndBody() {
-        Route route = new Route(HTTPRequest.Method.GET, "/simple_get");
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        String uri = "/simple_get";
 
         HTTPRequest request = new RequestBuilder()
-          .setRoute(route)
+          .setMethod(method)
+          .setUri(uri)
           .get();
 
-        HTTPRequest expectedRequest = new HTTPRequest(route, List.of(), Optional.empty());
+        HTTPRequest expectedRequest = new HTTPRequest(new Route(method, uri), List.of(), Optional.empty());
         assertEquals(expectedRequest, request);
     }
 }

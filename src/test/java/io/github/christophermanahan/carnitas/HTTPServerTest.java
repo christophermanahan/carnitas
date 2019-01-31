@@ -33,7 +33,7 @@ class HTTPServerTest {
         HTTPResponse expectedResponse = new ResponseBuilder()
           .setStatus(HTTPResponse.Status.OK)
           .get();
-        assertTrue(expectedResponse.equals(connections.get(0).response));
+        assertEquals(expectedResponse, connections.get(0).response);
     }
 
     @Test
@@ -84,7 +84,7 @@ class HTTPServerTest {
     void itWillLogAMessageIfSendFails() {
         String message = "Failed!";
         Connection connection = new Connection() {
-            public Optional<String> readAll() {
+            public Optional<byte[]> readAll() {
                 return Optional.empty();
             }
 
@@ -100,7 +100,15 @@ class HTTPServerTest {
             }
         };
         Listener listener = () -> connection;
-        Parser parser = reader -> Optional.of(new HTTPRequest(HTTPRequest.Method.GET, "/simple_get"));
+        Parser parser = new Parser<>() {
+            public Optional<HTTPRequest> parse(Reader reader) {
+                return Optional.of(new HTTPRequest(HTTPRequest.Method.GET, "/simple_get"));
+            }
+
+            public Object parse(Object request) {
+                return null;
+            }
+        };
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());
@@ -126,7 +134,7 @@ class HTTPServerTest {
             this.request = List.of(request.split("")).iterator();
         }
 
-        public Optional<String> readAll() {
+        public Optional<byte[]> readAll() {
             return Optional.empty();
         }
 
@@ -155,11 +163,15 @@ class HTTPServerTest {
         }
     }
 
-    private class TestParser implements Parser {
+    private class TestParser implements Parser<byte[], HTTPRequest> {
         public Optional<HTTPRequest> parse(Reader reader) {
             HTTPRequest.Method method = HTTPRequest.Method.valueOf(reader.readUntil(" ").get());
             String uri = reader.readUntil(Serializer.CRLF).get();
             return Optional.of(new HTTPRequest(method, uri));
+        }
+
+        public HTTPRequest parse(byte[] request) {
+            return null;
         }
     }
 

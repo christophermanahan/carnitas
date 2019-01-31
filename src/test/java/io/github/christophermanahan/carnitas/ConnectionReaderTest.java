@@ -35,7 +35,16 @@ class ConnectionReaderTest {
 
     @Test
     void itIsEmptyIfReadIsEmptyWhileReadingUntil() {
-        Reader reader = new ConnectionReader(Optional::empty);
+        Readable readable = new Readable() {
+            public Optional<Character> read() {
+                return Optional.empty();
+            }
+
+            public Optional<byte[]> readAll() {
+                return Optional.empty();
+            }
+        };
+        Reader reader = new ConnectionReader(readable);
 
         Optional<String> read = reader.readUntil(Serializer.CRLF);
 
@@ -44,7 +53,16 @@ class ConnectionReaderTest {
 
     @Test
     void itIsEmptyIfReadIsEmptyWhileReadingANumberOfCharacter() {
-        Reader reader = new ConnectionReader(Optional::empty);
+        Readable readable = new Readable() {
+            public Optional<Character> read() {
+                return Optional.empty();
+            }
+
+            public Optional<byte[]> readAll() {
+                return Optional.empty();
+            }
+        };
+        Reader reader = new ConnectionReader(readable);
 
         Optional<String> read = reader.read(1);
 
@@ -60,6 +78,10 @@ class ConnectionReaderTest {
 
         public Optional<Character> read() {
             return Optional.of(request.next().charAt(0));
+        }
+
+        public Optional<byte[]> readAll() {
+            return Optional.empty();
         }
     }
 }

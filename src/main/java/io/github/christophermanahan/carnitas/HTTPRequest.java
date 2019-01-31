@@ -45,6 +45,10 @@ public class HTTPRequest {
         return uri;
     }
 
+    public Route route() {
+        return route;
+    }
+
     public Optional<String> body() {
         return body;
     }

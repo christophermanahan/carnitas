@@ -1,9 +1,12 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-public class RequestParser implements Parser {
+public class RequestParser implements Parser<byte[], HTTPRequest> {
     public Optional<HTTPRequest> parse(Reader reader) {
         Optional<String> statusLine = readLine(reader);
         Optional<String> method = getMethod(statusLine);
@@ -84,5 +87,14 @@ public class RequestParser implements Parser {
         } else {
             return Optional.empty();
         }
+    }
+
+    public HTTPRequest parse(byte[] request) {
+        Stream<Iterator<String>> stream = Stream.of(request)
+          .map(String::valueOf)
+          .map(s -> s.split(Serializer.CRLF))
+          .map(Arrays::asList)
+          .map(List::iterator);
+        return null;
     }
 }

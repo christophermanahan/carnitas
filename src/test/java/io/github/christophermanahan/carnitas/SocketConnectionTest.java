@@ -26,26 +26,26 @@ class SocketConnectionTest {
     @Test
     void itReadsInTheSocketInput() {
         String body = "name=<something>";
-        String request = HTTPRequest.Method.POST + "/simple_post " + HTTPResponse.VERSION
+        String request = HTTPRequest.Method.POST + "/simple_post " + HTTPResponse.VERSION + Serializer.CRLF
           + Headers.contentLength(body.length())
           + Serializer.BLANK_LINE
           + body;
         Socket socket = new TestSocket(request);
 
-        Optional<String> read = new SocketConnection(socket).readAll();
+        Optional<String> read = new SocketConnection(socket).readAll().map(String::new);
 
         assertEquals(Optional.of(request), read);
     }
 
     @Test
     void itIsEmptyIfSocketInputFails() {
-        class ReadStreamExcepetion extends Socket {
+        class ReadStreamException extends Socket {
             public InputStream getInputStream() throws IOException {
                 throw new IOException();
             }
         }
 
-        Optional<String> read = new SocketConnection(new ReadStreamExcepetion()).readAll();
+        Optional read = new SocketConnection(new ReadStreamException()).readAll();
 
         assertEquals(Optional.empty(), read);
     }

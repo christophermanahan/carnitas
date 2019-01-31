@@ -19,9 +19,9 @@ public class SocketConnection implements Connection, Readable {
         }
     }
 
-    public Optional<String> readAll() {
+    public Optional<byte[]> readAll() {
         try {
-            return Optional.of(new String(socket.getInputStream().readAllBytes()));
+            return Optional.of(socket.getInputStream().readAllBytes());
         } catch (IOException e) {
             return Optional.empty();
         }

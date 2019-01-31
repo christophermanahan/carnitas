@@ -1,12 +1,11 @@
 package io.github.christophermanahan.carnitas;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class HTTPRequestTest {
     @Test
@@ -28,27 +27,47 @@ class HTTPRequestTest {
     }
 
     @Test
+    void itHasARoute() {
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        String uri = "/simple_get";
+
+        HTTPRequest request = new RequestBuilder()
+          .setMethod(method)
+          .setUri(uri)
+          .get();
+
+        assertEquals(new Route(method, uri), request.route());
+    }
+
+    @Test
     void itHasABody() {
         Optional<String> body = Optional.of("name=<something>");
 
-        HTTPRequest request = new HTTPRequest(HTTPRequest.Method.GET, "/simple_get")
-          .withBody(body);
+        HTTPRequest request = new RequestBuilder()
+          .setMethod(HTTPRequest.Method.POST)
+          .setUri("/simple_post")
+          .setBody(body)
+          .get();
+
 
         assertEquals(body, request.body());
     }
 
     @Test
     void itCanTestEquality() {
-        Route route = new Route(HTTPRequest.Method.GET, "/simple_get");
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        String uri = "/simple_get";
         String body = "name=<something>";
         String contentLength = Headers.contentLength(body.length());
         HTTPRequest request = new RequestBuilder()
-          .setRoute(route)
+          .setMethod(method)
+          .setUri(uri)
           .addHeader(contentLength)
           .setBody(Optional.of(body))
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setRoute(route)
+          .setMethod(method)
+          .setUri(uri)
           .addHeader(contentLength)
           .setBody(Optional.of(body))
           .get();
@@ -57,20 +76,30 @@ class HTTPRequestTest {
     }
 
     @Test
-    void itCanTestInequalityOfRoute() {
-        Route route = new Route(HTTPRequest.Method.GET, "/simple_get");
-        Route otherRoute = new Route(HTTPRequest.Method.HEAD, "/simple_get");
-        String body = "name=<something>";
-        String contentLength = Headers.contentLength(body.length());
+    void itCanTestInequalityOfMethod() {
+        String uri = "/simple_get";
         HTTPRequest request = new RequestBuilder()
-          .setRoute(route)
-          .addHeader(contentLength)
-          .setBody(Optional.of(body))
+          .setMethod(HTTPRequest.Method.GET)
+          .setUri(uri)
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setRoute(otherRoute)
-          .addHeader(contentLength)
-          .setBody(Optional.of(body))
+          .setMethod(HTTPRequest.Method.HEAD)
+          .setUri(uri)
+          .get();
+
+        assertNotEquals(request, otherRequest);
+    }
+
+    @Test
+    void itCanTestInequalityOfUri() {
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        HTTPRequest request = new RequestBuilder()
+          .setMethod(method)
+          .setUri("/simple_get")
+          .get();
+        HTTPRequest otherRequest = new RequestBuilder()
+          .setMethod(method)
+          .setUri("/simple_post")
           .get();
 
         assertNotEquals(request, otherRequest);
@@ -78,13 +107,16 @@ class HTTPRequestTest {
 
     @Test
     void itCanTestInequalityOfHeaders() {
-        Route route = new Route(HTTPRequest.Method.GET, "/simple_get");
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        String uri = "/simple_get";
         HTTPRequest request = new RequestBuilder()
-          .setRoute(route)
+          .setMethod(method)
+          .setUri(uri)
           .addHeader(Headers.contentLength(0))
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setRoute(route)
+          .setMethod(method)
+          .setUri(uri)
           .addHeader(Headers.contentLength(1))
           .get();
 
@@ -93,13 +125,16 @@ class HTTPRequestTest {
 
     @Test
     void itCanTestInequalityOfBody() {
-        Route route = new Route(HTTPRequest.Method.GET, "/simple_get");
+        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        String uri = "/simple_get";
         HTTPRequest request = new RequestBuilder()
-          .setRoute(route)
+          .setMethod(method)
+          .setUri(uri)
           .setBody(Optional.of("name=<something>"))
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setRoute(route)
+          .setMethod(method)
+          .setUri(uri)
           .setBody(Optional.of("name=<something-else>"))
           .get();
 
