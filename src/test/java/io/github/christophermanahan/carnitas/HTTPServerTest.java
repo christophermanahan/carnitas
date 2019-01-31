@@ -31,7 +31,7 @@ class HTTPServerTest {
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         HTTPResponse expectedResponse = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         assertEquals(expectedResponse, connections.get(0).response);
     }
@@ -45,7 +45,7 @@ class HTTPServerTest {
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         HTTPResponse expectedResponse = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.CREATED)
+          .set(HTTPResponse.Status.CREATED)
           .get();
         assertTrue(expectedResponse.equals(connections.get(0).response));
     }
@@ -62,7 +62,7 @@ class HTTPServerTest {
         new HTTPServer(parser, handler, logger).start(listener, new Twice());
 
         HTTPResponse expectedResponse = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         assertTrue(expectedResponse.equals(connections.get(0).response));
         assertTrue(expectedResponse.equals(connections.get(1).response));
@@ -179,7 +179,7 @@ class HTTPServerTest {
         public HTTPResponse handle(HTTPRequest request) {
             HTTPResponse.Status code = request.method().equals(HTTPRequest.Method.GET) ? HTTPResponse.Status.OK : HTTPResponse.Status.CREATED;
             return new ResponseBuilder()
-              .setStatus(code)
+              .set(code)
               .get();
         }
     }

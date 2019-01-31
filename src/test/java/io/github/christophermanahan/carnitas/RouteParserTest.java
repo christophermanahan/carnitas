@@ -30,7 +30,7 @@ class RouteParserTest {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
-        String header = Headers.contentLength(body.length());
+        String header = Headers.CONTENT_LENGTH + body.length();
         String request = method + " " + uri + " " + HTTPResponse.VERSION + Serializer.CRLF
           + header
           + Serializer.BLANK_LINE

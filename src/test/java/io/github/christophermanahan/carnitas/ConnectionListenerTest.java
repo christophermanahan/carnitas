@@ -15,7 +15,7 @@ class ConnectionListenerTest {
     @Test
     void listensForAConnection() throws IOException {
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ServerSocket serverSocket = new TestServerSocket(output);

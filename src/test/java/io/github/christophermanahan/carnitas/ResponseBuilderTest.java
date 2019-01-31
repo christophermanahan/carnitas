@@ -11,20 +11,19 @@ class ResponseBuilderTest {
     @Test
     void itCanBuildAnHTTPResponse() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
-        String contentLength = Headers.contentLength(0);
-        String allow = Headers.allow(List.of(HTTPRequest.Method.GET));
-        List<String> headers = List.of(contentLength, allow);
-        Optional<String> body = Optional.of("name=<something>");
+        String body = "name=<something>";
+        Headers headers = new Headers()
+          .contentLength(body.length())
+          .allow(List.of(HTTPRequest.Method.GET));
         ResponseBuilder builder = new ResponseBuilder();
 
         HTTPResponse response = builder
-          .setStatus(status)
-          .addHeader(contentLength)
-          .addHeader(allow)
-          .setBody(body)
+          .set(status)
+          .set(headers)
+          .set(Optional.of(body))
           .get();
 
-        HTTPResponse expectedResponse = new HTTPResponse(status, headers, body);
+        HTTPResponse expectedResponse = new HTTPResponse(status, headers, Optional.of(body));
         assertEquals(expectedResponse, response);
     }
 
@@ -34,10 +33,10 @@ class ResponseBuilderTest {
         ResponseBuilder builder = new ResponseBuilder();
 
         HTTPResponse response = builder
-          .setStatus(status)
+          .set(status)
           .get();
 
-        HTTPResponse expectedResponse = new HTTPResponse(status, List.of(), Optional.empty());
+        HTTPResponse expectedResponse = new HTTPResponse(status, new Headers(), Optional.empty());
         assertEquals(expectedResponse, response);
     }
 }

@@ -13,7 +13,7 @@ class RequestBuilderTest {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
-        String header = Headers.contentLength(body.length());
+        String header = Headers.CONTENT_LENGTH + body.length();
 
         HTTPRequest request = new RequestBuilder()
           .setMethod(method)

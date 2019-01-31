@@ -1,11 +1,10 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.List;
 import java.util.Optional;
 
 public class HTTPResponse {
     private final Status status;
-    private final List<String> headers;
+    private final Headers headers;
     private final Optional<String> body;
 
     static final String VERSION = "HTTP/1.1";
@@ -23,7 +22,7 @@ public class HTTPResponse {
         }
     }
 
-    HTTPResponse(Status status, List<String> headers, Optional<String> body) {
+    HTTPResponse(Status status, Headers headers, Optional<String> body) {
         this.status = status;
         this.headers = headers;
         this.body = body;
@@ -33,7 +32,7 @@ public class HTTPResponse {
         return status;
     }
 
-    public List<String> headers() {
+    public Headers headers() {
         return headers;
     }
 

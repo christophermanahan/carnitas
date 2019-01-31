@@ -1,26 +1,24 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ResponseBuilder implements Supplier<HTTPResponse> {
     private HTTPResponse.Status status = HTTPResponse.Status.OK;
-    private List<String> headers = new ArrayList<>();
+    private Headers headers = new Headers();
     private Optional<String> body = Optional.empty();
 
-    public ResponseBuilder setStatus(HTTPResponse.Status status) {
+    public ResponseBuilder set(HTTPResponse.Status status) {
         this.status = status;
         return this;
     }
 
-    public ResponseBuilder addHeader(String header) {
-        this.headers.add(header);
+    public ResponseBuilder set(Headers headers) {
+        this.headers = headers;
         return this;
     }
 
-    public ResponseBuilder setBody(Optional<String> body) {
+    public ResponseBuilder set(Optional<String> body) {
         this.body = body;
         return this;
     }

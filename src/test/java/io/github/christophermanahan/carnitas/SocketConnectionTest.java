@@ -27,7 +27,7 @@ class SocketConnectionTest {
     void itReadsInTheSocketInput() {
         String body = "name=<something>";
         String request = HTTPRequest.Method.POST + "/simple_post " + HTTPResponse.VERSION + Serializer.CRLF
-          + Headers.contentLength(body.length())
+          + Headers.CONTENT_LENGTH + body.length()
           + Serializer.BLANK_LINE
           + body;
         Socket socket = new TestSocket(request);
@@ -53,7 +53,7 @@ class SocketConnectionTest {
     @Test
     void itSendsResponseBytesToTheSocket() throws IOException {
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         Socket socket = new TestSocket(null);
 

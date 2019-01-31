@@ -13,7 +13,7 @@ class SerializerTest {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
+          .set(status)
           .get();
 
         String serialized = new String(serializer.serialize(response));
@@ -26,11 +26,11 @@ class SerializerTest {
     @Test
     void itCanSerializeAnHTTPResponseWithHeadersAndWithoutBody() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
-        String header = Headers.allow(List.of(HTTPRequest.Method.GET));
+        String header = Headers.ALLOW + HTTPRequest.Method.GET;
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
-          .addHeader(header)
+          .set(status)
+          .set(new Headers().allow(List.of(HTTPRequest.Method.GET)))
           .get();
 
         String serialized = new String(serializer.serialize(response));
@@ -45,15 +45,16 @@ class SerializerTest {
     void itCanSerializeAnHTTPResponseWithHeadersAndBody() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         Optional<String> body = Optional.of("name=<something>");
-        String allow = Headers.allow(List.of(HTTPRequest.Method.GET));
-        String contentLength = Headers.contentLength(body.orElse("").length());
+        String allow = Headers.ALLOW + HTTPRequest.Method.GET;
+        String contentLength = Headers.CONTENT_LENGTH + body.orElse("").length();
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
-          .addHeader(allow)
-          .addHeader(contentLength)
-          .setBody(body)
-          .get();
+          .set(status)
+          .set(body)
+          .set(new Headers()
+            .contentLength(body.orElse("").length())
+            .allow(List.of(HTTPRequest.Method.GET))
+          ).get();
 
         String serialized = new String(serializer.serialize(response));
 

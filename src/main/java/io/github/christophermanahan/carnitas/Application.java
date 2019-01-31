@@ -17,17 +17,19 @@ class Application implements Handler {
 
     private Function<HTTPRequest, HTTPResponse> okHandler() {
         return (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
-          .addHeader(Headers.contentLength(0))
-          .get();
+          .set(HTTPResponse.Status.OK)
+          .set(new Headers()
+            .contentLength(0)
+          ).get();
     }
 
     private Function<HTTPRequest, HTTPResponse> createdHandler() {
         return (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.CREATED)
-          .addHeader(Headers.contentLength(request.body().orElse("").length()))
-          .setBody(request.body())
-          .get();
+          .set(HTTPResponse.Status.CREATED)
+          .set(request.body())
+          .set(new Headers()
+            .contentLength(request.body().orElse("").length())
+          ).get();
     }
 
     public HTTPResponse handle(HTTPRequest request) {

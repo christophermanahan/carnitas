@@ -58,7 +58,7 @@ class HTTPRequestTest {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
-        String contentLength = Headers.contentLength(body.length());
+        String contentLength = Headers.CONTENT_LENGTH + body.length();
         HTTPRequest request = new RequestBuilder()
           .setMethod(method)
           .setUri(uri)
@@ -112,12 +112,12 @@ class HTTPRequestTest {
         HTTPRequest request = new RequestBuilder()
           .setMethod(method)
           .setUri(uri)
-          .addHeader(Headers.contentLength(0))
+          .addHeader(Headers.CONTENT_LENGTH + 0)
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
           .setMethod(method)
           .setUri(uri)
-          .addHeader(Headers.contentLength(1))
+          .addHeader(Headers.CONTENT_LENGTH + 1)
           .get();
 
         assertNotEquals(request, otherRequest);

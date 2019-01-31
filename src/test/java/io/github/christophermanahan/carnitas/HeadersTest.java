@@ -12,18 +12,44 @@ class HeadersTest {
     void itCanConstructAContentLengthHeader() {
         Integer length = 1;
 
-        String header = Headers.contentLength(length);
+        Headers headers = new Headers()
+          .contentLength(length);
 
-        assertEquals(Headers.CONTENT_LENGTH + length, header);
+        List<String> expectedHeaders = List.of(Headers.CONTENT_LENGTH + length);
+        assertEquals(expectedHeaders, headers.get());
     }
 
     @Test
     void itCanConstructAnAllowHeader() {
         List<HTTPRequest.Method> methods = List.of(HTTPRequest.Method.GET, HTTPRequest.Method.HEAD);
 
-        String header = Headers.allow(methods);
+        Headers headers = new Headers()
+          .allow(methods);
 
-        String expectedHeader = Headers.ALLOW + HTTPRequest.Method.GET + " " + HTTPRequest.Method.HEAD;
-        Assertions.assertEquals(expectedHeader, header);
+        List<String> expectedHeaders = List.of(Headers.ALLOW + HTTPRequest.Method.GET + " " + HTTPRequest.Method.HEAD);
+        Assertions.assertEquals(expectedHeaders, headers.get());
+    }
+
+    @Test
+    void itCanAddArbitraryHeaders() {
+        String testA = "Test-Header: TestA";
+        String testB = "Test-Header: TestB";
+        Headers headers = new Headers()
+          .add(testA)
+          .add(testB);
+
+        List<String> expectedHeaders = List.of(testA, testB);
+        assertEquals(expectedHeaders, headers.get());
+    }
+
+    @Test
+    void itCanTestEquality() {
+        Integer length = 1;
+        Headers headers = new Headers()
+          .contentLength(length);
+        Headers otherHeaders = new Headers()
+          .contentLength(length);
+
+        assertEquals(headers, otherHeaders);
     }
 }

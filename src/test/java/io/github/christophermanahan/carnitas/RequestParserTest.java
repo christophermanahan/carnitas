@@ -32,7 +32,7 @@ class RequestParserTest {
         String uri = "/simple_get";
         String body = "name=<something>";
         String request = method + " " + uri + " " + HTTPResponse.VERSION + Serializer.CRLF
-          + Headers.contentLength(body.length()) + Serializer.CRLF
+          + Headers.CONTENT_LENGTH + body.length() + Serializer.CRLF
           + "Test-Header: Test"
           + Serializer.BLANK_LINE
           + body;
@@ -53,7 +53,7 @@ class RequestParserTest {
     void itParsesRequestStringWithoutBody() {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
-        String contentLength = Headers.contentLength(0);
+        String contentLength = Headers.CONTENT_LENGTH + 0;
         String request = method + " " + uri + " " + HTTPResponse.VERSION + Serializer.CRLF
           + contentLength
           + Serializer.BLANK_LINE;
@@ -74,8 +74,8 @@ class RequestParserTest {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
-        String contentLength = Headers.contentLength(body.length());
-        String allow = Headers.allow(List.of(method));
+        String contentLength = Headers.CONTENT_LENGTH + body.length();
+        String allow = Headers.CONTENT_LENGTH + 1;
         String request = method + " " + uri + " " + HTTPResponse.VERSION + Serializer.CRLF
           + contentLength + Serializer.CRLF
           + allow
