@@ -1,17 +1,18 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class Headers {
-    private final List<String> headers;
+    private final HashSet<String> headers;
 
     static final String CONTENT_LENGTH = "Content-Length: ";
     static final String ALLOW = "Allow: ";
 
     Headers() {
-        this.headers = new ArrayList<>();
+        this.headers = new HashSet<>();
     }
 
     Headers contentLength(Integer length) {
@@ -37,7 +38,7 @@ class Headers {
         return this.headers.equals(headers.headers);
     }
 
-    List<String> get() {
+    Set<String> get() {
         return headers;
     }
 }

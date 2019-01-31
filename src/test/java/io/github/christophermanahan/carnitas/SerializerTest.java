@@ -59,8 +59,8 @@ class SerializerTest {
         String serialized = new String(serializer.serialize(response));
 
         String expectedSerialized = HTTPResponse.VERSION + " " + status.code + Serializer.CRLF
-          + allow + Serializer.CRLF
-          + contentLength
+          + contentLength + Serializer.CRLF
+          + allow
           + Serializer.BLANK_LINE
           + body.orElse("");
         assertEquals(expectedSerialized, serialized);

@@ -32,8 +32,8 @@ class HTTPRequestTest {
         String uri = "/simple_get";
 
         HTTPRequest request = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
+          .set(method)
+          .set(uri)
           .get();
 
         assertEquals(new Route(method, uri), request.route());
@@ -44,9 +44,9 @@ class HTTPRequestTest {
         Optional<String> body = Optional.of("name=<something>");
 
         HTTPRequest request = new RequestBuilder()
-          .setMethod(HTTPRequest.Method.POST)
-          .setUri("/simple_post")
-          .setBody(body)
+          .set(HTTPRequest.Method.POST)
+          .set("/simple_post")
+          .set(body)
           .get();
 
 
@@ -59,17 +59,18 @@ class HTTPRequestTest {
         String uri = "/simple_get";
         String body = "name=<something>";
         String contentLength = Headers.CONTENT_LENGTH + body.length();
+        Headers headers = new Headers().contentLength(body.length());
         HTTPRequest request = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .addHeader(contentLength)
-          .setBody(Optional.of(body))
+          .set(method)
+          .set(uri)
+          .set(headers)
+          .set(Optional.of(body))
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .addHeader(contentLength)
-          .setBody(Optional.of(body))
+          .set(method)
+          .set(uri)
+          .set(headers)
+          .set(Optional.of(body))
           .get();
 
         assertEquals(request, otherRequest);
@@ -79,12 +80,12 @@ class HTTPRequestTest {
     void itCanTestInequalityOfMethod() {
         String uri = "/simple_get";
         HTTPRequest request = new RequestBuilder()
-          .setMethod(HTTPRequest.Method.GET)
-          .setUri(uri)
+          .set(HTTPRequest.Method.GET)
+          .set(uri)
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setMethod(HTTPRequest.Method.HEAD)
-          .setUri(uri)
+          .set(HTTPRequest.Method.HEAD)
+          .set(uri)
           .get();
 
         assertNotEquals(request, otherRequest);
@@ -94,12 +95,12 @@ class HTTPRequestTest {
     void itCanTestInequalityOfUri() {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         HTTPRequest request = new RequestBuilder()
-          .setMethod(method)
-          .setUri("/simple_get")
+          .set(method)
+          .set("/simple_get")
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setMethod(method)
-          .setUri("/simple_post")
+          .set(method)
+          .set("/simple_post")
           .get();
 
         assertNotEquals(request, otherRequest);
@@ -110,15 +111,17 @@ class HTTPRequestTest {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         HTTPRequest request = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .addHeader(Headers.CONTENT_LENGTH + 0)
-          .get();
+          .set(method)
+          .set(uri)
+          .set(new Headers()
+            .contentLength(0)
+          ).get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .addHeader(Headers.CONTENT_LENGTH + 1)
-          .get();
+          .set(method)
+          .set(uri)
+          .set(new Headers()
+            .contentLength(1)
+          ).get();
 
         assertNotEquals(request, otherRequest);
     }
@@ -128,14 +131,14 @@ class HTTPRequestTest {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         HTTPRequest request = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .setBody(Optional.of("name=<something>"))
+          .set(method)
+          .set(uri)
+          .set(Optional.of("name=<something>"))
           .get();
         HTTPRequest otherRequest = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .setBody(Optional.of("name=<something-else>"))
+          .set(method)
+          .set(uri)
+          .set(Optional.of("name=<something-else>"))
           .get();
 
         assertNotEquals(request, otherRequest);

@@ -1,13 +1,12 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.List;
 import java.util.Optional;
 
 public class HTTPRequest {
     private Method method;
     private String uri;
     private Route route;
-    private List<String> headers;
+    private Headers headers;
     private Optional<String> body;
 
     enum Method {
@@ -27,7 +26,7 @@ public class HTTPRequest {
         this.body = body;
     }
 
-    HTTPRequest(Route route, List<String> headers, Optional<String> body) {
+    HTTPRequest(Route route, Headers headers, Optional<String> body) {
         this.route = route;
         this.headers = headers;
         this.body = body;
@@ -47,6 +46,10 @@ public class HTTPRequest {
 
     public Route route() {
         return route;
+    }
+
+    public Headers headers() {
+        return headers;
     }
 
     public Optional<String> body() {

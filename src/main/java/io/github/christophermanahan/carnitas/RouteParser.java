@@ -29,14 +29,14 @@ public class RouteParser implements Parser<Iterator<String>, Iterator<String>> {
           .map(list -> list.get(0))
           .map(HTTPRequest.Method::valueOf)
           .findFirst()
-          .map(builder::setMethod);
+          .map(builder::set);
     }
 
     private void uri(String requestLine) {
         split(requestLine)
           .map(list -> list.get(1))
           .findFirst()
-          .map(builder::setUri);
+          .map(builder::set);
     }
 
     private Stream<List<String>> split(String requestLine) {

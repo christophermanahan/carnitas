@@ -3,6 +3,7 @@ package io.github.christophermanahan.carnitas;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +16,7 @@ class HeadersTest {
         Headers headers = new Headers()
           .contentLength(length);
 
-        List<String> expectedHeaders = List.of(Headers.CONTENT_LENGTH + length);
+        HashSet<String> expectedHeaders = new HashSet<>(List.of(Headers.CONTENT_LENGTH + length));
         assertEquals(expectedHeaders, headers.get());
     }
 
@@ -26,7 +27,7 @@ class HeadersTest {
         Headers headers = new Headers()
           .allow(methods);
 
-        List<String> expectedHeaders = List.of(Headers.ALLOW + HTTPRequest.Method.GET + " " + HTTPRequest.Method.HEAD);
+        HashSet<String> expectedHeaders = new HashSet<>(List.of(Headers.ALLOW + HTTPRequest.Method.GET + " " + HTTPRequest.Method.HEAD));
         Assertions.assertEquals(expectedHeaders, headers.get());
     }
 
@@ -38,7 +39,7 @@ class HeadersTest {
           .add(testA)
           .add(testB);
 
-        List<String> expectedHeaders = List.of(testA, testB);
+        HashSet<String> expectedHeaders = new HashSet<>(List.of(testA, testB));
         assertEquals(expectedHeaders, headers.get());
     }
 

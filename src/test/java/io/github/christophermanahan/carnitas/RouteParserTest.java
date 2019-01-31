@@ -21,8 +21,7 @@ class RouteParserTest {
 
         parser.parse(Arrays.asList(request.split(Serializer.CRLF, includeEmptyStrings)).iterator());
 
-        Route route = builder.get().route();
-        assertEquals(new Route(method, uri), route);
+        assertEquals(new Route(method, uri), builder.get().route());
     }
 
     @Test

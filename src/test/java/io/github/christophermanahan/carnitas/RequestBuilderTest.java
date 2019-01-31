@@ -2,7 +2,6 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,16 +12,16 @@ class RequestBuilderTest {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
-        String header = Headers.CONTENT_LENGTH + body.length();
+        Headers headers = new Headers().contentLength(body.length());
 
         HTTPRequest request = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .addHeader(header)
-          .setBody(Optional.of(body))
+          .set(method)
+          .set(uri)
+          .set(headers)
+          .set(Optional.of(body))
           .get();
 
-        HTTPRequest expectedRequest = new HTTPRequest(new Route(method, uri), List.of(header), Optional.of(body));
+        HTTPRequest expectedRequest = new HTTPRequest(new Route(method, uri), headers, Optional.of(body));
         assertEquals(expectedRequest, request);
     }
 
@@ -32,11 +31,11 @@ class RequestBuilderTest {
         String uri = "/simple_get";
 
         HTTPRequest request = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
+          .set(method)
+          .set(uri)
           .get();
 
-        HTTPRequest expectedRequest = new HTTPRequest(new Route(method, uri), List.of(), Optional.empty());
+        HTTPRequest expectedRequest = new HTTPRequest(new Route(method, uri), new Headers(), Optional.empty());
         assertEquals(expectedRequest, request);
     }
 }

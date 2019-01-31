@@ -1,31 +1,29 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 class RequestBuilder {
     private HTTPRequest.Method method;
     private String uri;
-    private List<String> headers = new ArrayList<>();
+    private Headers headers = new Headers();
     private Optional<String> body = Optional.empty();
 
-    RequestBuilder setMethod(HTTPRequest.Method method) {
+    RequestBuilder set(HTTPRequest.Method method) {
         this.method = method;
         return this;
     }
 
-    RequestBuilder setUri(String uri) {
+    RequestBuilder set(String uri) {
         this.uri = uri;
         return this;
     }
 
-    RequestBuilder addHeader(String header) {
-        this.headers.add(header);
+    RequestBuilder set(Headers headers) {
+        this.headers = headers;
         return this;
     }
 
-    RequestBuilder setBody(Optional<String> body) {
+    RequestBuilder set(Optional<String> body) {
         this.body = body;
         return this;
     }

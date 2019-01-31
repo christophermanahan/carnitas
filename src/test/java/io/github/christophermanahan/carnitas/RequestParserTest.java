@@ -53,18 +53,19 @@ class RequestParserTest {
     void itParsesRequestStringWithoutBody() {
         HTTPRequest.Method method = HTTPRequest.Method.GET;
         String uri = "/simple_get";
-        String contentLength = Headers.CONTENT_LENGTH + 0;
+        int contentLength = 0;
+        String header = Headers.CONTENT_LENGTH + contentLength;
         String request = method + " " + uri + " " + HTTPResponse.VERSION + Serializer.CRLF
-          + contentLength
+          + header
           + Serializer.BLANK_LINE;
         Parser<byte[], HTTPRequest> parser = new RequestParser();
 
         HTTPRequest parsed = parser.parse(request.getBytes());
 
         HTTPRequest expectedRequest = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .addHeader(contentLength)
+          .set(method)
+          .set(uri)
+          .set(new Headers().contentLength(contentLength))
           .get();
         assertEquals(expectedRequest, parsed);
     }
@@ -75,7 +76,7 @@ class RequestParserTest {
         String uri = "/simple_get";
         String body = "name=<something>";
         String contentLength = Headers.CONTENT_LENGTH + body.length();
-        String allow = Headers.CONTENT_LENGTH + 1;
+        String allow = Headers.ALLOW + method;
         String request = method + " " + uri + " " + HTTPResponse.VERSION + Serializer.CRLF
           + contentLength + Serializer.CRLF
           + allow
@@ -86,12 +87,13 @@ class RequestParserTest {
         HTTPRequest parsed = parser.parse(request.getBytes());
 
         HTTPRequest expectedRequest = new RequestBuilder()
-          .setMethod(method)
-          .setUri(uri)
-          .addHeader(contentLength)
-          .addHeader(allow)
-          .setBody(Optional.of(body))
-          .get();
+          .set(method)
+          .set(uri)
+          .set(Optional.of(body))
+          .set(new Headers()
+            .contentLength(body.length())
+            .allow(List.of(method))
+          ).get();
         assertEquals(expectedRequest, parsed);
     }
 
