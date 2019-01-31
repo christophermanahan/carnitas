@@ -19,7 +19,6 @@ public class HeadersParser implements Parser<Iterator<String>, Iterator<String>>
         Headers headers = new Headers();
         addHeaders(request, headers);
         builder.set(headers);
-        System.out.println(builder.get().headers().get().size());
         return request;
     }
 
