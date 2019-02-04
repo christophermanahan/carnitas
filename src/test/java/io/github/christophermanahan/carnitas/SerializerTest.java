@@ -13,7 +13,7 @@ class SerializerTest {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
+          .set(status)
           .get();
 
         String serialized = new String(serializer.serialize(response));
@@ -29,8 +29,8 @@ class SerializerTest {
         String header = Headers.allow(List.of(HTTPRequest.Method.GET));
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
-          .addHeader(header)
+          .set(status)
+          .set(List.of(header))
           .get();
 
         String serialized = new String(serializer.serialize(response));
@@ -49,11 +49,12 @@ class SerializerTest {
         String contentLength = Headers.contentLength(body.orElse("").length());
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
-          .addHeader(allow)
-          .addHeader(contentLength)
-          .setBody(body)
-          .get();
+          .set(status)
+          .set(body)
+          .set(List.of(
+            allow,
+            contentLength
+          )).get();
 
         String serialized = new String(serializer.serialize(response));
 

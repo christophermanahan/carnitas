@@ -56,14 +56,18 @@ class Router implements Handler {
 
     private Supplier<HTTPResponse> not(List<HTTPRequest.Method> allowed) {
         return new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.METHOD_NOT_ALLOWED)
-          .addHeader(Headers.contentLength(0))
-          .addHeader(Headers.allow(allowed));
+          .set(HTTPResponse.Status.METHOD_NOT_ALLOWED)
+          .set(List.of(
+            Headers.contentLength(0),
+            Headers.allow(allowed)
+          ));
     }
 
     private Supplier<HTTPResponse> notFound() {
         return new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.NOT_FOUND)
-          .addHeader(Headers.contentLength(0));
+          .set(HTTPResponse.Status.NOT_FOUND)
+          .set(List.of(
+            Headers.contentLength(0)
+          ));
     }
 }

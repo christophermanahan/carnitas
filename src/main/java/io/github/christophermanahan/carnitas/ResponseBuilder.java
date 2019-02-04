@@ -10,17 +10,17 @@ public class ResponseBuilder implements Supplier<HTTPResponse> {
     private List<String> headers = new ArrayList<>();
     private Optional<String> body = Optional.empty();
 
-    public ResponseBuilder setStatus(HTTPResponse.Status status) {
+    public ResponseBuilder set(HTTPResponse.Status status) {
         this.status = status;
         return this;
     }
 
-    public ResponseBuilder addHeader(String header) {
-        this.headers.add(header);
+    public ResponseBuilder set(List<String> headers) {
+        this.headers = headers;
         return this;
     }
 
-    public ResponseBuilder setBody(Optional<String> body) {
+    public ResponseBuilder set(Optional<String> body) {
         this.body = body;
         return this;
     }

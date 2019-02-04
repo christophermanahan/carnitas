@@ -14,7 +14,7 @@ class HTTPResponseTest {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
 
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
+          .set(status)
           .get();
 
         assertEquals(status, response.status());
@@ -25,7 +25,7 @@ class HTTPResponseTest {
         String contentLength = Headers.contentLength(0);
 
         HTTPResponse response = new ResponseBuilder()
-          .addHeader(contentLength)
+          .set(List.of(contentLength))
           .get();
 
         assertEquals(List.of(contentLength), response.headers());
@@ -36,7 +36,7 @@ class HTTPResponseTest {
         Optional<String> body = Optional.of("name=<something>");
 
         HTTPResponse response = new ResponseBuilder()
-          .setBody(body)
+          .set(body)
           .get();
 
         assertEquals(body, response.body());
@@ -48,14 +48,14 @@ class HTTPResponseTest {
         String contentLength = Headers.contentLength(0);
         Optional<String> body = Optional.of("name=<something>");
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
-          .addHeader(contentLength)
-          .setBody(body)
+          .set(status)
+          .set(List.of(contentLength))
+          .set(body)
           .get();
         HTTPResponse otherResponse = new ResponseBuilder()
-          .setStatus(status)
-          .addHeader(contentLength)
-          .setBody(body)
+          .set(status)
+          .set(List.of(contentLength))
+          .set(body)
           .get();
 
         assertEquals(response, otherResponse);
@@ -64,10 +64,10 @@ class HTTPResponseTest {
     @Test
     void itCanTestInequalityOfStatus() {
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         HTTPResponse otherResponse = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.CREATED)
+          .set(HTTPResponse.Status.CREATED)
           .get();
 
         assertNotEquals(response, otherResponse);
@@ -77,12 +77,12 @@ class HTTPResponseTest {
     void itCanTestInequalityOfHeaders() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
-          .addHeader(Headers.contentLength(0))
+          .set(status)
+          .set(List.of(Headers.contentLength(0)))
           .get();
         HTTPResponse otherResponse = new ResponseBuilder()
-          .setStatus(status)
-          .addHeader(Headers.contentLength(1))
+          .set(status)
+          .set(List.of(Headers.contentLength(1)))
           .get();
 
         assertNotEquals(response, otherResponse);
@@ -92,12 +92,12 @@ class HTTPResponseTest {
     void itCanTestInequalityOfBody() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(status)
-          .setBody(Optional.of("name=<something>"))
+          .set(status)
+          .set(Optional.of("name=<something>"))
           .get();
         HTTPResponse otherResponse = new ResponseBuilder()
-          .setStatus(status)
-          .setBody(Optional.of("name=<something-else>"))
+          .set(status)
+          .set(Optional.of("name=<something-else>"))
           .get();
 
         assertNotEquals(response, otherResponse);

@@ -26,7 +26,7 @@ class SocketConnectionTest {
     @Test
     void itSendsResponseBytesToTheSocket() throws IOException {
         HTTPResponse response = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         Socket socket = new TestSocket(null);
 

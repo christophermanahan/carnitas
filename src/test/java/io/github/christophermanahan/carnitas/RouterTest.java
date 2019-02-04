@@ -11,7 +11,7 @@ class RouterTest {
     @Test
     void itProcessesAGETRequestIntoAResponseIfTheRouteHasBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         HTTPRequest request = new HTTPRequest(HTTPRequest.Method.GET, "/simple_get");
         Router router = new Router()
@@ -25,7 +25,7 @@ class RouterTest {
     @Test
     void itProcessesAHEADRequestIntoAResponseIfTheRouteHasBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         HTTPRequest request = new HTTPRequest(HTTPRequest.Method.HEAD, "/simple_get");
         Router router = new Router()
@@ -39,7 +39,7 @@ class RouterTest {
     @Test
     void itProcessesAPOSTRequestIntoAResponseIfTheRouteHasBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.CREATED)
+          .set(HTTPResponse.Status.CREATED)
           .get();
         HTTPRequest request = new HTTPRequest(HTTPRequest.Method.POST, "/simple_post");
         Router router = new Router()
@@ -53,7 +53,7 @@ class RouterTest {
     @Test
     void itProcessesARequestIntoAResponseIfMultipleRoutesHaveBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         HTTPRequest request = new HTTPRequest(HTTPRequest.Method.GET, "simple_get_again");
         Router router = new Router()
@@ -68,7 +68,7 @@ class RouterTest {
     @Test
     void itProcessesARequestIntoANotFoundResponseIfTheRouteHasNotBeenAdded() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
+          .set(HTTPResponse.Status.OK)
           .get();
         HTTPRequest request = new HTTPRequest(HTTPRequest.Method.POST, "/simple_post");
         Router router = new Router()
@@ -77,8 +77,8 @@ class RouterTest {
         HTTPResponse response = router.handle(request);
 
         HTTPResponse expectedResponse = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.NOT_FOUND)
-          .addHeader(Headers.contentLength(0))
+          .set(HTTPResponse.Status.NOT_FOUND)
+          .set(List.of(Headers.contentLength(0)))
           .get();
         assertEquals(expectedResponse, response);
     }
@@ -86,7 +86,7 @@ class RouterTest {
     @Test
     void itDoesNotAllowRequestsToRoutesThatCannotRespondToTheRequestMethod() {
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.CREATED)
+          .set(HTTPResponse.Status.CREATED)
           .get();
         HTTPRequest request = new HTTPRequest(HTTPRequest.Method.GET, "/simple_post");
         Router router = new Router()
@@ -95,10 +95,11 @@ class RouterTest {
         HTTPResponse response = router.handle(request);
 
         HTTPResponse expectedResponse = new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.METHOD_NOT_ALLOWED)
-          .addHeader(Headers.contentLength(0))
-          .addHeader(Headers.allow(List.of(HTTPRequest.Method.POST)))
-          .get();
+          .set(HTTPResponse.Status.METHOD_NOT_ALLOWED)
+          .set(List.of(
+            Headers.contentLength(0),
+            Headers.allow(List.of(HTTPRequest.Method.POST))
+          )).get();
         assertEquals(expectedResponse, response);
     }
 }

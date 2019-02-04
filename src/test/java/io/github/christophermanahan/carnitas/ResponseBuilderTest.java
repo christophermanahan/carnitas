@@ -18,11 +18,12 @@ class ResponseBuilderTest {
         ResponseBuilder builder = new ResponseBuilder();
 
         HTTPResponse response = builder
-          .setStatus(status)
-          .addHeader(contentLength)
-          .addHeader(allow)
-          .setBody(body)
-          .get();
+          .set(status)
+          .set(body)
+          .set(List.of(
+            contentLength,
+            allow
+          )).get();
 
         HTTPResponse expectedResponse = new HTTPResponse(status, headers, body);
         assertTrue(expectedResponse.equals(response));
@@ -34,7 +35,7 @@ class ResponseBuilderTest {
         ResponseBuilder builder = new ResponseBuilder();
 
         HTTPResponse response = builder
-          .setStatus(status)
+          .set(status)
           .get();
 
         HTTPResponse expectedResponse = new HTTPResponse(status, List.of(), Optional.empty());
