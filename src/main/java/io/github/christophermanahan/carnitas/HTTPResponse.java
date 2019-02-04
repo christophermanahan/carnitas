@@ -1,5 +1,6 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ public class HTTPResponse {
     public boolean equals(Object object) {
         HTTPResponse response = (HTTPResponse) object;
         return status.equals(response.status)
-          && headers.equals(response.headers)
+          && new HashSet<>(headers).equals(new HashSet<>(response.headers))
           && body.equals(response.body);
     }
 
