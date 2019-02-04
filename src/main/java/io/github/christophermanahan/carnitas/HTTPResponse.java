@@ -47,4 +47,8 @@ public class HTTPResponse {
           && headers.equals(response.headers)
           && body.equals(response.body);
     }
+
+    public String toString() {
+        return status + " " + String.join(", ", headers);
+    }
 }

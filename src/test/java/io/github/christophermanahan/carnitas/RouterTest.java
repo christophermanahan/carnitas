@@ -98,7 +98,33 @@ class RouterTest {
           .set(HTTPResponse.Status.METHOD_NOT_ALLOWED)
           .set(List.of(
             Headers.contentLength(0),
-            Headers.allow(List.of(HTTPRequest.Method.POST))
+            Headers.allow(List.of(
+              HTTPRequest.Method.POST,
+              HTTPRequest.Method.OPTIONS
+            ))
+          )).get();
+        assertEquals(expectedResponse, response);
+    }
+
+    @Test
+    void itProcessesAnOPTIONSRequestIntoAResponse() {
+        Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
+          .set(HTTPResponse.Status.OK)
+          .get();
+        HTTPRequest request = new HTTPRequest(HTTPRequest.Method.OPTIONS, "/simple_get");
+        Router router = new Router()
+          .get( "/simple_get", handler);
+
+        HTTPResponse response = router.handle(request);
+
+        HTTPResponse expectedResponse = new ResponseBuilder()
+          .set(HTTPResponse.Status.OK)
+          .set(List.of(
+            Headers.allow(List.of(
+              HTTPRequest.Method.GET,
+              HTTPRequest.Method.OPTIONS
+            )),
+            Headers.contentLength(0)
           )).get();
         assertEquals(expectedResponse, response);
     }

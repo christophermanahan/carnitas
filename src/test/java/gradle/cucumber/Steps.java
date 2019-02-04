@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -97,8 +98,8 @@ public class Steps {
     @And("Header {string} with values {string}")
     public void headerWithValues(String header, String values) {
         assertEquals(
-          new HashSet<>(List.of(values.split(", "))),
-          new HashSet<>(responses.get(0).headers().allValues(header))
+          new HashSet<>(List.of(responses.get(0).headers().allValues(header).get(0).split(" "))),
+          new HashSet<>(List.of(values.split(", ")))
         );
     }
 }

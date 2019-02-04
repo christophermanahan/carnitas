@@ -17,7 +17,12 @@ public class Route {
         return uri;
     }
 
-    boolean equals(Route route) {
+    public boolean equals(Object object) {
+        Route route = (Route) object;
         return method.equals(route.method) && uri.equals(route.uri);
+    }
+
+    public int hashCode() {
+        return 0;
     }
 }

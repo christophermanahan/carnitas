@@ -10,7 +10,8 @@ public class HTTPRequest {
     enum Method {
         GET,
         HEAD,
-        POST
+        POST,
+        OPTIONS
     }
 
     HTTPRequest(Method method, String uri) {

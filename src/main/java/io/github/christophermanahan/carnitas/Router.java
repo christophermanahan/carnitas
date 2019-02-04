@@ -15,18 +15,23 @@ class Router implements Handler {
     }
 
     Router get(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        map.put(new Route(HTTPRequest.Method.GET, uri), handler);
+        mapRoute(HTTPRequest.Method.GET, uri, handler);
         return this;
     }
 
     Router head(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        map.put(new Route(HTTPRequest.Method.HEAD, uri), handler);
+        mapRoute(HTTPRequest.Method.HEAD, uri, handler);
         return this;
     }
 
     Router post(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        map.put(new Route(HTTPRequest.Method.POST, uri), handler);
+        mapRoute(HTTPRequest.Method.POST, uri, handler);
         return this;
+    }
+
+    private void mapRoute(HTTPRequest.Method method, String uri, Function<HTTPRequest, HTTPResponse> handler) {
+        map.put(new Route(method, uri), handler);
+        map.putIfAbsent(new Route(HTTPRequest.Method.OPTIONS, uri), options());
     }
 
     public HTTPResponse handle(HTTPRequest request) {
@@ -69,5 +74,14 @@ class Router implements Handler {
           .set(List.of(
             Headers.contentLength(0)
           ));
+    }
+
+    private Function<HTTPRequest, HTTPResponse> options() {
+        return (HTTPRequest request) -> new ResponseBuilder()
+          .set(HTTPResponse.Status.OK)
+          .set(List.of(
+            Headers.allow(allowed(request)),
+            Headers.contentLength(0)
+          )).get();
     }
 }
