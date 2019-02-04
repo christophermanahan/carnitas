@@ -23,6 +23,7 @@ public class Route {
     }
 
     public int hashCode() {
-        return 0;
+        int valueEquality = 0;
+        return valueEquality;
     }
 }
