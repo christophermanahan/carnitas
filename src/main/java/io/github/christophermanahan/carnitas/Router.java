@@ -15,21 +15,21 @@ class Router implements Handler {
     }
 
     Router get(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        mapRoute(HTTPRequest.Method.GET, uri, handler);
+        add(HTTPRequest.Method.GET, uri, handler);
         return this;
     }
 
     Router head(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        mapRoute(HTTPRequest.Method.HEAD, uri, handler);
+        add(HTTPRequest.Method.HEAD, uri, handler);
         return this;
     }
 
     Router post(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        mapRoute(HTTPRequest.Method.POST, uri, handler);
+        add(HTTPRequest.Method.POST, uri, handler);
         return this;
     }
 
-    private void mapRoute(HTTPRequest.Method method, String uri, Function<HTTPRequest, HTTPResponse> handler) {
+    private void add(HTTPRequest.Method method, String uri, Function<HTTPRequest, HTTPResponse> handler) {
         map.put(new Route(method, uri), handler);
         map.putIfAbsent(new Route(HTTPRequest.Method.OPTIONS, uri), options());
     }
