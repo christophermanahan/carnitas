@@ -34,4 +34,17 @@ class RequestTest {
 
         assertEquals(body, request.body());
     }
+
+    @Test
+    void itCanProvideAStringfiedRequest() {
+        Request.Method method = Request.Method.GET;
+        String uri = "/simple_get";
+        String body = "name=<something>";
+        Request request = new Request(method, uri)
+          .withBody(Optional.of(body));
+
+        String expectedStringified = method + " " + uri + Serializer.CRLF
+          + body;
+        assertEquals(expectedStringified, request.toString());
+    }
 }

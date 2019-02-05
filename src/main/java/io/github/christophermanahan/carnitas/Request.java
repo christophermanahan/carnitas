@@ -40,4 +40,9 @@ public class Request {
     public Optional<String> body() {
         return body;
     }
+
+    @Override
+    public String toString() {
+        return String.join(Serializer.CRLF, String.join(" ", method.toString(), uri), body.orElse(""));
+    }
 }

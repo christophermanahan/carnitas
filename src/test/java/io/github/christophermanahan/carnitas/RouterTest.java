@@ -113,7 +113,6 @@ class RouterTest {
 
         Response response = router.handle(request);
 
-
         Response expectedResponse = new ResponseBuilder()
           .set(Response.Status.OK)
           .add(Headers.CONTENT_LENGTH + 0)
