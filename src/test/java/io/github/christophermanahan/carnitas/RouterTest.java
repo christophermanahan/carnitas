@@ -78,7 +78,7 @@ class RouterTest {
 
         HTTPResponse expectedResponse = new ResponseBuilder()
           .set(HTTPResponse.Status.NOT_FOUND)
-          .set(List.of(Headers.contentLength(0)))
+          .add(Headers.contentLength(0))
           .get();
         assertEquals(expectedResponse, response);
     }
@@ -96,13 +96,13 @@ class RouterTest {
 
         HTTPResponse expectedResponse = new ResponseBuilder()
           .set(HTTPResponse.Status.METHOD_NOT_ALLOWED)
-          .set(List.of(
-            Headers.contentLength(0),
-            Headers.allow(List.of(
+          .add(Headers.contentLength(0))
+          .add(Headers.allow(
+            List.of(
               HTTPRequest.Method.POST,
               HTTPRequest.Method.OPTIONS
-            ))
-          )).get();
+            )))
+          .get();
         assertEquals(expectedResponse, response);
     }
 
@@ -119,13 +119,13 @@ class RouterTest {
 
         HTTPResponse expectedResponse = new ResponseBuilder()
           .set(HTTPResponse.Status.OK)
-          .set(List.of(
-            Headers.allow(List.of(
+          .add(Headers.allow(
+            List.of(
               HTTPRequest.Method.GET,
               HTTPRequest.Method.OPTIONS
-            )),
-            Headers.contentLength(0)
-          )).get();
+            )))
+          .add(Headers.contentLength(0))
+          .get();
         assertEquals(expectedResponse, response);
     }
 }

@@ -1,13 +1,12 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ResponseBuilder implements Supplier<HTTPResponse> {
     private HTTPResponse.Status status = HTTPResponse.Status.OK;
-    private List<String> headers = new ArrayList<>();
+    private HashSet<String> headers = new HashSet<>();
     private Optional<String> body = Optional.empty();
 
     public ResponseBuilder set(HTTPResponse.Status status) {
@@ -15,8 +14,8 @@ public class ResponseBuilder implements Supplier<HTTPResponse> {
         return this;
     }
 
-    public ResponseBuilder set(List<String> headers) {
-        this.headers = headers;
+    public ResponseBuilder add(String header) {
+        headers.add(header);
         return this;
     }
 

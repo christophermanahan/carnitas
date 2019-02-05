@@ -2,7 +2,7 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,10 +25,10 @@ class HTTPResponseTest {
         String contentLength = Headers.contentLength(0);
 
         HTTPResponse response = new ResponseBuilder()
-          .set(List.of(contentLength))
+          .add(contentLength)
           .get();
 
-        assertEquals(List.of(contentLength), response.headers());
+        assertEquals(Collections.singleton(contentLength), response.headers());
     }
 
     @Test
@@ -49,12 +49,12 @@ class HTTPResponseTest {
         Optional<String> body = Optional.of("name=<something>");
         HTTPResponse response = new ResponseBuilder()
           .set(status)
-          .set(List.of(contentLength))
+          .add(contentLength)
           .set(body)
           .get();
         HTTPResponse otherResponse = new ResponseBuilder()
           .set(status)
-          .set(List.of(contentLength))
+          .add(contentLength)
           .set(body)
           .get();
 
@@ -78,11 +78,11 @@ class HTTPResponseTest {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         HTTPResponse response = new ResponseBuilder()
           .set(status)
-          .set(List.of(Headers.contentLength(0)))
+          .add(Headers.contentLength(0))
           .get();
         HTTPResponse otherResponse = new ResponseBuilder()
           .set(status)
-          .set(List.of(Headers.contentLength(1)))
+          .add(Headers.contentLength(1))
           .get();
 
         assertNotEquals(response, otherResponse);

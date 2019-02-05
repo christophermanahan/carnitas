@@ -26,17 +26,17 @@ class SerializerTest {
     @Test
     void itCanSerializeAnHTTPResponseWithHeadersAndWithoutBody() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
-        String header = Headers.allow(List.of(HTTPRequest.Method.GET));
+        String allow = Headers.allow(List.of(HTTPRequest.Method.GET));
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
           .set(status)
-          .set(List.of(header))
+          .add(allow)
           .get();
 
         String serialized = new String(serializer.serialize(response));
 
         String expectedSerialized = HTTPResponse.VERSION + " " + status.code + Serializer.CRLF
-          + header
+          + allow
           + Serializer.BLANK_LINE;
         assertEquals(expectedSerialized, serialized);
     }
@@ -51,16 +51,15 @@ class SerializerTest {
         HTTPResponse response = new ResponseBuilder()
           .set(status)
           .set(body)
-          .set(List.of(
-            allow,
-            contentLength
-          )).get();
+          .add(contentLength)
+          .add(allow)
+          .get();
 
         String serialized = new String(serializer.serialize(response));
 
         String expectedSerialized = HTTPResponse.VERSION + " " + status.code + Serializer.CRLF
-          + allow + Serializer.CRLF
-          + contentLength
+          + contentLength + Serializer.CRLF
+          + allow
           + Serializer.BLANK_LINE
           + body.orElse("");
         assertEquals(expectedSerialized, serialized);
