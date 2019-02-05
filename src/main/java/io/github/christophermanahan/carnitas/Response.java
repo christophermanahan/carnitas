@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 public class Response {
     private final Status status;
-    private final TreeSet headers;
+    private final TreeSet<String> headers;
     private final Optional<String> body;
 
     static final String VERSION = "HTTP/1.1";
@@ -47,5 +47,10 @@ public class Response {
         return status.equals(response.status)
           && headers.equals(response.headers)
           && body.equals(response.body);
+    }
+
+    @Override
+    public String toString() {
+        return String.join(Serializer.CRLF, status.toString(), String.join(Serializer.CRLF, headers), body.orElse(""));
     }
 }
