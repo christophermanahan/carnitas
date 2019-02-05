@@ -11,27 +11,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class RequestParserTest {
     @Test
     void itParsesRequestWithoutBody() {
-        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        Request.Method method = Request.Method.GET;
         String uri = "/simple_get";
-        String request = method + " " + uri + " " + HTTPResponse.VERSION
+        String request = method + " " + uri + " " + Response.VERSION
           + Serializer.BLANK_LINE;
         Reader reader = new RequestReader(request);
         Parser parser = new RequestParser();
 
-        Optional<HTTPRequest> parsed = parser.parse(reader);
+        Optional<Request> parsed = parser.parse(reader);
 
-        Optional<HTTPRequest.Method> parsedMethod = parsed.map(HTTPRequest::method);
-        Optional<String> parsedUri = parsed.map(HTTPRequest::uri);
+        Optional<Request.Method> parsedMethod = parsed.map(Request::method);
+        Optional<String> parsedUri = parsed.map(Request::uri);
         assertEquals(Optional.of(method), parsedMethod);
         assertEquals(Optional.of(uri), parsedUri);
     }
 
     @Test
     void itParsesRequestWithBody() {
-        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        Request.Method method = Request.Method.GET;
         String uri = "/simple_get";
         String body = "name=<something>";
-        String request = method + " " + uri + " " + HTTPResponse.VERSION + Serializer.CRLF
+        String request = method + " " + uri + " " + Response.VERSION + Serializer.CRLF
           + Headers.CONTENT_LENGTH + body.length() + Serializer.CRLF
           + "Test-Header: Test"
           + Serializer.BLANK_LINE
@@ -39,11 +39,11 @@ class RequestParserTest {
         Reader reader = new RequestReader(request);
         Parser parser = new RequestParser();
 
-        Optional<HTTPRequest> parsed = parser.parse(reader);
+        Optional<Request> parsed = parser.parse(reader);
 
-        Optional<HTTPRequest.Method> parsedMethod = parsed.map(HTTPRequest::method);
-        Optional<String> parsedUri = parsed.map(HTTPRequest::uri);
-        Optional<String> parsedBody = parsed.flatMap(HTTPRequest::body);
+        Optional<Request.Method> parsedMethod = parsed.map(Request::method);
+        Optional<String> parsedUri = parsed.map(Request::uri);
+        Optional<String> parsedBody = parsed.flatMap(Request::body);
         assertEquals(Optional.of(method), parsedMethod);
         assertEquals(Optional.of(uri), parsedUri);
         assertEquals(Optional.of(body), parsedBody);
@@ -62,7 +62,7 @@ class RequestParserTest {
         };
         Parser parser = new RequestParser();
 
-        Optional<HTTPRequest> parsed = parser.parse(reader);
+        Optional<Request> parsed = parser.parse(reader);
 
         assertEquals(Optional.empty(), parsed);
     }

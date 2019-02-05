@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ConnectionListenerTest {
     @Test
     void listensForAConnection() throws IOException {
-        HTTPResponse response = new ResponseBuilder()
-          .set(HTTPResponse.Status.OK)
+        Response response = new ResponseBuilder()
+          .set(Response.Status.OK)
           .get();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ServerSocket serverSocket = new TestServerSocket(output);

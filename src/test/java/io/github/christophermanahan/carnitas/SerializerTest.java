@@ -9,32 +9,32 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SerializerTest {
     @Test
     void itCanSerializeAnHTTPResponseWithoutHeadersOrBody() {
-        HTTPResponse.Status status = HTTPResponse.Status.OK;
+        Response.Status status = Response.Status.OK;
         Serializer serializer = new Serializer();
-        HTTPResponse response = new ResponseBuilder()
+        Response response = new ResponseBuilder()
           .set(status)
           .get();
 
         String serialized = new String(serializer.serialize(response));
 
-        String expectedSerialized = HTTPResponse.VERSION + " " + status.code + Serializer.CRLF
+        String expectedSerialized = Response.VERSION + " " + status.code + Serializer.CRLF
           + Serializer.BLANK_LINE;
         assertEquals(expectedSerialized, serialized);
     }
 
     @Test
     void itCanSerializeAnHTTPResponseWithHeadersAndWithoutBody() {
-        HTTPResponse.Status status = HTTPResponse.Status.OK;
-        String allow = Headers.ALLOW + HTTPRequest.Method.GET;
+        Response.Status status = Response.Status.OK;
+        String allow = Headers.ALLOW + Request.Method.GET;
         Serializer serializer = new Serializer();
-        HTTPResponse response = new ResponseBuilder()
+        Response response = new ResponseBuilder()
           .set(status)
           .add(allow)
           .get();
 
         String serialized = new String(serializer.serialize(response));
 
-        String expectedSerialized = HTTPResponse.VERSION + " " + status.code + Serializer.CRLF
+        String expectedSerialized = Response.VERSION + " " + status.code + Serializer.CRLF
           + allow
           + Serializer.BLANK_LINE;
         assertEquals(expectedSerialized, serialized);
@@ -42,12 +42,12 @@ class SerializerTest {
 
     @Test
     void itCanSerializeAnHTTPResponseWithHeadersAndBody() {
-        HTTPResponse.Status status = HTTPResponse.Status.OK;
+        Response.Status status = Response.Status.OK;
         Optional<String> body = Optional.of("name=<something>");
-        String allow = Headers.ALLOW + HTTPRequest.Method.GET;
+        String allow = Headers.ALLOW + Request.Method.GET;
         String contentLength = Headers.CONTENT_LENGTH + body.orElse("").length();
         Serializer serializer = new Serializer();
-        HTTPResponse response = new ResponseBuilder()
+        Response response = new ResponseBuilder()
           .set(status)
           .set(body)
           .add(contentLength)
@@ -56,7 +56,7 @@ class SerializerTest {
 
         String serialized = new String(serializer.serialize(response));
 
-        String expectedSerialized = HTTPResponse.VERSION + " " + status.code + Serializer.CRLF
+        String expectedSerialized = Response.VERSION + " " + status.code + Serializer.CRLF
           + allow + Serializer.CRLF
           + contentLength
           + Serializer.BLANK_LINE

@@ -19,7 +19,7 @@ public class SocketConnection implements Connection, Readable {
         }
     }
 
-    public void send(HTTPResponse response) {
+    public void send(Response response) {
         try {
             socket.getOutputStream().write(new Serializer().serialize(response));
         } catch (IOException e) {

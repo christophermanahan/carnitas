@@ -30,8 +30,8 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        HTTPResponse expectedResponse = new ResponseBuilder()
-          .set(HTTPResponse.Status.OK)
+        Response expectedResponse = new ResponseBuilder()
+          .set(Response.Status.OK)
           .get();
         assertTrue(expectedResponse.equals(connections.get(0).response));
     }
@@ -44,8 +44,8 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        HTTPResponse expectedResponse = new ResponseBuilder()
-          .set(HTTPResponse.Status.CREATED)
+        Response expectedResponse = new ResponseBuilder()
+          .set(Response.Status.CREATED)
           .get();
         assertTrue(expectedResponse.equals(connections.get(0).response));
     }
@@ -61,8 +61,8 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Twice());
 
-        HTTPResponse expectedResponse = new ResponseBuilder()
-          .set(HTTPResponse.Status.OK)
+        Response expectedResponse = new ResponseBuilder()
+          .set(Response.Status.OK)
           .get();
         assertTrue(expectedResponse.equals(connections.get(0).response));
         assertTrue(expectedResponse.equals(connections.get(1).response));
@@ -84,7 +84,7 @@ class HTTPServerTest {
     void itWillLogAMessageIfSendFails() {
         String message = "Failed!";
         Connection connection = new Connection() {
-            public void send(HTTPResponse response) {
+            public void send(Response response) {
                 throw new RuntimeException(message);
             }
 
@@ -96,7 +96,7 @@ class HTTPServerTest {
             }
         };
         Listener listener = () -> connection;
-        Parser parser = reader -> Optional.of(new HTTPRequest(HTTPRequest.Method.GET, "/simple_get"));
+        Parser parser = reader -> Optional.of(new Request(Request.Method.GET, "/simple_get"));
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
         assertEquals(message, logger.logged());
@@ -116,7 +116,7 @@ class HTTPServerTest {
 
     private class ReadableConnection implements Connection {
         private final Iterator<String> request;
-        private HTTPResponse response;
+        private Response response;
 
         ReadableConnection(String request) {
             this.request = List.of(request.split("")).iterator();
@@ -126,7 +126,7 @@ class HTTPServerTest {
             return Optional.of(request.next().charAt(0));
         }
 
-        public void send(HTTPResponse response) {
+        public void send(Response response) {
             this.response = response;
         }
 
@@ -148,16 +148,16 @@ class HTTPServerTest {
     }
 
     private class TestParser implements Parser {
-        public Optional<HTTPRequest> parse(Reader reader) {
-            HTTPRequest.Method method = HTTPRequest.Method.valueOf(reader.readUntil(" ").get());
+        public Optional<Request> parse(Reader reader) {
+            Request.Method method = Request.Method.valueOf(reader.readUntil(" ").get());
             String uri = reader.readUntil(Serializer.CRLF).get();
-            return Optional.of(new HTTPRequest(method, uri));
+            return Optional.of(new Request(method, uri));
         }
     }
 
     private class TestHandler implements Handler {
-        public HTTPResponse handle(HTTPRequest request) {
-            HTTPResponse.Status code = request.method().equals(HTTPRequest.Method.GET) ? HTTPResponse.Status.OK : HTTPResponse.Status.CREATED;
+        public Response handle(Request request) {
+            Response.Status code = request.method().equals(Request.Method.GET) ? Response.Status.OK : Response.Status.CREATED;
             return new ResponseBuilder()
               .set(code)
               .get();

@@ -8,33 +8,33 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 class Router implements Handler {
-    private final HashMap<Route, Function<HTTPRequest, HTTPResponse>> map;
+    private final HashMap<Route, Function<Request, Response>> map;
 
     Router() {
         this.map = new HashMap<>();
     }
 
-    Router get(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        add(HTTPRequest.Method.GET, uri, handler);
+    Router get(String uri, Function<Request, Response> handler) {
+        add(Request.Method.GET, uri, handler);
         return this;
     }
 
-    Router head(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        add(HTTPRequest.Method.HEAD, uri, handler);
+    Router head(String uri, Function<Request, Response> handler) {
+        add(Request.Method.HEAD, uri, handler);
         return this;
     }
 
-    Router post(String uri, Function<HTTPRequest, HTTPResponse> handler) {
-        add(HTTPRequest.Method.POST, uri, handler);
+    Router post(String uri, Function<Request, Response> handler) {
+        add(Request.Method.POST, uri, handler);
         return this;
     }
 
-    private void add(HTTPRequest.Method method, String uri, Function<HTTPRequest, HTTPResponse> handler) {
+    private void add(Request.Method method, String uri, Function<Request, Response> handler) {
         map.put(new Route(method, uri), handler);
-        map.putIfAbsent(new Route(HTTPRequest.Method.OPTIONS, uri), options());
+        map.putIfAbsent(new Route(Request.Method.OPTIONS, uri), options());
     }
 
-    public HTTPResponse handle(HTTPRequest request) {
+    public Response handle(Request request) {
         return map.keySet().stream()
           .filter(matches(request))
           .findFirst()
@@ -43,16 +43,16 @@ class Router implements Handler {
           .orElseGet(handler(request));
     }
 
-    private Predicate<Route> matches(HTTPRequest request) {
+    private Predicate<Route> matches(Request request) {
         return route -> route.equals(new Route(request.method(), request.uri()));
     }
 
-    private Supplier<HTTPResponse> handler(HTTPRequest request) {
+    private Supplier<Response> handler(Request request) {
         List<String> allowed = allowed(request);
         return allowed.isEmpty() ? notFound() : not(allowed);
     }
 
-    private List<String> allowed(HTTPRequest request) {
+    private List<String> allowed(Request request) {
         return map.keySet().stream()
           .filter(route -> route.uri().equals(request.uri()))
           .map(Route::method)
@@ -61,22 +61,22 @@ class Router implements Handler {
           .collect(Collectors.toList());
     }
 
-    private Supplier<HTTPResponse> not(List<String> allowed) {
+    private Supplier<Response> not(List<String> allowed) {
         return new ResponseBuilder()
-          .set(HTTPResponse.Status.METHOD_NOT_ALLOWED)
+          .set(Response.Status.METHOD_NOT_ALLOWED)
           .add(Headers.CONTENT_LENGTH + 0)
           .add(Headers.ALLOW + String.join(" ", allowed));
     }
 
-    private Supplier<HTTPResponse> notFound() {
+    private Supplier<Response> notFound() {
         return new ResponseBuilder()
-          .set(HTTPResponse.Status.NOT_FOUND)
+          .set(Response.Status.NOT_FOUND)
           .add((Headers.CONTENT_LENGTH + 0));
     }
 
-    private Function<HTTPRequest, HTTPResponse> options() {
-        return (HTTPRequest request) -> new ResponseBuilder()
-          .set(HTTPResponse.Status.OK)
+    private Function<Request, Response> options() {
+        return (Request request) -> new ResponseBuilder()
+          .set(Response.Status.OK)
           .add(Headers.ALLOW + String.join(" ", allowed(request)))
           .add(Headers.CONTENT_LENGTH + 0)
           .get();

@@ -3,7 +3,7 @@ package io.github.christophermanahan.carnitas;
 import java.util.Optional;
 import java.util.TreeSet;
 
-public class HTTPResponse {
+public class Response {
     private final Status status;
     private final TreeSet headers;
     private final Optional<String> body;
@@ -23,7 +23,7 @@ public class HTTPResponse {
         }
     }
 
-    HTTPResponse(Status status, TreeSet headers, Optional<String> body) {
+    Response(Status status, TreeSet headers, Optional<String> body) {
         this.status = status;
         this.headers = headers;
         this.body = body;
@@ -43,7 +43,7 @@ public class HTTPResponse {
 
     @Override
     public boolean equals(Object object) {
-        HTTPResponse response = (HTTPResponse) object;
+        Response response = (Response) object;
         return status.equals(response.status)
           && headers.equals(response.headers)
           && body.equals(response.body);

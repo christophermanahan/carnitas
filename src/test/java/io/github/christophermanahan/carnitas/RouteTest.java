@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RouteTest {
     @Test
     void itHasAMethod() {
-        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        Request.Method method = Request.Method.GET;
 
         Route route = new Route(method, "/simple_get");
 
@@ -19,14 +19,14 @@ class RouteTest {
     void itHasAUri() {
         String uri = "/simple_get";
 
-        Route route = new Route(HTTPRequest.Method.GET, uri);
+        Route route = new Route(Request.Method.GET, uri);
 
         assertEquals(uri, route.uri());
     }
 
     @Test
     void itCanCheckEquality() {
-        HTTPRequest.Method method = HTTPRequest.Method.GET;
+        Request.Method method = Request.Method.GET;
         String uri = "/simple_get";
 
         Route route1 = new Route(method, uri);

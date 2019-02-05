@@ -3,15 +3,15 @@ package io.github.christophermanahan.carnitas;
 import java.util.Objects;
 
 public class Route {
-    private final HTTPRequest.Method method;
+    private final Request.Method method;
     private final String uri;
 
-    Route(HTTPRequest.Method method, String uri) {
+    Route(Request.Method method, String uri) {
         this.method = method;
         this.uri = uri;
     }
 
-    public HTTPRequest.Method method() {
+    public Request.Method method() {
         return method;
     }
 
