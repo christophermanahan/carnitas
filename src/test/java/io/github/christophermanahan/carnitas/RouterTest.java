@@ -2,7 +2,6 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -78,7 +77,7 @@ class RouterTest {
 
         HTTPResponse expectedResponse = new ResponseBuilder()
           .set(HTTPResponse.Status.NOT_FOUND)
-          .add(Headers.contentLength(0))
+          .add(Headers.CONTENT_LENGTH + 0)
           .get();
         assertEquals(expectedResponse, response);
     }
@@ -96,12 +95,8 @@ class RouterTest {
 
         HTTPResponse expectedResponse = new ResponseBuilder()
           .set(HTTPResponse.Status.METHOD_NOT_ALLOWED)
-          .add(Headers.contentLength(0))
-          .add(Headers.allow(
-            List.of(
-              HTTPRequest.Method.POST,
-              HTTPRequest.Method.OPTIONS
-            )))
+          .add(Headers.CONTENT_LENGTH + 0)
+          .add(Headers.ALLOW + HTTPRequest.Method.POST + " " + HTTPRequest.Method.OPTIONS)
           .get();
         assertEquals(expectedResponse, response);
     }
@@ -119,12 +114,8 @@ class RouterTest {
 
         HTTPResponse expectedResponse = new ResponseBuilder()
           .set(HTTPResponse.Status.OK)
-          .add(Headers.allow(
-            List.of(
-              HTTPRequest.Method.GET,
-              HTTPRequest.Method.OPTIONS
-            )))
-          .add(Headers.contentLength(0))
+          .add(Headers.ALLOW + HTTPRequest.Method.GET + " " + HTTPRequest.Method.OPTIONS)
+          .add(Headers.CONTENT_LENGTH + 0)
           .get();
         assertEquals(expectedResponse, response);
     }

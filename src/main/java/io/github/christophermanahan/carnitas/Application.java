@@ -18,7 +18,7 @@ class Application implements Handler {
     private Function<HTTPRequest, HTTPResponse> okHandler() {
         return (HTTPRequest request) -> new ResponseBuilder()
           .set(HTTPResponse.Status.OK)
-          .add(Headers.contentLength(0))
+          .add(Headers.CONTENT_LENGTH + 0)
           .get();
     }
 
@@ -26,7 +26,7 @@ class Application implements Handler {
         return (HTTPRequest request) -> new ResponseBuilder()
           .set(HTTPResponse.Status.CREATED)
           .set(request.body())
-          .add(Headers.contentLength(request.body().orElse("").length()))
+          .add(Headers.CONTENT_LENGTH + request.body().orElse("").length())
           .get();
     }
 

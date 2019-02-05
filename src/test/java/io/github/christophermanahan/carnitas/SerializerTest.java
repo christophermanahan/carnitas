@@ -2,7 +2,6 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +25,7 @@ class SerializerTest {
     @Test
     void itCanSerializeAnHTTPResponseWithHeadersAndWithoutBody() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
-        String allow = Headers.allow(List.of(HTTPRequest.Method.GET));
+        String allow = Headers.ALLOW + HTTPRequest.Method.GET;
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
           .set(status)
@@ -45,8 +44,8 @@ class SerializerTest {
     void itCanSerializeAnHTTPResponseWithHeadersAndBody() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         Optional<String> body = Optional.of("name=<something>");
-        String allow = Headers.allow(List.of(HTTPRequest.Method.GET));
-        String contentLength = Headers.contentLength(body.orElse("").length());
+        String allow = Headers.ALLOW + HTTPRequest.Method.GET;
+        String contentLength = Headers.CONTENT_LENGTH + body.orElse("").length();
         Serializer serializer = new Serializer();
         HTTPResponse response = new ResponseBuilder()
           .set(status)

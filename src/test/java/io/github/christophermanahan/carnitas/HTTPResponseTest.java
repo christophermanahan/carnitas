@@ -22,7 +22,7 @@ class HTTPResponseTest {
 
     @Test
     void itHasHeaders() {
-        String contentLength = Headers.contentLength(0);
+        String contentLength = Headers.CONTENT_LENGTH + 0;
 
         HTTPResponse response = new ResponseBuilder()
           .add(contentLength)
@@ -45,7 +45,7 @@ class HTTPResponseTest {
     @Test
     void itCanTestEquality() {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
-        String contentLength = Headers.contentLength(0);
+        String contentLength = Headers.CONTENT_LENGTH + 0;
         Optional<String> body = Optional.of("name=<something>");
         HTTPResponse response = new ResponseBuilder()
           .set(status)
@@ -78,11 +78,11 @@ class HTTPResponseTest {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         HTTPResponse response = new ResponseBuilder()
           .set(status)
-          .add(Headers.contentLength(0))
+          .add(Headers.CONTENT_LENGTH + 0)
           .get();
         HTTPResponse otherResponse = new ResponseBuilder()
           .set(status)
-          .add(Headers.contentLength(1))
+          .add(Headers.CONTENT_LENGTH + 1)
           .get();
 
         assertNotEquals(response, otherResponse);

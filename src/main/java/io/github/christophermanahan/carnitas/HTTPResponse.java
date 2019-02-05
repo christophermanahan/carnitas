@@ -41,6 +41,7 @@ public class HTTPResponse {
         return body;
     }
 
+    @Override
     public boolean equals(Object object) {
         HTTPResponse response = (HTTPResponse) object;
         return status.equals(response.status)

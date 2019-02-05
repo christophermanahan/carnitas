@@ -48,35 +48,36 @@ class Router implements Handler {
     }
 
     private Supplier<HTTPResponse> handler(HTTPRequest request) {
-        List<HTTPRequest.Method> allowed = allowed(request);
+        List<String> allowed = allowed(request);
         return allowed.isEmpty() ? notFound() : not(allowed);
     }
 
-    private List<HTTPRequest.Method> allowed(HTTPRequest request) {
+    private List<String> allowed(HTTPRequest request) {
         return map.keySet().stream()
           .filter(route -> route.uri().equals(request.uri()))
           .map(Route::method)
+          .map(Enum::toString)
           .collect(Collectors.toList());
     }
 
-    private Supplier<HTTPResponse> not(List<HTTPRequest.Method> allowed) {
+    private Supplier<HTTPResponse> not(List<String> allowed) {
         return new ResponseBuilder()
           .set(HTTPResponse.Status.METHOD_NOT_ALLOWED)
-          .add(Headers.contentLength(0))
-          .add(Headers.allow(allowed));
+          .add(Headers.CONTENT_LENGTH + 0)
+          .add(Headers.ALLOW + String.join(" ", allowed));
     }
 
     private Supplier<HTTPResponse> notFound() {
         return new ResponseBuilder()
           .set(HTTPResponse.Status.NOT_FOUND)
-          .add((Headers.contentLength(0)));
+          .add((Headers.CONTENT_LENGTH + 0));
     }
 
     private Function<HTTPRequest, HTTPResponse> options() {
         return (HTTPRequest request) -> new ResponseBuilder()
           .set(HTTPResponse.Status.OK)
-          .add(Headers.allow(allowed(request)))
-          .add(Headers.contentLength(0))
+          .add(Headers.ALLOW + String.join(" ", allowed(request)))
+          .add(Headers.CONTENT_LENGTH + 0)
           .get();
     }
 }

@@ -1,5 +1,7 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Objects;
+
 public class Route {
     private final HTTPRequest.Method method;
     private final String uri;
@@ -17,13 +19,14 @@ public class Route {
         return uri;
     }
 
+    @Override
     public boolean equals(Object object) {
         Route route = (Route) object;
         return method.equals(route.method) && uri.equals(route.uri);
     }
 
+    @Override
     public int hashCode() {
-        int valueEquality = 0;
-        return valueEquality;
+        return Objects.hash(method, uri);
     }
 }
