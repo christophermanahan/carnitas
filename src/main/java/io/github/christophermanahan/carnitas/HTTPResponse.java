@@ -1,11 +1,11 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.HashSet;
 import java.util.Optional;
+import java.util.TreeSet;
 
 public class HTTPResponse {
     private final Status status;
-    private final HashSet headers;
+    private final TreeSet headers;
     private final Optional<String> body;
 
     static final String VERSION = "HTTP/1.1";
@@ -23,7 +23,7 @@ public class HTTPResponse {
         }
     }
 
-    HTTPResponse(Status status, HashSet headers, Optional<String> body) {
+    HTTPResponse(Status status, TreeSet headers, Optional<String> body) {
         this.status = status;
         this.headers = headers;
         this.body = body;
@@ -33,7 +33,7 @@ public class HTTPResponse {
         return status;
     }
 
-    public HashSet headers() {
+    public TreeSet headers() {
         return headers;
     }
 

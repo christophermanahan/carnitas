@@ -1,6 +1,6 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.HashSet;
+import java.util.TreeSet;
 
 class Serializer {
     static final String CRLF = "\r\n";
@@ -19,7 +19,7 @@ class Serializer {
         return HTTPResponse.VERSION + " " + response.status().code + Serializer.CRLF;
     }
 
-    private String format(HashSet headers) {
+    private String format(TreeSet headers) {
         return String.join(CRLF, headers);
     }
 

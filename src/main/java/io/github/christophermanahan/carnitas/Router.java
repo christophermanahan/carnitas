@@ -57,6 +57,7 @@ class Router implements Handler {
           .filter(route -> route.uri().equals(request.uri()))
           .map(Route::method)
           .map(Enum::toString)
+          .sorted()
           .collect(Collectors.toList());
     }
 

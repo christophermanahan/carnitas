@@ -1,12 +1,13 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 
 public class ResponseBuilder implements Supplier<HTTPResponse> {
     private HTTPResponse.Status status = HTTPResponse.Status.OK;
-    private HashSet<String> headers = new HashSet<>();
+    private TreeSet<String> headers = new TreeSet<>();
     private Optional<String> body = Optional.empty();
 
     public ResponseBuilder set(HTTPResponse.Status status) {

@@ -95,16 +95,17 @@ class RouterTest {
 
         HTTPResponse expectedResponse = new ResponseBuilder()
           .set(HTTPResponse.Status.METHOD_NOT_ALLOWED)
+          .add(Headers.ALLOW + HTTPRequest.Method.OPTIONS + " " + HTTPRequest.Method.POST)
           .add(Headers.CONTENT_LENGTH + 0)
-          .add(Headers.ALLOW + HTTPRequest.Method.POST + " " + HTTPRequest.Method.OPTIONS)
           .get();
         assertEquals(expectedResponse, response);
     }
 
     @Test
     void itProcessesAnOPTIONSRequestIntoAResponse() {
+        HTTPResponse.Status status = HTTPResponse.Status.OK;
         Function<HTTPRequest, HTTPResponse> handler = (HTTPRequest request) -> new ResponseBuilder()
-          .set(HTTPResponse.Status.OK)
+          .set(status)
           .get();
         HTTPRequest request = new HTTPRequest(HTTPRequest.Method.OPTIONS, "/simple_get");
         Router router = new Router()
@@ -112,10 +113,11 @@ class RouterTest {
 
         HTTPResponse response = router.handle(request);
 
+
         HTTPResponse expectedResponse = new ResponseBuilder()
           .set(HTTPResponse.Status.OK)
-          .add(Headers.ALLOW + HTTPRequest.Method.GET + " " + HTTPRequest.Method.OPTIONS)
           .add(Headers.CONTENT_LENGTH + 0)
+          .add(Headers.ALLOW + HTTPRequest.Method.GET + " " + HTTPRequest.Method.OPTIONS)
           .get();
         assertEquals(expectedResponse, response);
     }

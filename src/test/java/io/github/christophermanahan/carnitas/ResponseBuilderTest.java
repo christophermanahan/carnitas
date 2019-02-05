@@ -2,9 +2,9 @@ package io.github.christophermanahan.carnitas;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,7 +15,7 @@ class ResponseBuilderTest {
         HTTPResponse.Status status = HTTPResponse.Status.OK;
         String contentLength = Headers.CONTENT_LENGTH + 0;
         String allow = Headers.ALLOW + HTTPRequest.Method.GET;
-        HashSet headers = new HashSet<>(List.of(contentLength, allow));
+        TreeSet headers = new TreeSet<>(List.of(contentLength, allow));
 
         Optional<String> body = Optional.of("name=<something>");
         ResponseBuilder builder = new ResponseBuilder();
@@ -40,7 +40,7 @@ class ResponseBuilderTest {
           .set(status)
           .get();
 
-        HTTPResponse expectedResponse = new HTTPResponse(status, new HashSet(), Optional.empty());
+        HTTPResponse expectedResponse = new HTTPResponse(status, new TreeSet(), Optional.empty());
         assertEquals(expectedResponse, response);
     }
 }
