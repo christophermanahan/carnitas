@@ -2,7 +2,7 @@ package io.github.christophermanahan.carnitas;
 
 import java.util.Optional;
 
-public class HTTPRequest {
+public class Request {
     private final Method method;
     private final String uri;
     private Optional<String> body;
@@ -10,22 +10,23 @@ public class HTTPRequest {
     enum Method {
         GET,
         HEAD,
-        POST
+        POST,
+        OPTIONS
     }
 
-    HTTPRequest(Method method, String uri) {
+    Request(Method method, String uri) {
         this.method = method;
         this.uri = uri;
     }
 
-    private HTTPRequest(Method method, String uri, Optional<String> body) {
+    private Request(Method method, String uri, Optional<String> body) {
         this.method = method;
         this.uri = uri;
         this.body = body;
     }
 
-    HTTPRequest withBody(Optional<String> body) {
-        return new HTTPRequest(method, uri, body);
+    Request withBody(Optional<String> body) {
+        return new Request(method, uri, body);
     }
 
     public Method method() {

@@ -9,6 +9,7 @@ import cucumber.api.java.en.When;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -77,7 +78,7 @@ public class Steps {
     }
 
     @And("The {int}(st|nd) response should have status code {int}")
-    public void theStResponseShouldHaveStatusCode(int index, int code) {
+    public void theIntResponseShouldHaveStatusCode(int index, int code) {
         assertEquals(code, responses.get(index - 1).statusCode());
     }
 
@@ -89,7 +90,15 @@ public class Steps {
     }
 
     @And("The {int}nd response should have body {string}")
-    public void theNdResponseShouldHaveBody(int index, String body) {
+    public void theIntResponseShouldHaveBody(int index, String body) {
         assertEquals(body, responses.get(index - 1).body());
+    }
+
+    @And("Header {string} with values {string}")
+    public void headerWithValues(String header, String values) {
+        assertEquals(
+          new HashSet<>(List.of(responses.get(0).headers().allValues(header).get(0).split(" "))),
+          new HashSet<>(List.of(values.split(", ")))
+        );
     }
 }

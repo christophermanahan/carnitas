@@ -1,12 +1,12 @@
 package io.github.christophermanahan.carnitas;
 
-import java.util.List;
+import java.util.TreeSet;
 
 class Serializer {
     static final String CRLF = "\r\n";
     static final String BLANK_LINE = "\r\n\r\n";
 
-    byte[] serialize(HTTPResponse response) {
+    byte[] serialize(Response response) {
         return (
           statusLine(response)
           + format(response.headers())
@@ -15,15 +15,15 @@ class Serializer {
         ).getBytes();
     }
 
-    private String statusLine(HTTPResponse response) {
-        return HTTPResponse.VERSION + " " + response.status().code + Serializer.CRLF;
+    private String statusLine(Response response) {
+        return Response.VERSION + " " + response.status().code + Serializer.CRLF;
     }
 
-    private String format(List<String> headers) {
+    private String format(TreeSet headers) {
         return String.join(CRLF, headers);
     }
 
-    private String body(HTTPResponse response) {
+    private String body(Response response) {
         return response.body().orElse("");
     }
 }

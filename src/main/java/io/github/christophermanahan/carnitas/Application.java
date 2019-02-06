@@ -15,22 +15,22 @@ class Application implements Handler {
           .post(SIMPLE_POST, createdHandler());
     }
 
-    private Function<HTTPRequest, HTTPResponse> okHandler() {
-        return (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.OK)
-          .addHeader(Headers.contentLength(0))
+    private Function<Request, Response> okHandler() {
+        return (Request request) -> new ResponseBuilder()
+          .set(Response.Status.OK)
+          .add(Headers.CONTENT_LENGTH + 0)
           .get();
     }
 
-    private Function<HTTPRequest, HTTPResponse> createdHandler() {
-        return (HTTPRequest request) -> new ResponseBuilder()
-          .setStatus(HTTPResponse.Status.CREATED)
-          .addHeader(Headers.contentLength(request.body().orElse("").length()))
-          .setBody(request.body())
+    private Function<Request, Response> createdHandler() {
+        return (Request request) -> new ResponseBuilder()
+          .set(Response.Status.CREATED)
+          .set(request.body())
+          .add(Headers.CONTENT_LENGTH + request.body().orElse("").length())
           .get();
     }
 
-    public HTTPResponse handle(HTTPRequest request) {
+    public Response handle(Request request) {
         return router.handle(request);
     }
 }

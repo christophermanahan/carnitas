@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class RequestParser implements Parser {
-    public Optional<HTTPRequest> parse(Reader reader) {
+    public Optional<Request> parse(Reader reader) {
         Optional<String> statusLine = readLine(reader);
         Optional<String> method = getMethod(statusLine);
         Optional<String> uri = getUri(statusLine);
@@ -73,11 +73,11 @@ public class RequestParser implements Parser {
           .flatMap(reader::read);
     }
 
-    private Optional<HTTPRequest> request(Optional<String> method, Optional<String> uri, Optional<String> body) {
+    private Optional<Request> request(Optional<String> method, Optional<String> uri, Optional<String> body) {
         if (method.isPresent() && uri.isPresent()) {
             return Optional.of(
-              new HTTPRequest(
-                HTTPRequest.Method.valueOf(method.get()),
+              new Request(
+                Request.Method.valueOf(method.get()),
                 uri.get()
               ).withBody(body)
             );

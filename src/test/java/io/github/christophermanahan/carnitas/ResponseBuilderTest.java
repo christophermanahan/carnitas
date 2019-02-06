@@ -4,40 +4,43 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResponseBuilderTest {
     @Test
     void itCanBuildAnHTTPResponse() {
-        HTTPResponse.Status status = HTTPResponse.Status.OK;
-        String contentLength = Headers.contentLength(0);
-        String allow = Headers.allow(List.of(HTTPRequest.Method.GET));
-        List<String> headers = List.of(contentLength, allow);
+        Response.Status status = Response.Status.OK;
+        String contentLength = Headers.CONTENT_LENGTH + 0;
+        String allow = Headers.ALLOW + Request.Method.GET;
+        TreeSet headers = new TreeSet<>(List.of(contentLength, allow));
+
         Optional<String> body = Optional.of("name=<something>");
         ResponseBuilder builder = new ResponseBuilder();
 
-        HTTPResponse response = builder
-          .setStatus(status)
-          .addHeader(contentLength)
-          .addHeader(allow)
-          .setBody(body)
+        Response response = builder
+          .set(status)
+          .add(contentLength)
+          .add(allow)
+          .set(body)
           .get();
 
-        HTTPResponse expectedResponse = new HTTPResponse(status, headers, body);
+        Response expectedResponse = new Response(status, headers, body);
         assertTrue(expectedResponse.equals(response));
     }
 
     @Test
     void itCanBuildAnHTTPResponseWithOptionalHeadersAndBody() {
-        HTTPResponse.Status status = HTTPResponse.Status.OK;
+        Response.Status status = Response.Status.OK;
         ResponseBuilder builder = new ResponseBuilder();
 
-        HTTPResponse response = builder
-          .setStatus(status)
+        Response response = builder
+          .set(status)
           .get();
 
-        HTTPResponse expectedResponse = new HTTPResponse(status, List.of(), Optional.empty());
-        assertTrue(expectedResponse.equals(response));
+        Response expectedResponse = new Response(status, new TreeSet(), Optional.empty());
+        assertEquals(expectedResponse, response);
     }
 }
