@@ -10,13 +10,13 @@ public class Main {
             new HTTPServer(
               new RequestParser(),
               new Application(),
-              new ErrorLogger()
+              new ServerLogger()
             ).start(
               new ConnectionListener(serverSocket),
               new WhileOpen(serverSocket)
             );
         } catch (IOException e) {
-            new ErrorLogger().log(e.getMessage());
+            new ServerLogger().log(e.getMessage());
         }
     }
 

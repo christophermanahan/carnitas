@@ -178,6 +178,16 @@ class HTTPServerTest {
         public void log(String message) {
             log.append(message);
         }
+
+        public Request log(Request request) {
+            log.append(request.toString());
+            return request;
+        }
+
+        public Response log(Response response) {
+            log.append(response.toString());
+            return response;
+        }
     }
 
 }

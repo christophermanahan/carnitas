@@ -1,11 +1,15 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import java.util.TreeSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Response {
     private final Status status;
-    private final TreeSet<String> headers;
+    private final Set<String> headers;
     private final Optional<String> body;
 
     static final String VERSION = "HTTP/1.1";
@@ -23,7 +27,7 @@ public class Response {
         }
     }
 
-    Response(Status status, TreeSet headers, Optional<String> body) {
+    Response(Status status, Set<String> headers, Optional<String> body) {
         this.status = status;
         this.headers = headers;
         this.body = body;
@@ -33,7 +37,7 @@ public class Response {
         return status;
     }
 
-    public TreeSet headers() {
+    public Set<String> headers() {
         return headers;
     }
 
@@ -51,6 +55,8 @@ public class Response {
 
     @Override
     public String toString() {
-        return String.join(Serializer.CRLF, status.toString(), String.join(Serializer.CRLF, headers), body.orElse(""));
+        return Stream.of(List.of(status.toString()), headers, List.of(body.orElse("")))
+          .flatMap(Collection::stream)
+          .collect(Collectors.joining(Serializer.CRLF));
     }
 }
