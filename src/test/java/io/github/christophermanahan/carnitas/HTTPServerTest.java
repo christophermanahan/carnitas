@@ -3,7 +3,6 @@ package io.github.christophermanahan.carnitas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -78,8 +77,7 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        List<String> logged = logger.logged();
-        assertEquals(message, logged.get(logged.size() - 1));
+        assertEquals(message, logger.logged());
     }
 
     @Test
@@ -101,36 +99,7 @@ class HTTPServerTest {
         Parser parser = reader -> Optional.of(new Request(Request.Method.GET, "/simple_get"));
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        List<String> logged = logger.logged();
-        assertEquals(message, logged.get(logged.size() - 1));
-    }
-
-    @Test
-    void itLogsRequests() {
-        Request.Method method = Request.Method.GET;
-        String uri = "/simple_get";
-        String request = method + " " + uri + Serializer.CRLF;
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request));
-        Listener listener = new TestListener(connections);
-
-        new HTTPServer(parser, handler, logger).start(listener, new Once());
-
-        String expectedRequest = new Request(method, uri).toString();
-        assertEquals(expectedRequest, logger.logged().get(0));
-    }
-
-    @Test
-    void itLogsResponses() {
-        List<ReadableConnection> connections = List.of(new ReadableConnection(Request.Method.GET + " /simple_get" + Serializer.CRLF));
-        Listener listener = new TestListener(connections);
-
-        new HTTPServer(parser, handler, logger).start(listener, new Once());
-
-        String expectedResponse = new ResponseBuilder()
-          .set(Response.Status.OK)
-          .get()
-          .toString();
-        assertEquals(expectedResponse, logger.logged().get(1));
+        assertEquals(message, logger.logged());
     }
 
     private class TestListener implements Listener {
@@ -196,28 +165,18 @@ class HTTPServerTest {
     }
 
     private class TestLogger implements Logger {
-        private final ArrayList<String> log;
+        private final StringBuilder log;
 
         TestLogger() {
-            this.log = new ArrayList<>();
+            this.log = new StringBuilder();
         }
 
-        ArrayList<String> logged() {
-            return log;
+        String logged() {
+            return log.toString();
         }
 
         public void log(String message) {
-            log.add(message);
-        }
-
-        public Request log(Request request) {
-            log.add(request.toString());
-            return request;
-        }
-
-        public Response log(Response response) {
-            log.add(response.toString());
-            return response;
+            log.append(message);
         }
     }
 

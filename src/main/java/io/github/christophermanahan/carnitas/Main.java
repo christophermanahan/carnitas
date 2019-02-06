@@ -9,14 +9,14 @@ public class Main {
         try (ServerSocket serverSocket = new ServerSocket(port(args))) {
             new HTTPServer(
               new RequestParser(),
-              new Application(),
-              new ServerLogger()
+              new Middleware(),
+              new MessageLogger()
             ).start(
               new ConnectionListener(serverSocket),
               new WhileOpen(serverSocket)
             );
         } catch (IOException e) {
-            new ServerLogger().log(e.getMessage());
+            new MessageLogger().log(e.getMessage());
         }
     }
 
