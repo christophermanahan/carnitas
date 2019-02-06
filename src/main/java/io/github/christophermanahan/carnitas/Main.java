@@ -9,7 +9,7 @@ public class Main {
         try (ServerSocket serverSocket = new ServerSocket(port(args))) {
             new HTTPServer(
               new RequestParser(),
-              new Middleware(),
+              new Application(),
               new MessageLogger()
             ).start(
               new ConnectionListener(serverSocket),

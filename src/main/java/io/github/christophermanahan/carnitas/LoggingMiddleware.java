@@ -1,17 +1,17 @@
 package io.github.christophermanahan.carnitas;
 
-public class Middleware implements Handler {
+public class LoggingMiddleware implements Handler {
     private final MessageLogger logger;
-    private final Application application;
+    private final Handler handler;
 
-    Middleware() {
+    LoggingMiddleware(Handler handler) {
         this.logger = new MessageLogger();
-        this.application = new Application();
+        this.handler = handler;
     }
 
     public Response handle(Request request) {
         logger.log(request.toString());
-        Response response = application.handle(request);
+        Response response = handler.handle(request);
         logger.log(response.toString());
         return response;
     }

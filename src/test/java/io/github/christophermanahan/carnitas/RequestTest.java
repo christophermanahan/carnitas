@@ -44,7 +44,7 @@ class RequestTest {
           .withBody(Optional.of(body));
 
         String expectedStringified = method + " " + uri + Serializer.CRLF
-          + body;
+          + body + Serializer.CRLF;
         assertEquals(expectedStringified, request.toString());
     }
 }

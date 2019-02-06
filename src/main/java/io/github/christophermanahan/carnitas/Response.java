@@ -55,9 +55,14 @@ public class Response {
 
     @Override
     public String toString() {
-        return Stream.of(List.of(status.code), headers, List.of(body.orElse("")))
+        return Stream.of(statusLine(), headers, List.of(body.orElse("")))
           .flatMap(Collection::stream)
           .filter(s -> !s.isEmpty())
-          .collect(Collectors.joining(Serializer.CRLF));
+          .collect(Collectors.joining(Serializer.CRLF))
+          .concat(Serializer.CRLF);
+    }
+
+    private List<String> statusLine() {
+        return List.of(String.join(" ", VERSION, status.code));
     }
 }

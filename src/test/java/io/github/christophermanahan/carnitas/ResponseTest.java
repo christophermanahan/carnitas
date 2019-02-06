@@ -115,9 +115,9 @@ class ResponseTest {
           .set(Optional.of(body))
           .get();
 
-        String expectedStringified = status.code + Serializer.CRLF
+        String expectedStringified = Response.VERSION + " " + status.code + Serializer.CRLF
           + contentLength + Serializer.CRLF
-          + body;
+          + body + Serializer.CRLF;
         Assertions.assertEquals(expectedStringified, response.toString());
     }
 }

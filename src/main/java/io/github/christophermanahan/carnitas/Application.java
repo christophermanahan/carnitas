@@ -3,13 +3,17 @@ package io.github.christophermanahan.carnitas;
 import java.util.function.Function;
 
 class Application implements Handler {
-    private final Handler router;
+    private final Handler handler;
 
     private static final String SIMPLE_GET = "/simple_get";
     private static final String SIMPLE_POST = "/simple_post";
 
     Application() {
-        this.router = new Router()
+        this.handler = new LoggingMiddleware(router());
+    }
+
+    private Handler router() {
+        return new Router()
           .get(SIMPLE_GET, okHandler())
           .head(SIMPLE_GET, okHandler())
           .post(SIMPLE_POST, createdHandler());
@@ -31,6 +35,6 @@ class Application implements Handler {
     }
 
     public Response handle(Request request) {
-        return router.handle(request);
+        return handler.handle(request);
     }
 }

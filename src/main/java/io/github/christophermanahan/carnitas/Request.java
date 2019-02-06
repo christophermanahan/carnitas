@@ -1,6 +1,10 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Request {
     private final Method method;
@@ -43,6 +47,14 @@ public class Request {
 
     @Override
     public String toString() {
-        return String.join(Serializer.CRLF, String.join(" ", method.toString(), uri), body.orElse(""));
+        return Stream.of(requestLine(), List.of(body.orElse("")))
+          .flatMap(Collection::stream)
+          .filter(s -> !s.isEmpty())
+          .collect(Collectors.joining(Serializer.CRLF))
+          .concat(Serializer.CRLF);
+    }
+
+    private List<String> requestLine() {
+        return List.of(String.join(" ", method.toString(), uri));
     }
 }
