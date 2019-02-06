@@ -29,7 +29,9 @@ class HTTPServer {
 
     private void serve(Connection connection) {
         parser.parse(new ConnectionReader(connection))
+          .map(logger::log)
           .map(handler::handle)
+          .map(logger::log)
           .ifPresent(connection::send);
     }
 }

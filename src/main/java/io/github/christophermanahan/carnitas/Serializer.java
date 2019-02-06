@@ -19,7 +19,7 @@ class Serializer {
         return Response.VERSION + " " + response.status().code + Serializer.CRLF;
     }
 
-    private String format(Set headers) {
+    private String format(Set<String> headers) {
         return String.join(CRLF, headers);
     }
 

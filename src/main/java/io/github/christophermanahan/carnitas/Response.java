@@ -55,8 +55,9 @@ public class Response {
 
     @Override
     public String toString() {
-        return Stream.of(List.of(status.toString()), headers, List.of(body.orElse("")))
+        return Stream.of(List.of(status.code), headers, List.of(body.orElse("")))
           .flatMap(Collection::stream)
+          .filter(s -> !s.isEmpty())
           .collect(Collectors.joining(Serializer.CRLF));
     }
 }

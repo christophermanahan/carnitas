@@ -5,7 +5,7 @@ import java.util.Optional;
 public class Request {
     private final Method method;
     private final String uri;
-    private Optional<String> body;
+    private Optional<String> body = Optional.empty();
 
     enum Method {
         GET,

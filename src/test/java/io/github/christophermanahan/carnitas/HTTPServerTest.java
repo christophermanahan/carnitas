@@ -3,12 +3,13 @@ package io.github.christophermanahan.carnitas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
     private TestParser parser;
@@ -33,7 +34,7 @@ class HTTPServerTest {
         Response expectedResponse = new ResponseBuilder()
           .set(Response.Status.OK)
           .get();
-        assertTrue(expectedResponse.equals(connections.get(0).response));
+        assertEquals(expectedResponse, connections.get(0).response);
     }
 
     @Test
@@ -47,7 +48,7 @@ class HTTPServerTest {
         Response expectedResponse = new ResponseBuilder()
           .set(Response.Status.CREATED)
           .get();
-        assertTrue(expectedResponse.equals(connections.get(0).response));
+        assertEquals(expectedResponse, connections.get(0).response);
     }
 
     @Test
@@ -64,8 +65,8 @@ class HTTPServerTest {
         Response expectedResponse = new ResponseBuilder()
           .set(Response.Status.OK)
           .get();
-        assertTrue(expectedResponse.equals(connections.get(0).response));
-        assertTrue(expectedResponse.equals(connections.get(1).response));
+        assertEquals(expectedResponse, connections.get(0).response);
+        assertEquals(expectedResponse, connections.get(1).response);
     }
 
     @Test
@@ -77,7 +78,8 @@ class HTTPServerTest {
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        assertEquals(message, logger.logged());
+        List<String> logged = logger.logged();
+        assertEquals(message, logged.get(logged.size() - 1));
     }
 
     @Test
@@ -99,7 +101,36 @@ class HTTPServerTest {
         Parser parser = reader -> Optional.of(new Request(Request.Method.GET, "/simple_get"));
         new HTTPServer(parser, handler, logger).start(listener, new Once());
 
-        assertEquals(message, logger.logged());
+        List<String> logged = logger.logged();
+        assertEquals(message, logged.get(logged.size() - 1));
+    }
+
+    @Test
+    void itLogsRequests() {
+        Request.Method method = Request.Method.GET;
+        String uri = "/simple_get";
+        String request = method + " " + uri + Serializer.CRLF;
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request));
+        Listener listener = new TestListener(connections);
+
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
+
+        String expectedRequest = new Request(method, uri).toString();
+        assertEquals(expectedRequest, logger.logged().get(0));
+    }
+
+    @Test
+    void itLogsResponses() {
+        List<ReadableConnection> connections = List.of(new ReadableConnection(Request.Method.GET + " /simple_get" + Serializer.CRLF));
+        Listener listener = new TestListener(connections);
+
+        new HTTPServer(parser, handler, logger).start(listener, new Once());
+
+        String expectedResponse = new ResponseBuilder()
+          .set(Response.Status.OK)
+          .get()
+          .toString();
+        assertEquals(expectedResponse, logger.logged().get(1));
     }
 
     private class TestListener implements Listener {
@@ -165,27 +196,27 @@ class HTTPServerTest {
     }
 
     private class TestLogger implements Logger {
-        private final StringBuilder log;
+        private final ArrayList<String> log;
 
         TestLogger() {
-            this.log = new StringBuilder();
+            this.log = new ArrayList<>();
         }
 
-        String logged() {
-            return log.toString();
+        ArrayList<String> logged() {
+            return log;
         }
 
         public void log(String message) {
-            log.append(message);
+            log.add(message);
         }
 
         public Request log(Request request) {
-            log.append(request.toString());
+            log.add(request.toString());
             return request;
         }
 
         public Response log(Response response) {
-            log.append(response.toString());
+            log.add(response.toString());
             return response;
         }
     }
