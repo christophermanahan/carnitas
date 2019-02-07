@@ -1,14 +1,20 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import java.util.TreeSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Response {
     private final Status status;
-    private final TreeSet headers;
+    private final Set<String> headers;
     private final Optional<String> body;
 
     static final String VERSION = "HTTP/1.1";
+    static final String CRLF = "\r\n";
+    static final String BLANK_LINE = "\r\n\r\n";
 
     enum Status {
         OK("200 OK"),
@@ -23,7 +29,7 @@ public class Response {
         }
     }
 
-    Response(Status status, TreeSet headers, Optional<String> body) {
+    Response(Status status, Set<String> headers, Optional<String> body) {
         this.status = status;
         this.headers = headers;
         this.body = body;
@@ -33,7 +39,7 @@ public class Response {
         return status;
     }
 
-    public TreeSet headers() {
+    public Set<String> headers() {
         return headers;
     }
 
@@ -47,5 +53,18 @@ public class Response {
         return status.equals(response.status)
           && headers.equals(response.headers)
           && body.equals(response.body);
+    }
+
+    @Override
+    public String toString() {
+        return Stream.of(statusLine(), headers, List.of(body.orElse("")))
+          .flatMap(Collection::stream)
+          .filter(s -> !s.isEmpty())
+          .collect(Collectors.joining(CRLF))
+          .concat(CRLF);
+    }
+
+    private List<String> statusLine() {
+        return List.of(String.join(" ", VERSION, status.code));
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HTTPServerTest {
     private TestParser parser;
@@ -25,7 +25,7 @@ class HTTPServerTest {
     @Test
     void itWillServeGETRequests() {
         String request = "GET /simple_get";
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Serializer.CRLF));
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Response.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
@@ -33,13 +33,13 @@ class HTTPServerTest {
         Response expectedResponse = new ResponseBuilder()
           .set(Response.Status.OK)
           .get();
-        assertTrue(expectedResponse.equals(connections.get(0).response));
+        assertEquals(expectedResponse, connections.get(0).response);
     }
 
     @Test
     void itWillServePOSTRequests() {
         String request = "POST simple_post";
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Serializer.CRLF));
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Response.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
@@ -47,15 +47,15 @@ class HTTPServerTest {
         Response expectedResponse = new ResponseBuilder()
           .set(Response.Status.CREATED)
           .get();
-        assertTrue(expectedResponse.equals(connections.get(0).response));
+        assertEquals(expectedResponse, connections.get(0).response);
     }
 
     @Test
     void itWillServeRequestsBasedOnContext() {
         String request = "GET simple_get";
         List<ReadableConnection> connections = List.of(
-          new ReadableConnection(request + Serializer.CRLF),
-          new ReadableConnection(request + Serializer.CRLF)
+          new ReadableConnection(request + Response.CRLF),
+          new ReadableConnection(request + Response.CRLF)
         );
         Listener listener = new TestListener(connections);
 
@@ -64,8 +64,8 @@ class HTTPServerTest {
         Response expectedResponse = new ResponseBuilder()
           .set(Response.Status.OK)
           .get();
-        assertTrue(expectedResponse.equals(connections.get(0).response));
-        assertTrue(expectedResponse.equals(connections.get(1).response));
+        assertEquals(expectedResponse, connections.get(0).response);
+        assertEquals(expectedResponse, connections.get(1).response);
     }
 
     @Test
@@ -150,7 +150,7 @@ class HTTPServerTest {
     private class TestParser implements Parser {
         public Optional<Request> parse(Reader reader) {
             Request.Method method = Request.Method.valueOf(reader.readUntil(" ").get());
-            String uri = reader.readUntil(Serializer.CRLF).get();
+            String uri = reader.readUntil(Response.CRLF).get();
             return Optional.of(new Request(method, uri));
         }
     }

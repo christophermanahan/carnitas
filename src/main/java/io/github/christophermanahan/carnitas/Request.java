@@ -1,11 +1,15 @@
 package io.github.christophermanahan.carnitas;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Request {
     private final Method method;
     private final String uri;
-    private Optional<String> body;
+    private Optional<String> body = Optional.empty();
 
     enum Method {
         GET,
@@ -39,5 +43,18 @@ public class Request {
 
     public Optional<String> body() {
         return body;
+    }
+
+    @Override
+    public String toString() {
+        return Stream.of(requestLine(), List.of(body.orElse("")))
+          .flatMap(Collection::stream)
+          .filter(s -> !s.isEmpty())
+          .collect(Collectors.joining(Response.CRLF))
+          .concat(Response.CRLF);
+    }
+
+    private List<String> requestLine() {
+        return List.of(String.join(" ", method.toString(), uri));
     }
 }

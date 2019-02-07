@@ -1,5 +1,6 @@
 package io.github.christophermanahan.carnitas;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -101,5 +102,22 @@ class ResponseTest {
           .get();
 
         assertNotEquals(response, otherResponse);
+    }
+
+    @Test
+    void itCanProvideAStringifiedResponse() {
+        Response.Status status = Response.Status.OK;
+        String contentLength = Headers.CONTENT_LENGTH + 0;
+        String body = "name=<something>";
+        Response response = new ResponseBuilder()
+          .set(status)
+          .add(contentLength)
+          .set(Optional.of(body))
+          .get();
+
+        String expectedStringified = Response.VERSION + " " + status.code + Response.CRLF
+          + contentLength + Response.CRLF
+          + body + Response.CRLF;
+        Assertions.assertEquals(expectedStringified, response.toString());
     }
 }
