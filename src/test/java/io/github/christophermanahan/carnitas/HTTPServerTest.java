@@ -25,7 +25,7 @@ class HTTPServerTest {
     @Test
     void itWillServeGETRequests() {
         String request = "GET /simple_get";
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Serializer.CRLF));
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Response.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
@@ -39,7 +39,7 @@ class HTTPServerTest {
     @Test
     void itWillServePOSTRequests() {
         String request = "POST simple_post";
-        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Serializer.CRLF));
+        List<ReadableConnection> connections = List.of(new ReadableConnection(request + Response.CRLF));
         Listener listener = new TestListener(connections);
 
         new HTTPServer(parser, handler, logger).start(listener, new Once());
@@ -54,8 +54,8 @@ class HTTPServerTest {
     void itWillServeRequestsBasedOnContext() {
         String request = "GET simple_get";
         List<ReadableConnection> connections = List.of(
-          new ReadableConnection(request + Serializer.CRLF),
-          new ReadableConnection(request + Serializer.CRLF)
+          new ReadableConnection(request + Response.CRLF),
+          new ReadableConnection(request + Response.CRLF)
         );
         Listener listener = new TestListener(connections);
 
@@ -150,7 +150,7 @@ class HTTPServerTest {
     private class TestParser implements Parser {
         public Optional<Request> parse(Reader reader) {
             Request.Method method = Request.Method.valueOf(reader.readUntil(" ").get());
-            String uri = reader.readUntil(Serializer.CRLF).get();
+            String uri = reader.readUntil(Response.CRLF).get();
             return Optional.of(new Request(method, uri));
         }
     }

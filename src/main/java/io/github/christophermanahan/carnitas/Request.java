@@ -50,8 +50,8 @@ public class Request {
         return Stream.of(requestLine(), List.of(body.orElse("")))
           .flatMap(Collection::stream)
           .filter(s -> !s.isEmpty())
-          .collect(Collectors.joining(Serializer.CRLF))
-          .concat(Serializer.CRLF);
+          .collect(Collectors.joining(Response.CRLF))
+          .concat(Response.CRLF);
     }
 
     private List<String> requestLine() {

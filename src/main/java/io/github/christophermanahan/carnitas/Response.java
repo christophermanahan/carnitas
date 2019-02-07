@@ -13,6 +13,8 @@ public class Response {
     private final Optional<String> body;
 
     static final String VERSION = "HTTP/1.1";
+    static final String CRLF = "\r\n";
+    static final String BLANK_LINE = "\r\n\r\n";
 
     enum Status {
         OK("200 OK"),
@@ -58,8 +60,8 @@ public class Response {
         return Stream.of(statusLine(), headers, List.of(body.orElse("")))
           .flatMap(Collection::stream)
           .filter(s -> !s.isEmpty())
-          .collect(Collectors.joining(Serializer.CRLF))
-          .concat(Serializer.CRLF);
+          .collect(Collectors.joining(CRLF))
+          .concat(CRLF);
     }
 
     private List<String> statusLine() {

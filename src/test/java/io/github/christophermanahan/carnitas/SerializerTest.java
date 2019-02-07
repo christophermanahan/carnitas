@@ -17,8 +17,8 @@ class SerializerTest {
 
         String serialized = new String(serializer.serialize(response));
 
-        String expectedSerialized = Response.VERSION + " " + status.code + Serializer.CRLF
-          + Serializer.BLANK_LINE;
+        String expectedSerialized = Response.VERSION + " " + status.code + Response.CRLF
+          + Response.BLANK_LINE;
         assertEquals(expectedSerialized, serialized);
     }
 
@@ -34,9 +34,9 @@ class SerializerTest {
 
         String serialized = new String(serializer.serialize(response));
 
-        String expectedSerialized = Response.VERSION + " " + status.code + Serializer.CRLF
+        String expectedSerialized = Response.VERSION + " " + status.code + Response.CRLF
           + allow
-          + Serializer.BLANK_LINE;
+          + Response.BLANK_LINE;
         assertEquals(expectedSerialized, serialized);
     }
 
@@ -56,10 +56,10 @@ class SerializerTest {
 
         String serialized = new String(serializer.serialize(response));
 
-        String expectedSerialized = Response.VERSION + " " + status.code + Serializer.CRLF
-          + allow + Serializer.CRLF
+        String expectedSerialized = Response.VERSION + " " + status.code + Response.CRLF
+          + allow + Response.CRLF
           + contentLength
-          + Serializer.BLANK_LINE
+          + Response.BLANK_LINE
           + body.orElse("");
         assertEquals(expectedSerialized, serialized);
     }
