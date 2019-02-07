@@ -94,7 +94,7 @@ public class Steps {
         assertEquals(body, responses.get(index - 1).body());
     }
 
-    @And("Header {string} with values {string}")
+    @And("Header {string} with value(s) {string}")
     public void headerWithValues(String header, String values) {
         assertEquals(
           new HashSet<>(List.of(responses.get(0).headers().allValues(header).get(0).split(" "))),
